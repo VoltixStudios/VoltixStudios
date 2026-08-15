@@ -1,23 +1,32 @@
-# voltix_studios.github.io
+# VoltixStudios
 
-The Voltix Studios website — a single static page covering the studio and its two
-games, **Paper Squadron** and **CoreWard**.
+The Voltix Studios website — a landing page covering the studio and its two
+games, **Paper Squadron** and **CoreWard**, plus the legal documents Google Play
+requires those games to publish.
 
-Live at <https://oriolorragit.github.io/voltix_studios.github.io/>.
+Live at <https://voltixstudios.github.io/VoltixStudios/>.
 
-> The repository is owned by `oriolorragit`, so GitHub serves this as a *project*
-> page and the URL carries the repo name. To get the bare `oriolorragit.github.io`
-> address instead, rename the repository to `oriolorragit.github.io`; to use a
-> domain of your own, add a `CNAME` file. Every path in the page is relative, so
-> either move works without editing the HTML.
+> The repository is owned by the `VoltixStudios` org and is not named
+> `VoltixStudios.github.io`, so GitHub serves it as a *project* page and the URL
+> carries the repo name. To get the bare `voltixstudios.github.io` address,
+> rename the repository to `VoltixStudios.github.io`; to use a domain of your
+> own, add a `CNAME` file. Every path in the site is relative, so either move
+> works without editing a single link — but the absolute URLs in the `<link
+> rel="canonical">`, `og:` and `sitemap.xml` entries are written out in full and
+> would need updating.
 
 ## Layout
 
 ```
-index.html          the whole page
-assets/css/style.css
-assets/js/main.js   sticky header, scroll reveal, scroll-spy — all optional
-assets/img/         generated, committed
+index.html                 the landing page
+404.html                   self-contained; no assets, works at any depth
+robots.txt  sitemap.xml
+legal/paper-squadron/      privacy policy + account deletion, EN/ES
+assets/css/style.css       palette, header, buttons, social, footer
+assets/css/doc.css         long-form document pages only
+assets/js/main.js          sticky header, scroll reveal, scroll-spy — all optional
+assets/js/doc.js           language switch on the document pages — also optional
+assets/img/                generated, committed
 tools/build_assets.py
 ```
 
@@ -63,3 +72,61 @@ setting those two values is the whole theme for a section.
 
 Paper Squadron's copy is kept in step with `store/play-games-listing.md` in the
 game repo — if the Play listing changes, change it here too.
+
+## Social links
+
+The handles appear in more than one place, so change all of them together:
+
+| Where | What |
+| --- | --- |
+| `index.html` — `.follow` block | labelled pills in the contact section |
+| `index.html` + both legal pages — `.social--compact` | icon buttons in the footer |
+| `index.html` — JSON-LD `sameAs` | what search engines read |
+| `index.html` — `twitter:site` / `twitter:creator` | share cards |
+
+Current: [@voltix_studios](https://x.com/voltix_studios) on X,
+[@VoltixStudiosGaming](https://www.youtube.com/@VoltixStudiosGaming) on YouTube.
+
+The icons are an inline `<symbol>` sprite at the top of each `<body>` (`#i-x`,
+`#i-yt`, `#i-gh`, `#i-mail`) — no icon font, no network request. Each network
+keeps its own colour on hover only, so the resting row stays monochrome and the
+studio palette still owns the page.
+
+## Legal pages
+
+`legal/paper-squadron/` holds the two documents Google Play requires: the privacy
+policy and the account-deletion page. Both are published here in **English and
+Spanish**, matching the languages the game ships in.
+
+```
+legal/paper-squadron/privacy-policy.html
+legal/paper-squadron/delete-account.html
+```
+
+The wording is the same text previously served from Firebase Hosting
+(`paper_ace/docs/`) — only the presentation changed, plus a Spanish translation of
+the privacy policy, which had been English-only. **If the app's behaviour changes,
+these pages have to change with it**: they describe what the code actually does,
+and Play checks them.
+
+Language is chosen before first paint by a small inline script in each page's
+`<head>`, in this order: an explicit `?lang=en` / `?lang=es`, then the browser's
+own preference. Nothing is written to storage — a page whose subject is what the
+app keeps about you should not quietly keep something about you. With JavaScript
+blocked the switch hides itself and **both** languages render in full, which is
+the right fallback for a document a store has to be able to read.
+
+> The two URLs are declared in the Play Console (Data safety form) and in
+> `paper_ace/SETUP.md`. Both still point at the old Firebase Hosting addresses —
+> switching them over to these pages is a Console edit, and needs no new build.
+
+## Adding a game's legal pages
+
+Copy `legal/paper-squadron/` to `legal/<game>/`, replace the copy, and set the
+accent on `<main>`:
+
+```html
+<main id="main" class="doc--ps">   <!-- .doc--ps is defined in doc.css -->
+```
+
+Then add the new URLs to `sitemap.xml` and the footer's `.foot__links`.

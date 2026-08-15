@@ -714,28 +714,153 @@ p:last-child { margin-bottom: 0; }
 .contact__inner { text-align: center; }
 .contact .lead { margin: 0 auto 32px; }
 
+/* ── social ──────────────────────────────────────────────────────────────── */
+
+/* The sprite is markup, not a picture — it must occupy no space and stay out
+   of the accessibility tree, but `display:none` would kill the <use> refs. */
+.sprite {
+  position: absolute;
+  width: 0; height: 0;
+  overflow: hidden;
+}
+
+.social__icon {
+  width: 20px; height: 20px;
+  flex: none;
+  fill: currentColor;
+}
+
+.follow {
+  margin-top: clamp(44px, 6vw, 66px);
+  padding-top: clamp(32px, 4vw, 44px);
+  border-top: 1px solid var(--line-soft);
+}
+.follow__label {
+  font-family: var(--display);
+  font-size: .74rem;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+.follow__note {
+  margin: 22px 0 0;
+  font-size: .88rem;
+  color: var(--muted);
+}
+
+.social {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+}
+
+/* labelled pill — used in the contact block */
+.social__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 22px 12px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .03);
+  text-decoration: none;
+  transition: border-color .25s var(--ease), background .25s var(--ease),
+              transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.social__link:hover {
+  border-color: color-mix(in srgb, var(--brand, var(--volt)) 55%, transparent);
+  background: rgba(255, 255, 255, .06);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -14px color-mix(in srgb, var(--brand, var(--volt)) 70%, transparent);
+}
+.social__link:hover .social__icon { color: var(--brand, var(--volt)); }
+.social__link .social__icon {
+  width: 22px; height: 22px;
+  color: var(--text);
+  transition: color .25s var(--ease);
+}
+.social__name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: .95rem;
+  letter-spacing: .02em;
+  color: var(--text);
+}
+.social__handle {
+  font-size: .82rem;
+  color: var(--muted);
+  padding-left: 12px;
+  margin-left: 2px;
+  border-left: 1px solid var(--line);
+}
+
+/* icon-only button — used in the footer */
+.social--compact { gap: 10px; }
+.social__btn {
+  display: grid;
+  place-items: center;
+  width: 38px; height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, .025);
+  transition: color .25s var(--ease), border-color .25s var(--ease),
+              background .25s var(--ease), transform .25s var(--ease);
+}
+.social__btn:hover {
+  color: var(--brand, var(--volt));
+  border-color: color-mix(in srgb, var(--brand, var(--volt)) 50%, transparent);
+  background: rgba(255, 255, 255, .06);
+  transform: translateY(-2px);
+}
+
+/* Each network keeps its own colour on hover only, so the resting row stays
+   monochrome and the brand palette still owns the page. */
+.social__link--x,  .social__btn--x  { --brand: #e9edf6; }
+.social__link--yt, .social__btn--yt { --brand: #ff3d3d; }
+
 /* ── footer ──────────────────────────────────────────────────────────────── */
 
 .foot {
   border-top: 1px solid var(--line-soft);
-  padding: 38px 0 46px;
+  padding: 40px 0 46px;
 }
-.foot__inner {
+.foot__top {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 20px;
   flex-wrap: wrap;
+  padding-bottom: 26px;
+  border-bottom: 1px solid var(--line-soft);
 }
-.foot img { width: 26px; height: 26px; opacity: .8; }
-.foot p {
+.foot .brand img { width: 30px; height: 30px; opacity: .9; }
+
+.foot__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 26px;
+  flex-wrap: wrap;
+  padding-top: 24px;
+}
+.foot__copy {
   margin: 0;
   font-size: .84rem;
   color: var(--muted);
+  max-width: 62ch;
 }
 .foot__links {
-  margin-left: auto !important;
   display: flex;
-  gap: 20px;
+  gap: 22px;
+  flex-wrap: wrap;
+  font-size: .84rem;
 }
 .foot__links a {
   text-decoration: none;
@@ -781,11 +906,20 @@ p:last-child { margin-bottom: 0; }
   .strata__grid img { aspect-ratio: 1 / 1.5; }
 }
 
+/* The two handles are long enough to push a pill wider than a small phone, so
+   the row becomes a column before that happens. */
+@media (max-width: 560px) {
+  .social { flex-direction: column; align-items: stretch; }
+  .social__link { justify-content: center; }
+  .social--compact { flex-direction: row; justify-content: center; }
+}
+
 @media (max-width: 460px) {
   .nav__links a:nth-child(4) { display: none; }
   .hero__chips li { width: 100%; justify-content: center; }
-  .foot__inner { justify-content: center; text-align: center; }
-  .foot__links { margin-left: 0 !important; width: 100%; justify-content: center; }
+  .foot__top,
+  .foot__bar { justify-content: center; text-align: center; }
+  .foot__links { width: 100%; justify-content: center; }
 }
 
 /* Narrow phones: the wordmark's "STUDIOS" is the first thing to go, so the one
@@ -797,6 +931,8 @@ p:last-child { margin-bottom: 0; }
   .brand span { font-size: .98rem; }
   .btn--sm { padding: 8px 14px; font-size: .82rem; }
   .btn--lg { padding: 14px 20px; font-size: .9rem; }
+  /* the network name alone is enough this narrow */
+  .social__handle { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

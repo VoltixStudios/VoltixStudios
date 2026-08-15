@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found — Voltix Studios</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#05060a">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Inter:wght@400&display=swap">
+
+<!-- GitHub Pages serves this one file for every missing path at every depth, so
+     a relative stylesheet href would resolve differently depending on how deep
+     the bad URL was. Rather than hard-code /VoltixStudios/ — which would break
+     the moment the repo is renamed or put behind a domain — the page carries
+     its own styles and works out the way home at runtime. -->
+<style>
+  :root {
+    --ink: #05060a; --text: #e9edf6; --text-dim: #b3bccd; --muted: #8792a8;
+    --line: rgba(255,255,255,.09);
+    --volt: #35a3ff; --volt-2: #a06bff;
+    --display: "Chakra Petch", "Segoe UI Semibold", system-ui, sans-serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --ease: cubic-bezier(.22,.61,.36,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: grid; place-content: center; text-align: center;
+    padding: 60px 22px;
+    background: var(--ink); color: var(--text);
+    font: 400 16px/1.7 var(--body);
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(58% 40% at 50% 24%, rgba(53,163,255,.18), transparent 70%),
+      radial-gradient(40% 30% at 68% 12%, rgba(160,107,255,.14), transparent 72%);
+    background-repeat: no-repeat;
+  }
+  .code {
+    font-family: var(--display); font-weight: 700;
+    font-size: clamp(4.5rem, 18vw, 9rem); line-height: 1; letter-spacing: -.04em;
+    margin: 0 0 8px;
+    background: linear-gradient(100deg, var(--volt), var(--volt-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  h1 {
+    font-family: var(--display); font-weight: 700;
+    font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.15; letter-spacing: -.01em;
+    margin: 0 0 16px;
+  }
+  p { margin: 0 auto; max-width: 46ch; color: var(--text-dim); }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 32px; }
+  .btn {
+    display: inline-flex; align-items: center; padding: 13px 26px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: rgba(255,255,255,.03); color: var(--text);
+    font-family: var(--display); font-weight: 600; font-size: .95rem; letter-spacing: .02em;
+    text-decoration: none; max-width: 100%; overflow-wrap: anywhere;
+    transition: border-color .25s var(--ease), background .25s var(--ease), transform .25s var(--ease);
+  }
+  .btn:hover { border-color: rgba(53,163,255,.55); background: rgba(255,255,255,.06); transform: translateY(-2px); }
+  .btn--primary {
+    background: linear-gradient(100deg, var(--volt), var(--volt-2));
+    border-color: transparent; color: #05070e;
+    box-shadow: 0 8px 30px -10px rgba(53,163,255,.7);
+  }
+  .btn--primary:hover { background: linear-gradient(100deg, var(--volt), var(--volt-2)); }
+  :focus-visible { outline: 2px solid var(--volt); outline-offset: 3px; border-radius: 4px; }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: .001ms !important; } }
+</style>
+</head>
+<body>
+
+  <p class="code">404</p>
+  <h1>This one flew off the desk</h1>
+  <p>There is nothing at that address. It may have moved, or the link may have been mistyped.</p>
+
+  <div class="cta">
+    <a class="btn btn--primary" id="home" href="/">Back to the studio</a>
+    <a class="btn" href="mailto:voltix.studios.gaming@gmail.com">Tell us about it</a>
+  </div>
+
+<script>
+/* On a github.io *project* site the studio lives one segment down (/<repo>/);
+   on a user site or a custom domain it lives at the root. Work out which
+   without naming the repo, so a rename needs no edit here. */
+(function () {
+  var home = "/";
+  if (/(^|\.)github\.io$/.test(location.hostname)) {
+    var seg = location.pathname.split("/")[1];
+    if (seg) home = "/" + seg + "/";
+  }
+  document.getElementById("home").setAttribute("href", home);
+})();
+</script>
+</body>
+</html>

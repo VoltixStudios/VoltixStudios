@@ -11,11 +11,13 @@
 
   /* Header gets a background once the page has scrolled off the top. */
   var nav = document.getElementById("nav");
-  var onScroll = function () {
-    nav.classList.toggle("is-stuck", window.scrollY > 12);
-  };
-  onScroll();
-  window.addEventListener("scroll", onScroll, { passive: true });
+  if (nav) {
+    var onScroll = function () {
+      nav.classList.toggle("is-stuck", window.scrollY > 12);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
 
   /* Reveal-on-scroll. Without IntersectionObserver the elements are simply
      shown, which is why the class is removed rather than added by default. */
@@ -33,8 +35,15 @@
     items.forEach(function (el) { io.observe(el); });
   }
 
-  /* Underline the nav link for whichever section is currently in view. */
-  var links = Array.prototype.slice.call(document.querySelectorAll(".nav__links a"));
+  /* Underline the nav link for whichever section is currently in view. The
+     inner pages point their nav back at index.html, so only same-page hashes
+     are considered — anything else is not a section this page can spy on. */
+  var links = Array.prototype.slice
+    .call(document.querySelectorAll(".nav__links a"))
+    .filter(function (link) {
+      var href = link.getAttribute("href") || "";
+      return href.charAt(0) === "#" && href.length > 1;
+    });
   var sections = links
     .map(function (link) { return document.querySelector(link.getAttribute("href")); })
     .filter(Boolean);

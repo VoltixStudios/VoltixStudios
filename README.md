@@ -21,7 +21,9 @@ Live at <https://voltixstudios.github.io/VoltixStudios/>.
 index.html                 the landing page
 404.html                   self-contained; no assets, works at any depth
 robots.txt  sitemap.xml
+app-ads.txt                authorises AdMob to sell our inventory — see below
 legal/paper-squadron/      privacy policy + account deletion, EN/ES
+legal/coreward/            privacy policy + terms & virtual currency, EN/ES
 assets/css/style.css       palette, header, buttons, social, footer
 assets/css/doc.css         long-form document pages only
 assets/js/main.js          sticky header, scroll reveal, scroll-spy — all optional
@@ -31,6 +33,39 @@ tools/build_assets.py
 ```
 
 There is no build step. Edit, commit, push; GitHub Pages serves it as-is.
+
+## The legal pages
+
+Each game's documents are what its store listing and its ad SDK point at, so the
+URLs are load-bearing: once a Play listing or an AdMob app references one, it has
+to keep resolving.
+
+```
+legal/coreward/privacy-policy.html    Play Console "Privacy policy" + AdMob
+legal/coreward/terms.html             design doc §14's virtual-currency terms
+legal/paper-squadron/privacy-policy.html
+legal/paper-squadron/delete-account.html
+```
+
+CoreWard's policy is deliberately far shorter than Paper Squadron's, because the
+game does far less: no account, no cloud save, no analytics, no crash reporting,
+no notifications, no leaderboard backend. Only AdMob and Play Billing leave the
+device. **If any of that changes — the moment Firebase or Play Games is wired in
+— the policy is wrong and has to be updated in the same change**, along with the
+Play data-safety form, which has to agree with it.
+
+The Cores wording in `terms.html` is a verbatim copy of the string the game shows
+on its own store screen (`Store.CurrencyTermsKey` in the CoreWard repo, in both
+languages). If one is reworded the other has to move with it.
+
+> **`app-ads.txt` is published but not yet found.** Crawlers take the developer
+> website from the Play listing and fetch `/app-ads.txt` at the *root of that
+> domain*. Because this is a GitHub project page, the file lands at
+> `voltixstudios.github.io/VoltixStudios/app-ads.txt` while AdMob will look at
+> `voltixstudios.github.io/app-ads.txt`. Renaming the repository to
+> `VoltixStudios.github.io`, or adding a `CNAME`, fixes it — the same rename the
+> note at the top of this file already describes. Until then it costs fill and
+> eCPM rather than breaking anything.
 
 ## Images
 

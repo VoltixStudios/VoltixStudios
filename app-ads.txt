@@ -1,0 +1,21 @@
+# app-ads.txt — Voltix Studios
+#
+# Authorises Google AdMob to sell inventory in our apps. Crawlers reach this by
+# taking the developer website URL from the Play Store listing and requesting
+# /app-ads.txt at the ROOT of that domain.
+#
+# That root matters and is currently not satisfied: this repository is served as
+# a GitHub *project* page, so the site lives at
+#   https://voltixstudios.github.io/VoltixStudios/
+# and this file publishes to
+#   https://voltixstudios.github.io/VoltixStudios/app-ads.txt
+# while crawlers will look at
+#   https://voltixstudios.github.io/app-ads.txt
+#
+# Until the repository is renamed to VoltixStudios.github.io, or a custom domain
+# is set with a CNAME file, this file is published but not found — which costs
+# fill and eCPM rather than breaking anything. See the README.
+#
+# Publisher ID: pub-8715619194809926 (AdMob, Voltix Studios)
+
+google.com, pub-8715619194809926, DIRECT, f08c47fec0942fa0

@@ -10,8 +10,12 @@
   --doc-wrap: 820px;
 }
 
-/* Paper Squadron's accent, so a policy page still reads as that game's. */
+/* Each game's accent, so a policy page still reads as that game's. The values
+   match .game--ps and .game--cw in style.css — a document that arrives in the
+   wrong colour reads as the wrong game's terms, which is worse here than on a
+   marketing page. */
 .doc--ps { --accent: #ff5a52; --accent-2: #4a91ea; }
+.doc--cw { --accent: #ff8a2b; --accent-2: #ffc04d; }
 
 /* ── title block ─────────────────────────────────────────────────────────── */
 

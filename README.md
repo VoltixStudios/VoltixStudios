@@ -30,6 +30,7 @@ assets/js/main.js          sticky header, scroll reveal, scroll-spy — all opti
 assets/js/doc.js           language switch on the document pages — also optional
 assets/img/                generated, committed
 tools/build_assets.py
+tools/build_qr.py          the Play Store QR in the Paper Squadron section
 ```
 
 There is no build step. Edit, commit, push; GitHub Pages serves it as-is.
@@ -84,6 +85,20 @@ The one hand-measured thing in it is `STRATA_BOUNDS`, the five panel edges in
 CoreWard's `images/backgrounds.png`. Those panels are not evenly spaced, so if that
 sheet is regenerated the numbers need re-checking.
 
+`assets/img/ps-play-qr.svg` — the Play Store QR in the Paper Squadron section — is
+the exception. It is drawn from a URL rather than from any source art, so it has
+its own generator.
+
+```bash
+python3 tools/build_qr.py              # needs OpenCV
+```
+
+It encodes `PLAY_URL` — the constant at the top of the script is the only
+human-readable record of what the image says — then reads the result back with
+OpenCV's detector and refuses to write a file it cannot decode. A QR pointing at
+the wrong address passes every review a person can give it, so the check belongs
+in the tool. If the Play URL ever changes, edit the constant and re-run.
+
 ## Preview locally
 
 ```bash
@@ -123,9 +138,9 @@ Current: [@voltix_studios](https://x.com/voltix_studios) on X,
 [@VoltixStudiosGaming](https://www.youtube.com/@VoltixStudiosGaming) on YouTube.
 
 The icons are an inline `<symbol>` sprite at the top of each `<body>` (`#i-x`,
-`#i-yt`, `#i-gh`, `#i-mail`) — no icon font, no network request. Each network
-keeps its own colour on hover only, so the resting row stays monochrome and the
-studio palette still owns the page.
+`#i-yt`, `#i-gh`, `#i-mail`, plus `#i-play` on the landing page) — no icon font,
+no network request. Each network keeps its own colour on hover only, so the
+resting row stays monochrome and the studio palette still owns the page.
 
 ## Legal pages
 

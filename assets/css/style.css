@@ -151,6 +151,28 @@ p:last-child { margin-bottom: 0; }
   box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--volt) 80%, transparent);
 }
 
+/* The section-coloured counterpart to .btn--primary, for a call to action that
+   belongs to one game rather than to the studio. Solid rather than a gradient:
+   --accent and --accent-2 are a long way apart on some games (Paper Squadron's
+   pair is red to blue) and the sweep under dark text reads as a mistake. */
+.btn--accent {
+  background: var(--accent);
+  border-color: transparent;
+  color: #05070e;
+  box-shadow: 0 8px 30px -10px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.btn--accent:hover {
+  background: color-mix(in srgb, var(--accent) 88%, white);
+  border-color: transparent;
+  box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+
+.btn__icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
 .btn--sm { padding: 9px 18px; font-size: .86rem; }
 .btn--lg { padding: 16px 34px; font-size: 1.02rem; }
 
@@ -445,6 +467,45 @@ p:last-child { margin-bottom: 0; }
 
 .game__intro p { color: var(--text-dim); }
 .game__intro .game__pitch { color: var(--text); }
+
+/* store call to action */
+
+.cta-play {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  margin-top: 26px;
+}
+
+/* A QR has to keep its own light ground and quiet zone — inverted codes are
+   rejected by a fair number of scanners — so it sits on a white card rather
+   than inheriting the page. */
+.qr {
+  margin: 0;
+  padding: 10px 10px 8px;
+  border-radius: 12px;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 10px 30px -14px rgba(0, 0, 0, .8);
+}
+/* 150px over 45 viewBox units is ~3.3px a module. Smaller than this and the code
+   is a version-5 grid squeezed under 3px a module, which phones start refusing
+   at anything but point-blank range. */
+.qr img {
+  display: block;
+  width: 150px;
+  height: 150px;
+}
+.qr figcaption {
+  margin-top: 6px;
+  font-family: var(--display);
+  font-size: .58rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #4a5163;
+}
 
 /* feature cards */
 
@@ -902,6 +963,10 @@ p:last-child { margin-bottom: 0; }
 @media (max-width: 760px) {
   html { scroll-padding-top: 78px; }
   .nav__inner { gap: 14px; }
+  /* You cannot scan a code with the screen showing it. Below this width the
+     reader is holding the device they would have scanned it with, so the QR is
+     dropped and the button carries the section on its own. */
+  .qr { display: none; }
   .strata__grid { grid-template-columns: repeat(2, 1fr); }
   .strata__grid img { aspect-ratio: 1 / 1.5; }
 }

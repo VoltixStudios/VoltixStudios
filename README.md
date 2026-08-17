@@ -35,6 +35,11 @@ tools/build_qr.py          the Play Store QR in the Paper Squadron section
 
 There is no build step. Edit, commit, push; GitHub Pages serves it as-is.
 
+> Because nothing fingerprints the filenames, `index.html` loads the stylesheet as
+> `style.css?v=N`. **Bump that number whenever `style.css` changes.** A browser
+> holding the old stylesheet against new markup does not render an old page, it
+> renders a broken one — new elements land with none of their rules.
+
 ## The legal pages
 
 Each game's documents are what its store listing and its ad SDK point at, so the

@@ -151,22 +151,8 @@ p:last-child { margin-bottom: 0; }
   box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--volt) 80%, transparent);
 }
 
-/* The section-coloured counterpart to .btn--primary, for a call to action that
-   belongs to one game rather than to the studio. Solid rather than a gradient:
-   --accent and --accent-2 are a long way apart on some games (Paper Squadron's
-   pair is red to blue) and the sweep under dark text reads as a mistake. */
-.btn--accent {
-  background: var(--accent);
-  border-color: transparent;
-  color: #05070e;
-  box-shadow: 0 8px 30px -10px color-mix(in srgb, var(--accent) 70%, transparent);
-}
-.btn--accent:hover {
-  background: color-mix(in srgb, var(--accent) 88%, white);
-  border-color: transparent;
-  box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--accent) 80%, transparent);
-}
-
+/* Brand icons keep their own colours, so this sets size only. The 18px cap is
+   what stops a <use> reference from drawing at the symbol's natural size. */
 .btn__icon {
   width: 18px;
   height: 18px;
@@ -478,33 +464,25 @@ p:last-child { margin-bottom: 0; }
   margin-top: 26px;
 }
 
-/* A QR has to keep its own light ground and quiet zone — inverted codes are
-   rejected by a fair number of scanners — so it sits on a white card rather
-   than inheriting the page. */
+/* No card, no shadow. The SVG already carries the white ground and the
+   four-module quiet zone a scanner needs, so wrapping it in anything else is
+   just chrome around a thing that is already a white square. */
 .qr {
   margin: 0;
-  padding: 10px 10px 8px;
-  border-radius: 12px;
-  background: #fff;
   text-align: center;
-  box-shadow: 0 10px 30px -14px rgba(0, 0, 0, .8);
 }
-/* 150px over 45 viewBox units is ~3.3px a module. Smaller than this and the code
-   is a version-5 grid squeezed under 3px a module, which phones start refusing
-   at anything but point-blank range. */
+/* 136px over 45 viewBox units is ~3px a module, which is about where phones
+   stop needing to be held at point-blank range to read a version-5 grid. */
 .qr img {
   display: block;
-  width: 150px;
-  height: 150px;
+  width: 136px;
+  height: 136px;
+  border-radius: 8px;
 }
 .qr figcaption {
-  margin-top: 6px;
-  font-family: var(--display);
-  font-size: .58rem;
-  font-weight: 600;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: #4a5163;
+  margin-top: 8px;
+  font-size: .72rem;
+  color: var(--muted);
 }
 
 /* feature cards */

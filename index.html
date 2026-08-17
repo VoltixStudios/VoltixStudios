@@ -28,7 +28,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/css/style.css">
+<!-- ?v= is a cache buster. There is no build step to fingerprint the file, and a
+     browser holding an old stylesheet against new markup renders the page wrong
+     rather than merely stale — bump the number whenever style.css changes. -->
+<link rel="stylesheet" href="assets/css/style.css?v=2">
 
 <script type="application/ld+json">
 {
@@ -62,8 +65,15 @@
     <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M2.75 5.75h18.5v12.5H2.75z"/>
     <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m3.4 6.4 8.6 6.6 8.6-6.6"/>
   </symbol>
+  <!-- The Play mark keeps its own four colours rather than currentColor: it is a
+       brand icon, and the recognition is the whole point of putting it on the
+       button. Traced off the official asset — blue left, green top, yellow tip,
+       red bottom. -->
   <symbol id="i-play" viewBox="0 0 24 24">
-    <path fill="currentColor" d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594ZM1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l11.155-11.087L1.337.924Zm12.207 10.065 3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179l11.04 10.973Zm0 2.067-11 10.933c.298.036.612-.016.906-.183l13.324-7.54-3.23-3.21Z"/>
+    <path fill="#4285f4" d="M2.88 2.88 11.31 12 2.88 21.12Z"/>
+    <path fill="#34a853" d="M2.88 2.88 5.46 1.5 15.44 7.7 11.31 12Z"/>
+    <path fill="#fbbc04" d="M15.44 7.7 21.12 11.14 21.12 12.86 15.44 16.3 11.31 12Z"/>
+    <path fill="#ea4335" d="M11.31 12 15.44 16.3 5.46 22.5 2.88 21.12Z"/>
   </symbol>
   <symbol id="i-gh" viewBox="0 0 24 24">
     <path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2.1c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/>
@@ -154,7 +164,7 @@
           </p>
 
           <div class="cta-play">
-            <a class="btn btn--accent"
+            <a class="btn"
                href="https://play.google.com/store/apps/details?id=com.voltixstudios.papersquadron"
                rel="noopener" target="_blank">
               <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg>
@@ -164,7 +174,7 @@
                  to a screen reader — and useless on a phone, which is the device you would
                  scan it with. Hidden below 760px in the stylesheet. -->
             <figure class="qr" aria-hidden="true">
-              <img src="assets/img/ps-play-qr.svg" alt="" width="150" height="150"
+              <img src="assets/img/ps-play-qr.svg" alt="" width="136" height="136"
                    loading="lazy" decoding="async">
               <figcaption>Scan to pre-register</figcaption>
             </figure>

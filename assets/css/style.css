@@ -863,6 +863,7 @@ p:last-child { margin-bottom: 0; }
    monochrome and the brand palette still owns the page. */
 .social__link--x,  .social__btn--x  { --brand: #e9edf6; }
 .social__link--yt, .social__btn--yt { --brand: #ff3d3d; }
+.social__link--tt, .social__btn--tt { --brand: #25f4ee; }
 
 /* ── footer ──────────────────────────────────────────────────────────────── */
 

@@ -35,10 +35,11 @@ tools/build_qr.py          the Play Store QR in the Paper Squadron section
 
 There is no build step. Edit, commit, push; GitHub Pages serves it as-is.
 
-> Because nothing fingerprints the filenames, `index.html` loads the stylesheet as
-> `style.css?v=N`. **Bump that number whenever `style.css` changes.** A browser
-> holding the old stylesheet against new markup does not render an old page, it
-> renders a broken one — new elements land with none of their rules.
+> Because nothing fingerprints the filenames, every page loads the stylesheet as
+> `style.css?v=N`. **Bump that number, in all five pages, whenever `style.css`
+> changes.** A browser holding the old stylesheet against new markup does not
+> render an old page, it renders a broken one — new elements land with none of
+> their rules.
 
 ## The legal pages
 
@@ -135,17 +136,19 @@ The handles appear in more than one place, so change all of them together:
 | Where | What |
 | --- | --- |
 | `index.html` — `.follow` block | labelled pills in the contact section |
-| `index.html` + both legal pages — `.social--compact` | icon buttons in the footer |
+| `index.html` + all four legal pages — `.social--compact` | icon buttons in the footer |
 | `index.html` — JSON-LD `sameAs` | what search engines read |
 | `index.html` — `twitter:site` / `twitter:creator` | share cards |
 
 Current: [@voltix_studios](https://x.com/voltix_studios) on X,
-[@VoltixStudiosGaming](https://www.youtube.com/@VoltixStudiosGaming) on YouTube.
+[@VoltixStudiosGaming](https://www.youtube.com/@VoltixStudiosGaming) on YouTube,
+[@voltixstudios](https://www.tiktok.com/@voltixstudios) on TikTok.
 
 The icons are an inline `<symbol>` sprite at the top of each `<body>` (`#i-x`,
-`#i-yt`, `#i-gh`, `#i-mail`, plus `#i-play` on the landing page) — no icon font,
-no network request. Each network keeps its own colour on hover only, so the
-resting row stays monochrome and the studio palette still owns the page.
+`#i-yt`, `#i-tt`, `#i-gh`, `#i-mail`, plus `#i-play` on the landing page) — no
+icon font, no network request. The sprite is copied into every page, so adding a
+network means editing all five. Each network keeps its own colour on hover only,
+so the resting row stays monochrome and the studio palette still owns the page.
 
 ## Legal pages
 

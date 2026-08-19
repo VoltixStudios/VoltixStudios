@@ -101,26 +101,28 @@
 
       <p class="lead" data-lang="en">
         CoreWard is a single-player arcade puzzler. This page explains what data the app handles
-        and why. There is no account, no sign-in and no cloud save: your progress lives on your
-        device and nowhere else. The only data that leaves your phone is what Google AdMob needs
-        in order to show ads, and what Google Play needs in order to process a purchase.
+        and why. Your progress is kept on your device. If you sign in to Google Play Games, a
+        copy is also saved to your Google account so it survives a reinstall, and your best
+        depths can appear on leaderboards. The game also sends crash reports and — only if you
+        agree to it — anonymous gameplay statistics, and it shows ads through Google AdMob.
       </p>
       <p class="lead" data-lang="es" lang="es">
         CoreWard es un puzle arcade para un solo jugador. Esta página explica qué datos maneja la
-        aplicación y por qué. No hay cuenta, ni inicio de sesión, ni copia en la nube: tu progreso
-        vive en tu dispositivo y en ningún otro sitio. Los únicos datos que salen de tu teléfono
-        son los que Google AdMob necesita para mostrar anuncios y los que Google Play necesita
-        para procesar una compra.
+        aplicación y por qué. Tu progreso se guarda en tu dispositivo. Si inicias sesión en Google
+        Play Games, también se guarda una copia en tu cuenta de Google para que sobreviva a una
+        reinstalación, y tus mejores profundidades pueden aparecer en las clasificaciones. El
+        juego además envía informes de fallos y —solo si lo autorizas— estadísticas anónimas de
+        juego, y muestra anuncios a través de Google AdMob.
       </p>
 
       <dl class="doc-meta" data-lang="en">
-        <div><dt>Effective date</dt><dd>17 August 2026</dd></div>
+        <div><dt>Effective date</dt><dd>19 August 2026</dd></div>
         <div><dt>App</dt><dd>CoreWard <code>com.voltixstudios.coreward</code></dd></div>
         <div><dt>Developer</dt><dd>Voltix Studios
           <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
       </dl>
       <dl class="doc-meta" data-lang="es" lang="es">
-        <div><dt>Fecha de entrada en vigor</dt><dd>17 de agosto de 2026</dd></div>
+        <div><dt>Fecha de entrada en vigor</dt><dd>19 de agosto de 2026</dd></div>
         <div><dt>Aplicación</dt><dd>CoreWard <code>com.voltixstudios.coreward</code></dd></div>
         <div><dt>Desarrollador</dt><dd>Voltix Studios
           <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
@@ -138,9 +140,13 @@
           <p class="toc__title">On this page</p>
           <ol>
             <li><a href="#device">Data stored on your device</a></li>
+            <li><a href="#play">Google Play Games: sign-in, cloud save, leaderboards</a></li>
+            <li><a href="#crash">Crash reports</a></li>
+            <li><a href="#analytics">Gameplay statistics</a></li>
             <li><a href="#ads">Advertising</a></li>
-            <li><a href="#consent">Your ad consent choice</a></li>
+            <li><a href="#consent">Your ad and statistics choice</a></li>
             <li><a href="#purchases">In-app purchases</a></li>
+            <li><a href="#sharing">Sharing a result</a></li>
             <li><a href="#none">What the game does not do</a></li>
             <li><a href="#deletion">Data deletion</a></li>
             <li><a href="#children">Children</a></li>
@@ -152,21 +158,78 @@
         <h2 id="device">Data stored on your device</h2>
         <p>
           Your descent progress, Cores, artifacts, drones, upgrades, boosts and settings are
-          stored locally on your device. So are your best depths and your standing contracts.
-          None of it is uploaded anywhere, none of it is readable by us, and uninstalling the app
-          deletes all of it.
+          stored locally on your device. So are your best depths, your standing contracts and
+          which one-off purchases you own. Uninstalling the app deletes all of it from the
+          device.
+        </p>
+
+        <h2 id="play">Google Play Games: sign-in, cloud save and leaderboards</h2>
+        <p>
+          The game attempts a silent sign-in to Google Play Games when it starts. It never shows
+          a sign-in prompt and never asks you for anything; if the attempt does not succeed, the
+          game runs exactly as it would otherwise and everything below simply does not happen.
+        </p>
+        <p>When you are signed in, three things use that connection:</p>
+        <ul>
+          <li><strong>Cloud save.</strong> A copy of your save is stored to Google Play Games
+              Saved Games under your Google account, so your progress survives a reinstall or a
+              new phone. That copy contains what the section above describes — progress, cleared
+              tiers, currency balances, items owned, which purchases you hold, and your in-game
+              settings. It contains no name, no email address and no contact details.</li>
+          <li><strong>Leaderboards.</strong> If you play Deep Dive or the Daily Shaft, the depth
+              you reached is submitted to a Play Games leaderboard. Expedition depths are never
+              submitted. How you appear on a leaderboard — your Play Games display name and
+              avatar, and who can see them — is controlled by your own Play Games profile
+              settings, not by this game.</li>
+          <li><strong>Achievements.</strong> Unlocked achievements are recorded against your Play
+              Games profile.</li>
+        </ul>
+        <p>
+          Google is an independent controller of the data held in your Play Games profile. See
+          <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Google's
+          Privacy Policy</a>.
+        </p>
+
+        <h2 id="crash">Crash reports</h2>
+        <p>
+          The game uses Firebase Crashlytics to report crashes and errors, so that faults can be
+          found and fixed. A report contains the technical details of the failure — the error, the
+          device model, the operating system version, and a Firebase installation identifier —
+          together with a small amount of context about what the game was doing: which tier and
+          mode were being played, the shaft's random seed, how many sessions you have played, how
+          long ago you installed, your Cores balance, and whether you have ever made a purchase.
+        </p>
+        <p>
+          It contains no name, no email address and no advertising ID.
+          <strong>Crash reporting runs regardless of the advertising choice described below.</strong>
+          If you would prefer it not to, contact us at the address at the foot of this page.
+        </p>
+
+        <h2 id="analytics">Gameplay statistics</h2>
+        <p>
+          The game uses Firebase Analytics to count things like runs started and finished, tiers
+          cleared, depth reached, Cores earned and spent, which screens are opened, ads watched
+          and purchases made. It is used to understand whether the game is well balanced — for
+          example, whether a particular tier is failing far more players than the ones around it.
+        </p>
+        <p>
+          <strong>Statistics are collected only if you agree.</strong> Collection stays switched
+          off until you answer the consent form described below, and stays off entirely if you
+          decline. Firebase Remote Config is also used to adjust in-game prices and settings
+          without an app update.
         </p>
 
         <h2 id="ads">Advertising (Google AdMob)</h2>
         <p>
-          The game shows ads through Google AdMob. Every ad in CoreWard is a video you choose to
+          The game shows ads through Google AdMob. Every ad in CoreWard is one you choose to
           start — you are always told what you get for watching before it plays, and you can
           decline. There are no ads in the first fifteen minutes after you install the game.
         </p>
         <p>
           To serve and measure those ads, AdMob may process your device's advertising ID, coarse
-          device and network information, and your interactions with the ad. Google acts as an
-          independent controller of that data. See
+          device and network information, and your interactions with the ad. The app declares the
+          <code>com.google.android.gms.permission.AD_ID</code> permission for this reason. Google
+          acts as an independent controller of that data. See
           <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Google's
           Privacy Policy</a> and
           <a href="https://support.google.com/admob/answer/9012903" rel="noopener" target="_blank">how
@@ -178,11 +241,12 @@
           each one includes.
         </p>
 
-        <h2 id="consent">Your ad consent choice</h2>
+        <h2 id="consent">Your ad and statistics choice</h2>
         <p>
           If you are in the European Economic Area, the United Kingdom or Switzerland, the game
           shows you Google's consent form <em>before</em> it requests a single ad, and it requests
-          none until you have answered. You can change your answer at any time from
+          none until you have answered. The same answer governs the gameplay statistics above:
+          decline, and none are collected. You can change your answer at any time from
           <span class="ui">Settings → Ad Privacy</span> inside the game.
         </p>
 
@@ -197,31 +261,51 @@
           Privacy Policy</a> for how Google processes this data.
         </p>
 
+        <h2 id="sharing">Sharing a result</h2>
+        <p>
+          After a Daily Shaft run you can tap <span class="ui">Share</span>. That hands a short
+          line of text — your depth, the date of that day's shaft, and a link to the game — to
+          Android's own share sheet, and you choose which app receives it, or cancel. Nothing is
+          sent anywhere unless you pick a destination, and the game does not learn what you chose.
+        </p>
+
         <h2 id="none">What the game does not do</h2>
         <p>
-          Stated plainly, because the absence is easy to miss and it is most of the answer:
+          Stated plainly, because the absence is easy to miss:
         </p>
         <ul>
-          <li>No account, no sign-in, no email address collected.</li>
-          <li>No cloud save. Progress is on your device only, and a reinstall starts it over.</li>
-          <li>No analytics or usage tracking of any kind.</li>
-          <li>No crash reporting.</li>
+          <li>No account is created, and no email address, phone number or contact detail is
+              ever collected or requested.</li>
           <li>No notifications, and no push messaging.</li>
-          <li>No location data, precise or approximate, beyond the country AdMob infers from your
+          <li>No location data, precise or approximate, beyond the country inferred from your
               network in order to serve a relevant ad.</li>
           <li>No contacts, photos, microphone, camera or file access.</li>
-          <li>No online leaderboard or social features — scores are compared only against your
-              own previous runs, on your own device.</li>
-          <li>Nothing is sold or shared with data brokers.</li>
+          <li>No chat, no friend lists and no social features beyond the leaderboards and
+              achievements described above.</li>
+          <li>Nothing is sold, and nothing is shared with data brokers.</li>
+          <li>No advertising profile is built by us. We never receive your advertising ID.</li>
         </ul>
 
         <h2 id="deletion">Data deletion</h2>
         <p>
-          Because there is no account and no server-side copy, uninstalling CoreWard deletes
-          everything the game holds about you. There is nothing for us to delete on request and
-          no deletion form to fill in: we hold no record of you in the first place. Data that
-          Google holds as a result of serving you ads or processing a purchase is governed by
-          Google's own policy, linked above, and by your
+          There is no account to delete, but there are three separate places data can sit, and
+          each is cleared differently:
+        </p>
+        <ul>
+          <li><strong>On your device.</strong> Uninstalling CoreWard removes it.</li>
+          <li><strong>Your cloud save, leaderboard scores and achievements.</strong> These belong
+              to your Google Play Games profile. Open the <strong>Play Games</strong> app →
+              <strong>Settings</strong> → <strong>Delete Play Games account data</strong>, where
+              you can delete the data for this game individually. Deleting the game's saved data
+              also removes the cloud copy of your progress.</li>
+          <li><strong>Crash reports and statistics.</strong> Write to the address below and we
+              will delete the records associated with your installation. Please send the message
+              from a device that has the game installed, or tell us roughly when you played, as
+              those records carry no name to search on.</li>
+        </ul>
+        <p>
+          Data that Google holds as a result of serving you ads or processing a purchase is
+          governed by Google's own policy, linked above, and by your
           <a href="https://myadcenter.google.com" rel="noopener" target="_blank">Google Ad
           settings</a>, where you can also reset or delete your advertising ID.
         </p>
@@ -264,9 +348,13 @@
           <p class="toc__title">En esta página</p>
           <ol>
             <li><a href="#device-es">Datos guardados en tu dispositivo</a></li>
+            <li><a href="#play-es">Google Play Games: sesión, copia en la nube y clasificaciones</a></li>
+            <li><a href="#crash-es">Informes de fallos</a></li>
+            <li><a href="#analytics-es">Estadísticas de juego</a></li>
             <li><a href="#ads-es">Publicidad</a></li>
-            <li><a href="#consent-es">Tu decisión sobre los anuncios</a></li>
+            <li><a href="#consent-es">Tu decisión sobre anuncios y estadísticas</a></li>
             <li><a href="#purchases-es">Compras integradas</a></li>
+            <li><a href="#sharing-es">Compartir un resultado</a></li>
             <li><a href="#none-es">Lo que el juego no hace</a></li>
             <li><a href="#deletion-es">Eliminación de datos</a></li>
             <li><a href="#children-es">Menores</a></li>
@@ -279,8 +367,68 @@
         <p>
           Tu progreso en el descenso, los núcleos, los artefactos, los drones, las mejoras, los
           impulsos y los ajustes se guardan localmente en tu dispositivo. También tus mejores
-          profundidades y tus contratos activos. Nada de ello se sube a ningún sitio, nada de
-          ello podemos leerlo nosotros, y desinstalar la aplicación lo elimina todo.
+          profundidades, tus contratos activos y qué compras únicas posees. Desinstalar la
+          aplicación elimina todo ello del dispositivo.
+        </p>
+
+        <h2 id="play-es">Google Play Games: sesión, copia en la nube y clasificaciones</h2>
+        <p>
+          El juego intenta iniciar sesión en Google Play Games de forma silenciosa al arrancar.
+          Nunca muestra una ventana de inicio de sesión ni te pide nada; si el intento no
+          funciona, el juego se comporta exactamente igual y nada de lo que sigue ocurre.
+        </p>
+        <p>Cuando has iniciado sesión, esa conexión se usa para tres cosas:</p>
+        <ul>
+          <li><strong>Copia en la nube.</strong> Se guarda una copia de tu partida en las
+              Partidas guardadas de Google Play Games, en tu cuenta de Google, para que tu
+              progreso sobreviva a una reinstalación o a un teléfono nuevo. Esa copia contiene lo
+              que describe la sección anterior: progreso, niveles superados, saldos de moneda,
+              objetos en propiedad, qué compras posees y tus ajustes del juego. No contiene
+              nombre, ni correo electrónico, ni datos de contacto.</li>
+          <li><strong>Clasificaciones.</strong> Si juegas a Inmersión o al Pozo Diario, la
+              profundidad alcanzada se envía a una clasificación de Play Games. Las
+              profundidades de Expedición no se envían nunca. Cómo apareces en una clasificación
+              —tu nombre y avatar de Play Games, y quién puede verlos— lo controlan los ajustes
+              de tu propio perfil de Play Games, no este juego.</li>
+          <li><strong>Logros.</strong> Los logros desbloqueados se registran en tu perfil de Play
+              Games.</li>
+        </ul>
+        <p>
+          Google actúa como responsable independiente de los datos de tu perfil de Play Games.
+          Consulta la
+          <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Política
+          de Privacidad de Google</a>.
+        </p>
+
+        <h2 id="crash-es">Informes de fallos</h2>
+        <p>
+          El juego usa Firebase Crashlytics para informar de fallos y errores, de modo que puedan
+          localizarse y corregirse. Un informe contiene los detalles técnicos del fallo —el error,
+          el modelo del dispositivo, la versión del sistema operativo y un identificador de
+          instalación de Firebase— junto con algo de contexto sobre lo que hacía el juego: qué
+          nivel y modo se jugaban, la semilla aleatoria del pozo, cuántas sesiones has jugado,
+          cuánto hace que instalaste, tu saldo de núcleos y si alguna vez has hecho una compra.
+        </p>
+        <p>
+          No contiene nombre, ni correo electrónico, ni identificador de publicidad.
+          <strong>Los informes de fallos se envían con independencia de la decisión sobre
+          publicidad que se describe más abajo.</strong> Si prefieres que no ocurra, escríbenos a
+          la dirección que aparece al final de esta página.
+        </p>
+
+        <h2 id="analytics-es">Estadísticas de juego</h2>
+        <p>
+          El juego usa Firebase Analytics para contar cosas como partidas empezadas y terminadas,
+          niveles superados, profundidad alcanzada, núcleos ganados y gastados, qué pantallas se
+          abren, anuncios vistos y compras realizadas. Sirve para entender si el juego está bien
+          equilibrado; por ejemplo, si un nivel concreto hace fracasar a muchos más jugadores que
+          los de alrededor.
+        </p>
+        <p>
+          <strong>Las estadísticas solo se recogen si lo autorizas.</strong> La recogida
+          permanece desactivada hasta que respondas al formulario de consentimiento descrito
+          abajo, y sigue desactivada por completo si lo rechazas. También se usa Firebase Remote
+          Config para ajustar precios y parámetros del juego sin una actualización.
         </p>
 
         <h2 id="ads-es">Publicidad (Google AdMob)</h2>
@@ -293,83 +441,105 @@
         <p>
           Para mostrar y medir esos anuncios, AdMob puede tratar el identificador de publicidad
           de tu dispositivo, información aproximada del dispositivo y de la red, y tus
-          interacciones con el anuncio. Google actúa como responsable independiente de esos
-          datos. Consulta la
+          interacciones con el anuncio. Por este motivo la aplicación declara el permiso
+          <code>com.google.android.gms.permission.AD_ID</code>. Google actúa como responsable
+          independiente de esos datos. Consulta la
           <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Política
           de Privacidad de Google</a> y
           <a href="https://support.google.com/admob/answer/9012903" rel="noopener" target="_blank">cómo
           usa Google los datos de las aplicaciones asociadas</a>.
         </p>
         <p>
-          Comprar <strong>Quitar anuncios</strong> o el <strong>Pack de mecenas</strong> elimina
-          la pausa publicitaria a pantalla completa. Consulta
+          Comprar <strong>Quitar anuncios</strong> o el <strong>Pack de apoyo</strong> elimina la
+          pausa publicitaria a pantalla completa. Consulta los
           <a href="terms.html">Términos y moneda virtual</a> para ver qué incluye cada uno.
         </p>
 
-        <h2 id="consent-es">Tu decisión sobre los anuncios</h2>
+        <h2 id="consent-es">Tu decisión sobre anuncios y estadísticas</h2>
         <p>
           Si te encuentras en el Espacio Económico Europeo, el Reino Unido o Suiza, el juego te
           muestra el formulario de consentimiento de Google <em>antes</em> de solicitar un solo
-          anuncio, y no solicita ninguno hasta que hayas respondido. Puedes cambiar tu respuesta
-          en cualquier momento desde <span class="ui">Ajustes → Privacidad de anuncios</span>
-          dentro del juego.
+          anuncio, y no solicita ninguno hasta que hayas respondido. Esa misma respuesta rige las
+          estadísticas de juego anteriores: si la rechazas, no se recoge ninguna. Puedes cambiar
+          tu respuesta cuando quieras desde
+          <span class="ui">Ajustes → Privacidad de anuncios</span> dentro del juego.
         </p>
 
         <h2 id="purchases-es">Compras integradas (Google Play Billing)</h2>
         <p>
-          El juego ofrece compras integradas opcionales: paquetes de núcleos, un kit inicial y
-          las dos opciones para eliminar anuncios. Todos los pagos los procesa Google Play
-          Billing: la aplicación nunca ve, recibe ni almacena los datos de tu tarjeta o método de
-          pago. Google Play entrega a la aplicación un recibo de compra para que pueda darte lo
-          que has comprado y restaurarlo si reinstalas o cambias de dispositivo. Las compras son
-          opcionales y el juego se puede jugar por completo sin ellas. Consulta la
+          El juego ofrece compras integradas opcionales: packs de núcleos, un kit inicial y las
+          dos opciones para quitar anuncios. Todos los pagos los procesa Google Play Billing: la
+          aplicación nunca ve, recibe ni guarda los datos de tu tarjeta o de tu método de pago.
+          Google Play entrega a la aplicación un recibo de compra para que pueda darte lo que
+          compraste y restaurarlo si reinstalas o cambias de dispositivo. Las compras son
+          opcionales y el juego completo se puede jugar sin ellas. Consulta la
           <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Política
           de Privacidad de Google</a> para saber cómo trata Google estos datos.
         </p>
 
+        <h2 id="sharing-es">Compartir un resultado</h2>
+        <p>
+          Tras una partida del Pozo Diario puedes pulsar <span class="ui">Compartir</span>. Eso
+          entrega una línea breve de texto —tu profundidad, la fecha del pozo de ese día y un
+          enlace al juego— al propio menú de compartir de Android, y tú eliges qué aplicación lo
+          recibe, o cancelas. No se envía nada a ningún sitio a menos que elijas un destino, y el
+          juego no llega a saber cuál elegiste.
+        </p>
+
         <h2 id="none-es">Lo que el juego no hace</h2>
         <p>
-          Dicho con claridad, porque lo que falta pasa desapercibido con facilidad y es la mayor
-          parte de la respuesta:
+          Dicho claramente, porque las ausencias pasan desapercibidas con facilidad:
         </p>
         <ul>
-          <li>Sin cuenta, sin inicio de sesión, sin recopilar direcciones de correo.</li>
-          <li>Sin copia en la nube. El progreso está solo en tu dispositivo, y una reinstalación
-              lo empieza de cero.</li>
-          <li>Sin analíticas ni seguimiento de uso de ningún tipo.</li>
-          <li>Sin informes de fallos.</li>
-          <li>Sin notificaciones ni mensajería push.</li>
-          <li>Sin datos de ubicación, precisa o aproximada, más allá del país que AdMob deduce de
-              tu red para mostrar un anuncio pertinente.</li>
-          <li>Sin acceso a contactos, fotos, micrófono, cámara ni archivos.</li>
-          <li>Sin clasificaciones en línea ni funciones sociales: las puntuaciones solo se
-              comparan con tus propias partidas anteriores, en tu propio dispositivo.</li>
-          <li>No se vende ni se comparte nada con intermediarios de datos.</li>
+          <li>No se crea ninguna cuenta, y nunca se recoge ni se solicita correo electrónico,
+              teléfono ni ningún dato de contacto.</li>
+          <li>Ni notificaciones, ni mensajería push.</li>
+          <li>Ningún dato de ubicación, precisa o aproximada, más allá del país que se deduce de
+              tu red para mostrar un anuncio relevante.</li>
+          <li>Ningún acceso a contactos, fotos, micrófono, cámara ni archivos.</li>
+          <li>Ni chat, ni listas de amigos, ni funciones sociales más allá de las clasificaciones
+              y los logros descritos arriba.</li>
+          <li>No se vende nada, ni se comparte nada con intermediarios de datos.</li>
+          <li>Nosotros no construimos ningún perfil publicitario. Nunca recibimos tu
+              identificador de publicidad.</li>
         </ul>
 
         <h2 id="deletion-es">Eliminación de datos</h2>
         <p>
-          Como no hay cuenta ni copia en servidor, desinstalar CoreWard elimina todo lo que el
-          juego guarda sobre ti. No hay nada que podamos eliminar a petición ni ningún formulario
-          de eliminación que rellenar: sencillamente no tenemos ningún registro tuyo. Los datos
-          que Google conserve por mostrarte anuncios o procesar una compra se rigen por la
-          política de Google enlazada arriba y por tu
-          <a href="https://myadcenter.google.com" rel="noopener" target="_blank">configuración de
+          No hay ninguna cuenta que eliminar, pero los datos pueden estar en tres sitios
+          distintos y cada uno se borra de una forma:
+        </p>
+        <ul>
+          <li><strong>En tu dispositivo.</strong> Desinstalar CoreWard los elimina.</li>
+          <li><strong>Tu copia en la nube, tus puntuaciones y tus logros.</strong> Pertenecen a
+              tu perfil de Google Play Games. Abre la aplicación <strong>Play Juegos</strong> →
+              <strong>Ajustes</strong> → <strong>Eliminar datos de la cuenta de Play Juegos</strong>,
+              donde puedes borrar los datos de este juego de forma individual. Al eliminar las
+              partidas guardadas del juego se elimina también la copia en la nube de tu progreso.</li>
+          <li><strong>Informes de fallos y estadísticas.</strong> Escríbenos a la dirección de
+              abajo y eliminaremos los registros asociados a tu instalación. Envíanos el mensaje
+              desde un dispositivo que tenga el juego instalado, o indícanos aproximadamente
+              cuándo jugaste, ya que esos registros no llevan ningún nombre por el que buscar.</li>
+        </ul>
+        <p>
+          Los datos que Google conserve por mostrarte anuncios o procesar una compra se rigen por
+          la política de Google, enlazada arriba, y por tus
+          <a href="https://myadcenter.google.com" rel="noopener" target="_blank">ajustes de
           anuncios de Google</a>, donde también puedes restablecer o eliminar tu identificador de
           publicidad.
         </p>
 
         <h2 id="children-es">Menores</h2>
         <p>
-          CoreWard no está dirigido a menores de 13 años y no recopila conscientemente
-          información personal de ellos. Los anuncios se solicitan con una clasificación máxima
-          de contenido para adolescentes.
+          CoreWard no está dirigido a menores de 13 años y no recoge conscientemente información
+          personal de ellos. Los anuncios se solicitan con una clasificación de contenido máxima
+          para adolescentes.
         </p>
 
         <h2 id="changes-es">Cambios</h2>
         <p>
-          Si esta política cambia, la versión actualizada se publicará en esta misma URL con una
-          nueva fecha de entrada en vigor.
+          Si esta política cambia, la versión actualizada se publicará en esta misma dirección
+          con una nueva fecha de entrada en vigor.
         </p>
 
         <h2 id="contact-es">Contacto</h2>
@@ -380,8 +550,8 @@
 
         <div class="note">
           <p>
-            Este documento se publica en inglés y en español. Si ambas versiones difieren en
-            algún punto, prevalece el texto en inglés.
+            Este documento se publica en inglés y en español. Si ambas versiones llegaran a
+            discrepar, el texto en inglés es el que prevalece.
           </p>
         </div>
 

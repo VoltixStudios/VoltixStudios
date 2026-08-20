@@ -4,17 +4,14 @@
 # taking the developer website URL from the Play Store listing and requesting
 # /app-ads.txt at the ROOT of that domain.
 #
-# That root matters and is currently not satisfied: this repository is served as
-# a GitHub *project* page, so the site lives at
-#   https://voltixstudios.github.io/VoltixStudios/
-# and this file publishes to
-#   https://voltixstudios.github.io/VoltixStudios/app-ads.txt
-# while crawlers will look at
-#   https://voltixstudios.github.io/app-ads.txt
-#
-# Until the repository is renamed to VoltixStudios.github.io, or a custom domain
-# is set with a CNAME file, this file is published but not found — which costs
-# fill and eCPM rather than breaking anything. See the README.
+# That root is satisfied: the site is served by Cloudflare Pages at
+#   https://voltixstudios.pages.dev/
+# so this file publishes to
+#   https://voltixstudios.pages.dev/app-ads.txt
+# which is exactly where crawlers look. The Play listing's developer website
+# field must name that domain for the match to happen — if it still points at
+# the old GitHub Pages project URL (voltixstudios.github.io/VoltixStudios/),
+# the crawler will fetch voltixstudios.github.io/app-ads.txt and find nothing.
 #
 # Publisher ID: pub-8715619194809926 (AdMob, Voltix Studios)
 

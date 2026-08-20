@@ -4,16 +4,24 @@ The Voltix Studios website — a landing page covering the studio and its two
 games, **Paper Squadron** and **CoreWard**, plus the legal documents Google Play
 requires those games to publish.
 
-Live at <https://voltixstudios.github.io/VoltixStudios/>.
+Live at <https://voltixstudios.pages.dev/>, served by Cloudflare Pages.
 
-> The repository is owned by the `VoltixStudios` org and is not named
-> `VoltixStudios.github.io`, so GitHub serves it as a *project* page and the URL
-> carries the repo name. To get the bare `voltixstudios.github.io` address,
-> rename the repository to `VoltixStudios.github.io`; to use a domain of your
-> own, add a `CNAME` file. Every path in the site is relative, so either move
-> works without editing a single link — but the absolute URLs in the `<link
-> rel="canonical">`, `og:` and `sitemap.xml` entries are written out in full and
-> would need updating.
+> The site is deployed from this repository to Cloudflare Pages, which serves it
+> at the **root** of `voltixstudios.pages.dev` — no repo-name path segment, and
+> `/app-ads.txt` lands where AdMob looks for it. Extensionless paths work too:
+> `/legal/paper-squadron/privacy-policy` and the `.html` form both resolve, so
+> the `<link rel="canonical">` and `og:url` tags name the extensionless form to
+> keep the two from competing as duplicates.
+>
+> GitHub Pages still answers on the old project URL
+> (`voltixstudios.github.io/VoltixStudios/`). Every path in the site is
+> relative, so it renders there fine — but its pages now declare Cloudflare as
+> canonical, which is the intent. If that copy is not wanted, turn Pages off in
+> the repository settings.
+>
+> Absolute URLs live in the `<link rel="canonical">`, `og:` and `sitemap.xml`
+> entries plus `robots.txt` and `app-ads.txt`; a future host move means editing
+> those, and nothing else.
 
 ## Layout
 
@@ -65,14 +73,15 @@ The Cores wording in `terms.html` is a verbatim copy of the string the game show
 on its own store screen (`Store.CurrencyTermsKey` in the CoreWard repo, in both
 languages). If one is reworded the other has to move with it.
 
-> **`app-ads.txt` is published but not yet found.** Crawlers take the developer
-> website from the Play listing and fetch `/app-ads.txt` at the *root of that
-> domain*. Because this is a GitHub project page, the file lands at
-> `voltixstudios.github.io/VoltixStudios/app-ads.txt` while AdMob will look at
-> `voltixstudios.github.io/app-ads.txt`. Renaming the repository to
-> `VoltixStudios.github.io`, or adding a `CNAME`, fixes it — the same rename the
-> note at the top of this file already describes. Until then it costs fill and
-> eCPM rather than breaking anything.
+> **`app-ads.txt` resolves at the root — check the Play listing agrees.**
+> Crawlers take the developer website from the Play listing and fetch
+> `/app-ads.txt` at the *root of that domain*. Cloudflare Pages serves the site
+> at the root, so `voltixstudios.pages.dev/app-ads.txt` is live and is what a
+> crawler asks for. The remaining half is the Play Console: the developer
+> website field on each listing has to name `voltixstudios.pages.dev`. If it
+> still points at the old GitHub project URL, the crawler fetches
+> `voltixstudios.github.io/app-ads.txt`, finds nothing, and the fill and eCPM
+> cost stays.
 
 ## Images
 

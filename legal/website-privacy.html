@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>This Website — Privacy · Voltix Studios</title>
+<meta name="description" content="What the Voltix Studios website measures, and what it keeps. No cookies, nothing stored on your device. English and Spanish.">
+<meta name="theme-color" content="#05060a">
+<link rel="canonical" href="https://voltixstudios.pages.dev/legal/website-privacy">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Voltix Studios">
+<meta property="og:title" content="This Website — Privacy">
+<meta property="og:description" content="What the Voltix Studios website measures, and what it keeps.">
+<meta property="og:url" content="https://voltixstudios.pages.dev/legal/website-privacy">
+<meta property="og:image" content="https://voltixstudios.pages.dev/assets/img/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@voltix_studios">
+
+<link rel="icon" href="../assets/img/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/css/style.css?v=3">
+<link rel="stylesheet" href="../assets/css/doc.css">
+
+<!-- Picks the language before the first paint, so the other one never flashes.
+     Order: explicit ?lang= / #es, then the browser's own preference. Nothing
+     is written to storage — see assets/js/doc.js. -->
+<script>
+(function () {
+  var d = document.documentElement;
+  d.className += " js";
+  var m = /[?&]lang=(en|es)/.exec(location.search) || /^#(en|es)$/.exec(location.hash);
+  var lang = m ? m[1]
+    : (((navigator.language || navigator.userLanguage || "en").toLowerCase().indexOf("es") === 0) ? "es" : "en");
+  d.setAttribute("data-doclang", lang);
+  d.setAttribute("lang", lang);
+})();
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-x" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z"/>
+  </symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/>
+  </symbol>
+  <symbol id="i-tt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07Z"/>
+  </symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M2.75 5.75h18.5v12.5H2.75z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m3.4 6.4 8.6 6.6 8.6-6.6"/>
+  </symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2.1c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/>
+  </symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="../index.html">
+      <img src="../assets/img/voltix-mark.webp" alt="" width="256" height="256" decoding="async">
+      <span>Voltix<em>Studios</em></span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="../index.html#games">Games</a>
+      <a href="../index.html#paper-squadron">Paper Squadron</a>
+      <a href="../index.html#coreward">CoreWard</a>
+    </nav>
+    <a class="btn btn--sm" href="mailto:voltix.studios.gaming@gmail.com">Contact</a>
+  </div>
+</header>
+
+<!-- No .doc--ps / .doc--cw accent: this document belongs to the studio, not to
+     either game. -->
+<main id="main">
+
+  <div class="doc-head">
+    <div class="wrap">
+      <p class="crumbs">
+        <a href="../index.html">Voltix Studios</a>
+        <span aria-hidden="true">/</span>
+        <span data-lang="en">Website Privacy</span>
+        <span data-lang="es" lang="es">Privacidad del Sitio Web</span>
+      </p>
+
+      <div class="lang" role="group" aria-label="Document language">
+        <button type="button" data-set-lang="en" aria-pressed="true">English</button>
+        <button type="button" data-set-lang="es" aria-pressed="false">Español</button>
+      </div>
+
+      <h1 class="doc__title" data-lang="en">This Website — Privacy</h1>
+      <h1 class="doc__title" data-lang="es" lang="es">Este Sitio Web — Privacidad</h1>
+
+      <p class="lead" data-lang="en">
+        The other documents here describe what the <em>games</em> do. This one is about the
+        website itself, and it is much shorter: the site counts visits so we know whether
+        anyone is reading it, and it keeps nothing about you. No cookies, nothing written to
+        your device, and no way to follow you anywhere.
+      </p>
+      <p class="lead" data-lang="es" lang="es">
+        Los demás documentos de esta sección describen lo que hacen los <em>juegos</em>. Este
+        trata del sitio web en sí, y es mucho más breve: el sitio cuenta las visitas para saber
+        si alguien lo está leyendo, y no guarda nada sobre ti. Sin cookies, sin escribir nada en
+        tu dispositivo y sin ninguna forma de seguirte a ninguna parte.
+      </p>
+
+      <dl class="doc-meta" data-lang="en">
+        <div><dt>Effective date</dt><dd>20 August 2026</dd></div>
+        <div><dt>Site</dt><dd><code>voltixstudios.pages.dev</code></dd></div>
+        <div><dt>Developer</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+      </dl>
+      <dl class="doc-meta" data-lang="es" lang="es">
+        <div><dt>Fecha de entrada en vigor</dt><dd>20 de agosto de 2026</dd></div>
+        <div><dt>Sitio</dt><dd><code>voltixstudios.pages.dev</code></dd></div>
+        <div><dt>Desarrollador</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="doc">
+    <div class="wrap">
+
+      <!-- ─────────────────────────── English ─────────────────────────── -->
+      <div data-lang="en">
+
+        <h2 id="measured">What is measured</h2>
+        <p>
+          The site uses <a href="https://umami.is" rel="noopener" target="_blank">Umami</a>, a
+          privacy-focused analytics tool, to count how many people visit, which pages they read,
+          and which links they use. Each visit records the page address, the site you arrived
+          from, a country, and your browser, operating system and screen size.
+        </p>
+        <p>
+          A short list of clicks is also recorded, so we can tell which parts of the page are
+          doing anything: the Google Play button, the social links, the email addresses, the
+          English/Spanish switch, and how far down the landing page a visit reached. What is
+          recorded is <em>that</em> a link was clicked, never who clicked it.
+        </p>
+
+        <h2 id="device">Nothing is stored on your device</h2>
+        <p>
+          No cookies. Nothing in local storage, nothing in session storage, nothing at all
+          written to your browser and nothing read back on a later visit. There is no banner on
+          this site asking you to accept cookies because there are none to accept.
+        </p>
+
+        <h2 id="counting">How visits are counted</h2>
+        <p>
+          Without a cookie there has to be some other way to tell two visits apart. Umami
+          derives a temporary identifier from your IP address and browser details, combined with
+          a secret that is replaced every day. Your IP address itself is not stored.
+        </p>
+        <p>
+          Because that secret changes daily, the same person visiting on two different days
+          counts as two different visitors, and nothing links the two. There is no way to follow
+          anyone from one day to the next, or from this site to any other.
+        </p>
+
+        <h2 id="first-party">No third-party script</h2>
+        <p>
+          The analytics code is served from this domain, at
+          <code>voltixstudios.pages.dev/analytics/</code>. Your browser sends no request to an
+          analytics company; this site makes that request on your behalf and passes on nothing
+          beyond what is described above. The only other outside request any page here makes is
+          to Google Fonts, for the two typefaces the site is set in.
+        </p>
+
+        <h2 id="never">What this site does not do</h2>
+        <p>Stated plainly, because the absence is easy to miss:</p>
+        <ul>
+          <li>No account, no sign-in, and no form anywhere on the site.</li>
+          <li>No cookies, and nothing written to your device.</li>
+          <li>No advertising, no ad network, and no tracking pixel.</li>
+          <li>No profile is built, and nothing follows you to other websites.</li>
+          <li>No location beyond the country inferred from your network.</li>
+          <li>No email address, phone number or contact detail is collected — writing to us is
+              your own mail app, sending your own message.</li>
+          <li>Nothing is sold, and nothing is shared with data brokers.</li>
+        </ul>
+
+        <h2 id="games">The games are separate</h2>
+        <p>
+          This page covers the website only. What each game handles on your phone is a different
+          question with its own answer:
+          <a href="paper-squadron/privacy-policy.html">Paper Squadron</a> and
+          <a href="coreward/privacy-policy.html">CoreWard</a>.
+        </p>
+
+        <h2 id="changes">Changes</h2>
+        <p>
+          If this page changes, the updated version will be published at this URL with a new
+          effective date.
+        </p>
+
+        <div class="note">
+          <p>
+            This document is published in English and Spanish. If the two versions ever
+            disagree, the English text is the one that governs.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>Looking for what a game keeps, rather than the site?</p>
+          <a class="btn" href="paper-squadron/privacy-policy.html">Paper Squadron Privacy Policy</a>
+        </div>
+      </div>
+
+      <!-- ─────────────────────────── Español ─────────────────────────── -->
+      <div data-lang="es" lang="es">
+
+        <h2 id="measured-es">Qué se mide</h2>
+        <p>
+          El sitio usa <a href="https://umami.is" rel="noopener" target="_blank">Umami</a>, una
+          herramienta de analítica centrada en la privacidad, para contar cuántas personas nos
+          visitan, qué páginas leen y qué enlaces usan. Cada visita registra la dirección de la
+          página, el sitio desde el que llegaste, un país, y tu navegador, sistema operativo y
+          tamaño de pantalla.
+        </p>
+        <p>
+          También se registra una lista corta de clics, para saber qué partes de la página
+          sirven de algo: el botón de Google Play, los enlaces a redes sociales, las direcciones
+          de correo, el conmutador inglés/español y hasta dónde llegó la visita en la página
+          principal. Se registra <em>que</em> se hizo clic en un enlace, nunca quién lo hizo.
+        </p>
+
+        <h2 id="device-es">No se guarda nada en tu dispositivo</h2>
+        <p>
+          Sin cookies. Nada en el almacenamiento local, nada en el almacenamiento de sesión,
+          nada en absoluto escrito en tu navegador y nada leído de vuelta en una visita
+          posterior. En este sitio no hay ningún aviso pidiéndote que aceptes cookies porque no
+          hay ninguna que aceptar.
+        </p>
+
+        <h2 id="counting-es">Cómo se cuentan las visitas</h2>
+        <p>
+          Sin una cookie hace falta alguna otra forma de distinguir dos visitas. Umami deriva un
+          identificador temporal a partir de tu dirección IP y de los datos de tu navegador,
+          combinados con un secreto que se sustituye cada día. Tu dirección IP no se guarda.
+        </p>
+        <p>
+          Como ese secreto cambia a diario, la misma persona que visita en dos días distintos
+          cuenta como dos visitantes distintos, y nada relaciona a los dos. No hay forma de
+          seguir a nadie de un día para otro, ni de este sitio a ningún otro.
+        </p>
+
+        <h2 id="first-party-es">Sin scripts de terceros</h2>
+        <p>
+          El código de analítica se sirve desde este mismo dominio, en
+          <code>voltixstudios.pages.dev/analytics/</code>. Tu navegador no envía ninguna
+          petición a una empresa de analítica; es este sitio el que la hace en tu nombre, y no
+          transmite nada más allá de lo descrito arriba. La única otra petición externa que hace
+          cualquier página de aquí es a Google Fonts, para las dos tipografías del sitio.
+        </p>
+
+        <h2 id="never-es">Lo que este sitio no hace</h2>
+        <p>Dicho claramente, porque las ausencias pasan desapercibidas:</p>
+        <ul>
+          <li>Sin cuenta, sin inicio de sesión y sin ningún formulario en todo el sitio.</li>
+          <li>Sin cookies, y sin escribir nada en tu dispositivo.</li>
+          <li>Sin publicidad, sin red de anuncios y sin píxeles de seguimiento.</li>
+          <li>No se construye ningún perfil, y nada te sigue a otros sitios web.</li>
+          <li>Ninguna ubicación más allá del país deducido de tu red.</li>
+          <li>No se recopila ninguna dirección de correo, teléfono ni dato de contacto —
+              escribirnos es tu propia aplicación de correo enviando tu propio mensaje.</li>
+          <li>No se vende nada, y no se comparte nada con intermediarios de datos.</li>
+        </ul>
+
+        <h2 id="games-es">Los juegos van aparte</h2>
+        <p>
+          Esta página trata solo del sitio web. Lo que cada juego maneja en tu teléfono es otra
+          cuestión, con su propia respuesta:
+          <a href="paper-squadron/privacy-policy.html?lang=es">Paper Squadron</a> y
+          <a href="coreward/privacy-policy.html?lang=es">CoreWard</a>.
+        </p>
+
+        <h2 id="changes-es">Cambios</h2>
+        <p>
+          Si esta página cambia, la versión actualizada se publicará en esta misma URL con una
+          nueva fecha de entrada en vigor.
+        </p>
+
+        <div class="note">
+          <p>
+            Este documento se publica en inglés y español. Si ambas versiones llegaran a
+            discrepar, el texto en inglés es el que prevalece.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>¿Buscas lo que guarda un juego, y no el sitio?</p>
+          <a class="btn" href="paper-squadron/privacy-policy.html?lang=es">Política de Privacidad de Paper Squadron</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+
+    <div class="foot__top">
+      <a class="brand" href="../index.html">
+        <img src="../assets/img/voltix-mark.webp" alt="" width="256" height="256" loading="lazy">
+        <span>Voltix<em>Studios</em></span>
+      </a>
+
+      <ul class="social social--compact" aria-label="Voltix Studios elsewhere">
+        <li><a class="social__btn social__btn--x" href="https://x.com/voltix_studios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on X">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></a></li>
+        <li><a class="social__btn social__btn--yt" href="https://www.youtube.com/@VoltixStudiosGaming"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on YouTube">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-yt"></use></svg></a></li>
+        <li><a class="social__btn social__btn--tt" href="https://www.tiktok.com/@voltixstudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on TikTok">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-tt"></use></svg></a></li>
+        <li><a class="social__btn" href="https://github.com/VoltixStudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on GitHub">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-gh"></use></svg></a></li>
+        <li><a class="social__btn" href="mailto:voltix.studios.gaming@gmail.com"
+               aria-label="Email Voltix Studios">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg></a></li>
+      </ul>
+    </div>
+
+    <div class="foot__bar">
+      <p class="foot__copy">
+        &copy; <span id="year">2026</span> Voltix Studios. All game names and artwork are
+        property of Voltix Studios.
+      </p>
+      <nav class="foot__links" aria-label="Legal">
+        <a href="paper-squadron/privacy-policy.html">Paper Squadron privacy</a>
+        <a href="coreward/privacy-policy.html">CoreWard privacy</a>
+        <a href="website-privacy.html">Website privacy</a>
+      </nav>
+    </div>
+
+  </div>
+</footer>
+
+<script src="../assets/js/main.js" defer></script>
+<script src="../assets/js/doc.js" defer></script>
+
+<!-- /analytics/ is a Pages Function proxying Umami: no third-party script, and
+     nothing stored on the device (legal/website-privacy.html). Root-absolute on
+     purpose — it resolves only on Cloudflare, keeping the github.io mirror out. -->
+<script defer src="/analytics/script.js"
+        data-website-id="REPLACE_WITH_UMAMI_WEBSITE_ID"
+        data-exclude-hash="true"></script>
+<script src="../assets/js/analytics.js" defer></script>
+</body>
+</html>

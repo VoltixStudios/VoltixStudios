@@ -32,20 +32,27 @@ robots.txt  sitemap.xml
 app-ads.txt                authorises AdMob to sell our inventory — see below
 legal/paper-squadron/      privacy policy + account deletion, EN/ES
 legal/coreward/            privacy policy + terms & virtual currency, EN/ES
+legal/website-privacy.html what the *site* measures, EN/ES — see Analytics below
+functions/analytics/       Pages Function: first-party proxy for Umami
 assets/css/style.css       palette, header, buttons, social, footer
 assets/css/doc.css         long-form document pages only
 assets/js/main.js          sticky header, scroll reveal, scroll-spy — all optional
 assets/js/doc.js           language switch on the document pages — also optional
+assets/js/analytics.js     click and scroll-depth events — also optional
 assets/img/                generated, committed
 tools/build_assets.py
 tools/build_qr.py          the Play Store QR in the Paper Squadron section
 ```
 
-There is no build step. Edit, commit, push; GitHub Pages serves it as-is.
+There is no build step. Edit, commit, push; Cloudflare Pages serves it as-is.
+`functions/` is the one exception to "static": Cloudflare picks it up by path,
+with no config and nothing added to the deploy. It does not exist on the
+GitHub Pages mirror, which is deliberate — see Analytics.
 
 > Because nothing fingerprints the filenames, every page loads the stylesheet as
-> `style.css?v=N`. **Bump that number, in all five pages, whenever `style.css`
-> changes.** A browser holding the old stylesheet against new markup does not
+> `style.css?v=N`. **Bump that number in every page that links it, whenever
+> `style.css` changes** — `grep -rl 'style.css?v=' --include=*.html .` lists
+> them, so the rule does not rot as pages are added. A browser holding the old stylesheet against new markup does not
 > render an old page, it renders a broken one — new elements land with none of
 > their rules.
 
@@ -60,6 +67,8 @@ legal/coreward/privacy-policy.html    Play Console "Privacy policy" + AdMob
 legal/coreward/terms.html             design doc §14's virtual-currency terms
 legal/paper-squadron/privacy-policy.html
 legal/paper-squadron/delete-account.html
+legal/website-privacy.html            the site itself, not a game — no store
+                                      references it, so this URL is ours to move
 ```
 
 CoreWard's policy is deliberately far shorter than Paper Squadron's, because the
@@ -122,6 +131,66 @@ python3 -m http.server 8000
 
 Then open <http://localhost:8000>.
 
+That serves the static files but not `functions/`, so `/analytics/*` 404s and no
+events are sent — which is usually what you want while editing. To exercise the
+proxy, use `npx wrangler pages dev .` instead, or push to a branch and open the
+Cloudflare Pages preview.
+
+## Analytics
+
+The site uses [Umami](https://cloud.umami.is) — cookieless, and on the free tier
+it still gives custom events, funnels and user journeys, which is the whole reason
+it was picked over Cloudflare Web Analytics. Cloudflare's own tool has no custom
+events at all, so it could report traffic but never a click.
+
+Three pieces:
+
+```
+functions/analytics/[[path]].js   proxies /analytics/* -> cloud.umami.is
+assets/js/analytics.js            decides what counts as an event
+<script> in every page            the loader, carrying the website ID
+```
+
+The website ID is public by design and lives in the markup, in **every page** —
+the same copied-into-every-page tax as the sprite and the social links. There is
+no API key and no environment variable on the client side.
+
+**Everything is proxied, nothing is third-party.** The browser only ever talks to
+`voltixstudios.pages.dev/analytics/`. That keeps `tools/build_qr.py`'s "the site
+loads no third-party JavaScript" true, and stops content blockers from quietly
+biasing the numbers towards people who do not run one. The honest nuance: the
+tracker *code* is still Umami's — it is the *requests* that are first-party.
+
+> **The proxy must forward `CF-Connecting-IP` as `X-Forwarded-For`.** Umami has no
+> cookie to recognise anyone by; a visitor is a salted hash of IP and user agent,
+> computed on Umami's side. Behind a proxy every request appears to come from
+> Cloudflare, so without that header every visitor on earth hashes to the same
+> person — one visitor, one session, and journeys that are pure invention. It
+> fails silently and plausibly. The check is to load the site from two different
+> networks and confirm Umami says two visitors, not one.
+
+Events are derived from the `href` in `analytics.js`, **not** from
+`data-umami-event` attributes in the markup. Nearly thirty links spread across
+every page is nearly thirty chances to forget one; this way a new social network
+or a new page needs no tracking edit at all. What is recorded: `play-preregister`, `social`
+(with network and placement), `email` (contact vs. deletion request), `outbound`,
+`section` for scroll depth, and `lang-switch`. Internal navigation deliberately is
+not — the destination logs its own page view and Umami stitches the journey from
+those, so an event would add an unload race for information already in hand.
+
+`data-exclude-hash` is set on the loader. Without it every `#games` nav click on
+the landing page counts as a page view and buries the real paths.
+
+The script tag's `src` is root-absolute (`/analytics/script.js`) where everything
+else in the site is relative. That is the exception that keeps the old
+`voltixstudios.github.io` copy out of the data: the path resolves only on
+Cloudflare Pages, so the mirror 404s and reports nothing.
+
+`legal/website-privacy.html` describes all of the above to visitors, in both
+languages. **It is the site's counterpart to the rule the game policies live
+under** — if what the site measures changes, that page is wrong and has to change
+in the same commit.
+
 ## Editing content
 
 Both game sections use the same markup, so a third game is a copy of one
@@ -145,7 +214,7 @@ The handles appear in more than one place, so change all of them together:
 | Where | What |
 | --- | --- |
 | `index.html` — `.follow` block | labelled pills in the contact section |
-| `index.html` + all four legal pages — `.social--compact` | icon buttons in the footer |
+| `index.html` + every legal page — `.social--compact` | icon buttons in the footer |
 | `index.html` — JSON-LD `sameAs` | what search engines read |
 | `index.html` — `twitter:site` / `twitter:creator` | share cards |
 
@@ -156,7 +225,7 @@ Current: [@voltix_studios](https://x.com/voltix_studios) on X,
 The icons are an inline `<symbol>` sprite at the top of each `<body>` (`#i-x`,
 `#i-yt`, `#i-tt`, `#i-gh`, `#i-mail`, plus `#i-play` on the landing page) — no
 icon font, no network request. The sprite is copied into every page, so adding a
-network means editing all five. Each network keeps its own colour on hover only,
+network means editing every one of them. Each network keeps its own colour on hover only,
 so the resting row stays monochrome and the studio palette still owns the page.
 
 ## Legal pages

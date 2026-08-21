@@ -497,6 +497,7 @@
         <a href="legal/paper-squadron/delete-account.html">Delete your data</a>
         <a href="legal/coreward/privacy-policy.html">CoreWard privacy</a>
         <a href="legal/coreward/terms.html">CoreWard terms</a>
+        <a href="legal/website-privacy.html">Website privacy</a>
       </nav>
     </div>
 
@@ -504,5 +505,13 @@
 </footer>
 
 <script src="assets/js/main.js" defer></script>
+
+<!-- /analytics/ is a Pages Function proxying Umami: no third-party script, and
+     nothing stored on the device (legal/website-privacy.html). Root-absolute on
+     purpose — it resolves only on Cloudflare, keeping the github.io mirror out. -->
+<script defer src="/analytics/script.js"
+        data-website-id="REPLACE_WITH_UMAMI_WEBSITE_ID"
+        data-exclude-hash="true"></script>
+<script src="assets/js/analytics.js" defer></script>
 </body>
 </html>

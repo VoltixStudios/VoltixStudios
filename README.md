@@ -172,7 +172,9 @@ tracker *code* is still Umami's — it is the *requests* that are first-party.
 Events are derived from the `href` in `analytics.js`, **not** from
 `data-umami-event` attributes in the markup. Nearly thirty links spread across
 every page is nearly thirty chances to forget one; this way a new social network
-or a new page needs no tracking edit at all. What is recorded: `play-preregister`, `social`
+or a new page needs no tracking edit at all. What is recorded: `play-preregister`
+(named before Paper Squadron shipped and kept that way so the history is one
+series, not two), `social`
 (with network and placement), `email` (contact vs. deletion request), `outbound`,
 `section` for scroll depth, and `lang-switch`. Internal navigation deliberately is
 not — the destination logs its own page view and Umami stitches the journey from

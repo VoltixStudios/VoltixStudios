@@ -73,7 +73,9 @@
     if (link.protocol !== "http:" && link.protocol !== "https:") return;
 
     /* Host alone is not enough: the legal pages link to Play's terms, which is
-       the same host and emphatically not a pre-registration. */
+       the same host and emphatically not a store listing. The event keeps its
+       `play-preregister` name from before Paper Squadron shipped, so the Umami
+       history stays one series instead of splitting at the launch date. */
     if (link.hostname === "play.google.com" && link.pathname.indexOf("/store/apps") === 0) {
       track("play-preregister");
       return;

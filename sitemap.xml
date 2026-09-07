@@ -26,6 +26,11 @@
     <priority>0.4</priority>
   </url>
   <url>
+    <loc>https://voltixstudios.pages.dev/legal/coreward/delete-account</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
     <loc>https://voltixstudios.pages.dev/legal/website-privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>

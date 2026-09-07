@@ -65,18 +65,30 @@ to keep resolving.
 ```
 legal/coreward/privacy-policy.html    Play Console "Privacy policy" + AdMob
 legal/coreward/terms.html             design doc §14's virtual-currency terms
+legal/coreward/delete-account.html    Play data-safety "data deletion" URL
 legal/paper-squadron/privacy-policy.html
 legal/paper-squadron/delete-account.html
 legal/website-privacy.html            the site itself, not a game — no store
                                       references it, so this URL is ours to move
 ```
 
-CoreWard's policy is deliberately far shorter than Paper Squadron's, because the
-game does far less: no account, no cloud save, no analytics, no crash reporting,
-no notifications, no leaderboard backend. Only AdMob and Play Billing leave the
-device. **If any of that changes — the moment Firebase or Play Games is wired in
-— the policy is wrong and has to be updated in the same change**, along with the
-Play data-safety form, which has to agree with it.
+**CoreWard's policy used to be the short one, and it is not any more.** It was
+written when the game had no account, no cloud save, no analytics and no crash
+reporting; Firebase and Play Games were then wired in and all four became untrue,
+so it was rewritten on 19 August 2026 to describe Play Games silent sign-in,
+cloud save, leaderboards, achievements, Crashlytics, Analytics, Remote Config,
+Play billing, AdMob and the share sheet. The rule that produced that rewrite
+still stands: **the moment the app starts handling something new, the policy is
+wrong in the same commit**, along with the Play data-safety form, which has to
+agree with it.
+
+Both games now have a deletion page, because the Play data-safety form asks for a
+URL where a player can request deletion and an anchor buried in a policy is a
+worse answer than a page. CoreWard's is the awkward case and says so plainly:
+there is no account to delete, so the page is three routes to three different
+owners — the device, the player's own Play Games profile, and the crash and
+analytics records we hold, which carry no name and therefore need the player to
+tell us when they played.
 
 The Cores wording in `terms.html` is a verbatim copy of the string the game shows
 on its own store screen (`Store.CurrencyTermsKey` in the CoreWard repo, in both

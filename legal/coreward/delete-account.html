@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoreWard — Delete Your Data · Voltix Studios</title>
+<meta name="description" content="How to delete CoreWard's data, and exactly what is and is not removed. English and Spanish.">
+<meta name="theme-color" content="#05060a">
+<link rel="canonical" href="https://voltixstudios.pages.dev/legal/coreward/delete-account">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Voltix Studios">
+<meta property="og:title" content="CoreWard — Delete Your Data">
+<meta property="og:description" content="How to delete CoreWard's data, and exactly what is and is not removed.">
+<meta property="og:url" content="https://voltixstudios.pages.dev/legal/coreward/delete-account">
+<meta property="og:image" content="https://voltixstudios.pages.dev/assets/img/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@voltix_studios">
+
+<link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../assets/css/style.css?v=3">
+<link rel="stylesheet" href="../../assets/css/doc.css">
+
+<!-- Picks the language before the first paint, so the other one never flashes.
+     Order: explicit ?lang= / #es, then the browser's own preference. Nothing
+     is written to storage — see assets/js/doc.js. -->
+<script>
+(function () {
+  var d = document.documentElement;
+  d.className += " js";
+  var m = /[?&]lang=(en|es)/.exec(location.search) || /^#(en|es)$/.exec(location.hash);
+  var lang = m ? m[1]
+    : (((navigator.language || navigator.userLanguage || "en").toLowerCase().indexOf("es") === 0) ? "es" : "en");
+  d.setAttribute("data-doclang", lang);
+  d.setAttribute("lang", lang);
+})();
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-x" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z"/>
+  </symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/>
+  </symbol>
+  <symbol id="i-tt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07Z"/>
+  </symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M2.75 5.75h18.5v12.5H2.75z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m3.4 6.4 8.6 6.6 8.6-6.6"/>
+  </symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2.1c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/>
+  </symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="../../index.html">
+      <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" decoding="async">
+      <span>Voltix<em>Studios</em></span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="../../index.html#games">Games</a>
+      <a href="../../index.html#paper-squadron">Paper Squadron</a>
+      <a href="../../index.html#coreward">CoreWard</a>
+    </nav>
+    <a class="btn btn--sm" href="mailto:voltix.studios.gaming@gmail.com">Contact</a>
+  </div>
+</header>
+
+<main id="main" class="doc--cw">
+
+  <div class="doc-head">
+    <div class="wrap">
+      <p class="crumbs">
+        <a href="../../index.html">Voltix Studios</a>
+        <span aria-hidden="true">/</span>
+        <a href="../../index.html#coreward">CoreWard</a>
+        <span aria-hidden="true">/</span>
+        <span data-lang="en">Delete Your Data</span>
+        <span data-lang="es" lang="es">Eliminar tus datos</span>
+      </p>
+
+      <div class="lang" role="group" aria-label="Document language">
+        <button type="button" data-set-lang="en" aria-pressed="true">English</button>
+        <button type="button" data-set-lang="es" aria-pressed="false">Español</button>
+      </div>
+
+      <h1 class="doc__title" data-lang="en">CoreWard — Delete Your Data</h1>
+      <h1 class="doc__title" data-lang="es" lang="es">CoreWard — Eliminar tus datos</h1>
+
+      <p class="lead" data-lang="en">
+        CoreWard has no account. There is nothing to sign up for, no username, and no password —
+        which means there is also no single button that erases everything, because the data does
+        not sit in one place. It sits in three, each belonging to someone different, and each is
+        cleared its own way. This page covers all three, and you can do two of them yourself
+        right now without writing to us.
+      </p>
+      <p class="lead" data-lang="es" lang="es">
+        CoreWard no tiene cuenta. No hay registro, ni nombre de usuario, ni contraseña — lo que
+        significa que tampoco hay un único botón que lo borre todo, porque los datos no están en
+        un solo sitio. Están en tres, cada uno pertenece a alguien distinto y cada uno se borra a
+        su manera. Esta página cubre los tres, y dos de ellos puedes hacerlos tú ahora mismo sin
+        escribirnos.
+      </p>
+
+      <dl class="doc-meta" data-lang="en">
+        <div><dt>Effective date</dt><dd>7 September 2026</dd></div>
+        <div><dt>App</dt><dd>CoreWard <code>com.voltixstudios.coreward</code></dd></div>
+        <div><dt>Developer</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+      </dl>
+      <dl class="doc-meta" data-lang="es" lang="es">
+        <div><dt>Fecha de entrada en vigor</dt><dd>7 de septiembre de 2026</dd></div>
+        <div><dt>Aplicación</dt><dd>CoreWard <code>com.voltixstudios.coreward</code></dd></div>
+        <div><dt>Desarrollador</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="doc">
+    <div class="wrap">
+
+      <!-- ─────────────────────────── English ─────────────────────────── -->
+      <div data-lang="en">
+
+        <nav class="toc" aria-label="On this page">
+          <p class="toc__title">On this page</p>
+          <ol>
+            <li><a href="#device">1 · On your device</a></li>
+            <li><a href="#play">2 · Your Google Play Games profile</a></li>
+            <li><a href="#us">3 · Crash reports and statistics</a></li>
+            <li><a href="#kept">What is not deleted, and why</a></li>
+            <li><a href="#retention">Retention</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ol>
+        </nav>
+
+        <h2 id="device">1 · On your device</h2>
+        <p>
+          Your descent progress, Cores, artifacts, drones, upgrades, boosts and settings are
+          stored on the phone itself and nowhere else by default.
+        </p>
+        <p>
+          <strong>Uninstalling CoreWard removes all of it.</strong> There is no step after that,
+          and nothing survives locally.
+        </p>
+        <p>
+          If you want to start over without uninstalling, <strong>Settings</strong> →
+          <strong>Reset progress</strong> erases the same data from inside the game. It asks
+          twice, and if you are signed in to Play Games it also clears the cloud copy — otherwise
+          the next sign-in would hand back exactly what you just erased.
+        </p>
+
+        <h2 id="play">2 · Your Google Play Games profile</h2>
+        <p>
+          If you signed in to Google Play Games, three things live in your Google account rather
+          than on your device: a saved copy of your progress, your best depths on the two
+          leaderboards, and your achievements. These belong to your Play Games profile, so they
+          are deleted through Google rather than through us — and you do not need to ask anyone's
+          permission:
+        </p>
+        <ol>
+          <li>Open the <strong>Play Games</strong> app.</li>
+          <li>Go to <strong>Settings</strong> → <strong>Delete Play Games account data</strong>.</li>
+          <li>Choose <strong>Delete individual game data</strong>, then pick <strong>CoreWard</strong>.</li>
+        </ol>
+        <p>
+          That removes the cloud save, the scores and the achievements for this game and leaves
+          your other games untouched. Deleting your whole Play Games account data is also offered
+          on that screen, and it takes every game with it — including this one.
+        </p>
+        <div class="note">
+          <p>
+            The cloud save and the copy on your phone are separate. Deleting one does not delete
+            the other. To be rid of both, do this <em>and</em> uninstall the game.
+          </p>
+        </div>
+
+        <h2 id="us">3 · Crash reports and statistics</h2>
+        <p>
+          This is the only part we hold, and the only part that needs an email. It is two things:
+          crash reports, sent whenever the game fails, and anonymous gameplay statistics, sent
+          only if you agreed to them when the game asked.
+        </p>
+        <p>
+          Write to
+          <a href="mailto:voltix.studios.gaming@gmail.com?subject=CoreWard%20data%20deletion%20request">voltix.studios.gaming@gmail.com</a>
+          with the subject <strong>CoreWard data deletion request</strong>, and we will delete
+          the records associated with your installation.
+        </p>
+        <p>
+          These records carry no name, no email address and no account, because none was ever
+          collected — which is good for your privacy and awkward for this request, since there is
+          no name for us to search on. So please tell us one of the following, or we will not be
+          able to find the right records:
+        </p>
+        <ul>
+          <li>Send the message from a device that still has CoreWard installed, or</li>
+          <li>tell us roughly <strong>when you played</strong> — the dates or the week are
+              enough — and the <strong>phone model</strong> you played on.</li>
+        </ul>
+        <p>
+          We will confirm by reply when it is done. If we cannot identify the records from what
+          you send, we will say so rather than delete someone else's.
+        </p>
+
+        <h2 id="kept">What is not deleted, and why</h2>
+        <ul>
+          <li>
+            <strong>Purchase records.</strong> If you bought Cores, the starter kit or an
+            ad-removal option, Google Play holds the transaction — we never see your payment
+            details and cannot delete Google's record of a sale. Tax and consumer-protection law
+            requires it to be kept. Your <em>entitlements</em> (an ad-removal you own, for
+            instance) are restored from Google Play if you reinstall, which is a feature rather
+            than a leftover; nothing we hold is what restores them.
+          </li>
+          <li>
+            <strong>Data Google holds for showing you ads.</strong> Advertising happens between
+            your device and Google. We never receive your advertising ID and build no profile
+            from it. Reset or delete that identifier in your
+            <a href="https://myadcenter.google.com" rel="noopener" target="_blank">Google Ad
+            settings</a>.
+          </li>
+          <li>
+            <strong>Aggregate counts.</strong> Statistics that have already been rolled up —
+            "how many players cleared tier 6 in August" — no longer contain anything that could
+            be traced to a device, and there is nothing individual left in them to remove.
+          </li>
+        </ul>
+
+        <h2 id="retention">Retention</h2>
+        <p>
+          Crash reports and gameplay statistics are held by Firebase on our behalf and expire on
+          Google's own schedule whether or not you ask — crash data after 90 days, analytics
+          events after 14 months. An emailed request is completed within 30 days, and usually the
+          same week. We keep no separate backup of our own to restore from.
+        </p>
+
+        <h2 id="contact">Contact</h2>
+        <p>
+          <a href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a> —
+          Voltix Studios, Spain. Deletion requests, questions about this page, or anything else
+          about what the game handles.
+        </p>
+
+        <div class="note">
+          <p>
+            This document is published in English and Spanish. If the two versions ever
+            disagree, the English text is the one that governs.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>For the full picture of what the app collects:</p>
+          <a class="btn" href="privacy-policy.html">Read the Privacy Policy</a>
+        </div>
+      </div>
+
+      <!-- ─────────────────────────── Español ─────────────────────────── -->
+      <div data-lang="es" lang="es">
+
+        <nav class="toc" aria-label="En esta página">
+          <p class="toc__title">En esta página</p>
+          <ol>
+            <li><a href="#device-es">1 · En tu dispositivo</a></li>
+            <li><a href="#play-es">2 · Tu perfil de Google Play Juegos</a></li>
+            <li><a href="#us-es">3 · Informes de fallos y estadísticas</a></li>
+            <li><a href="#kept-es">Qué no se elimina, y por qué</a></li>
+            <li><a href="#retention-es">Conservación</a></li>
+            <li><a href="#contact-es">Contacto</a></li>
+          </ol>
+        </nav>
+
+        <h2 id="device-es">1 · En tu dispositivo</h2>
+        <p>
+          Tu progreso, tus Núcleos, tus artefactos, tus drones, tus mejoras, tus impulsos y tus
+          ajustes se guardan en el propio teléfono y, por defecto, en ningún otro sitio.
+        </p>
+        <p>
+          <strong>Desinstalar CoreWard lo elimina todo.</strong> No hay ningún paso posterior y no
+          queda nada en el dispositivo.
+        </p>
+        <p>
+          Si quieres empezar de cero sin desinstalar, <strong>Ajustes</strong> →
+          <strong>Borrar progreso</strong> elimina los mismos datos desde dentro del juego. Pide
+          confirmación dos veces y, si has iniciado sesión en Play Juegos, borra también la copia
+          en la nube — de lo contrario, el siguiente inicio de sesión te devolvería justo lo que
+          acabas de borrar.
+        </p>
+
+        <h2 id="play-es">2 · Tu perfil de Google Play Juegos</h2>
+        <p>
+          Si iniciaste sesión en Google Play Juegos, hay tres cosas que viven en tu cuenta de
+          Google y no en tu dispositivo: una copia guardada de tu progreso, tus mejores
+          profundidades en las dos clasificaciones y tus logros. Pertenecen a tu perfil de Play
+          Juegos, así que se eliminan a través de Google y no a través de nosotros — y no
+          necesitas pedirle permiso a nadie:
+        </p>
+        <ol>
+          <li>Abre la aplicación <strong>Play Juegos</strong>.</li>
+          <li>Ve a <strong>Ajustes</strong> → <strong>Eliminar datos de la cuenta de Play Juegos</strong>.</li>
+          <li>Elige <strong>Eliminar datos de un juego concreto</strong> y selecciona <strong>CoreWard</strong>.</li>
+        </ol>
+        <p>
+          Eso elimina la copia en la nube, las puntuaciones y los logros de este juego, y deja
+          intactos los demás. En esa misma pantalla también puedes eliminar todos los datos de tu
+          cuenta de Play Juegos, lo que se lleva por delante todos los juegos, incluido este.
+        </p>
+        <div class="note">
+          <p>
+            La copia en la nube y la del teléfono son independientes. Borrar una no borra la
+            otra. Para deshacerte de las dos, haz esto <em>y</em> desinstala el juego.
+          </p>
+        </div>
+
+        <h2 id="us-es">3 · Informes de fallos y estadísticas</h2>
+        <p>
+          Esta es la única parte que conservamos nosotros y la única que necesita un correo. Son
+          dos cosas: los informes de fallos, que se envían cuando el juego falla, y las
+          estadísticas anónimas de juego, que solo se envían si las autorizaste cuando el juego
+          te lo preguntó.
+        </p>
+        <p>
+          Escribe a
+          <a href="mailto:voltix.studios.gaming@gmail.com?subject=Solicitud%20de%20eliminaci%C3%B3n%20de%20datos%20de%20CoreWard">voltix.studios.gaming@gmail.com</a>
+          con el asunto <strong>Solicitud de eliminación de datos de CoreWard</strong> y
+          eliminaremos los registros asociados a tu instalación.
+        </p>
+        <p>
+          Esos registros no llevan nombre, ni dirección de correo, ni cuenta, porque nunca se
+          recogió ninguna — lo cual es bueno para tu privacidad e incómodo para esta solicitud, ya
+          que no hay ningún nombre por el que buscar. Así que indícanos una de estas dos cosas o
+          no podremos encontrar los registros correctos:
+        </p>
+        <ul>
+          <li>Envía el mensaje desde un dispositivo que todavía tenga CoreWard instalado, o</li>
+          <li>dinos aproximadamente <strong>cuándo jugaste</strong> — las fechas o la semana
+              bastan — y el <strong>modelo de teléfono</strong> en el que jugaste.</li>
+        </ul>
+        <p>
+          Te confirmaremos por respuesta cuando esté hecho. Si no podemos identificar los
+          registros con lo que nos envíes, te lo diremos en lugar de borrar los de otra persona.
+        </p>
+
+        <h2 id="kept-es">Qué no se elimina, y por qué</h2>
+        <ul>
+          <li>
+            <strong>Registros de compra.</strong> Si compraste Núcleos, el kit inicial o alguna
+            de las opciones para quitar anuncios, Google Play conserva la transacción — nosotros
+            nunca vemos tus datos de pago y no podemos eliminar el registro de una venta que
+            guarda Google. La normativa fiscal y de protección al consumidor obliga a
+            conservarlo. Tus <em>derechos</em> (por ejemplo, una eliminación de anuncios que
+            hayas comprado) se restauran desde Google Play si reinstalas, lo cual es una función
+            y no un resto: nada de lo que guardamos nosotros es lo que los restaura.
+          </li>
+          <li>
+            <strong>Datos que Google conserva por mostrarte anuncios.</strong> La publicidad
+            ocurre entre tu dispositivo y Google. Nunca recibimos tu identificador de publicidad
+            ni construimos ningún perfil con él. Puedes restablecerlo o eliminarlo en tus
+            <a href="https://myadcenter.google.com" rel="noopener" target="_blank">ajustes de
+            anuncios de Google</a>.
+          </li>
+          <li>
+            <strong>Recuentos agregados.</strong> Las estadísticas ya agrupadas — «cuántos
+            jugadores superaron el nivel 6 en agosto» — ya no contienen nada que pueda
+            atribuirse a un dispositivo, y no queda nada individual que eliminar.
+          </li>
+        </ul>
+
+        <h2 id="retention-es">Conservación</h2>
+        <p>
+          Firebase conserva por nuestra cuenta los informes de fallos y las estadísticas de
+          juego, y caducan según el calendario de Google los pidas o no: los datos de fallos a
+          los 90 días y los eventos de analítica a los 14 meses. Una solicitud por correo se
+          completa en un plazo de 30 días, y normalmente la misma semana. No guardamos ninguna
+          copia de seguridad propia desde la que restaurar.
+        </p>
+
+        <h2 id="contact-es">Contacto</h2>
+        <p>
+          <a href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a> —
+          Voltix Studios, España. Solicitudes de eliminación, dudas sobre esta página o cualquier
+          otra cosa sobre lo que maneja el juego.
+        </p>
+
+        <div class="note">
+          <p>
+            Este documento se publica en inglés y en español. Si ambas versiones no coinciden,
+            prevalece el texto en inglés.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>Para conocer todo lo que recopila la aplicación:</p>
+          <a class="btn" href="privacy-policy.html">Leer la Política de Privacidad</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+
+    <div class="foot__top">
+      <a class="brand" href="../../index.html">
+        <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" loading="lazy">
+        <span>Voltix<em>Studios</em></span>
+      </a>
+
+      <ul class="social social--compact" aria-label="Voltix Studios elsewhere">
+        <li><a class="social__btn social__btn--x" href="https://x.com/voltix_studios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on X">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></a></li>
+        <li><a class="social__btn social__btn--yt" href="https://www.youtube.com/@VoltixStudiosGaming"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on YouTube">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-yt"></use></svg></a></li>
+        <li><a class="social__btn social__btn--tt" href="https://www.tiktok.com/@voltixstudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on TikTok">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-tt"></use></svg></a></li>
+        <li><a class="social__btn" href="https://github.com/VoltixStudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on GitHub">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-gh"></use></svg></a></li>
+        <li><a class="social__btn" href="mailto:voltix.studios.gaming@gmail.com"
+               aria-label="Email Voltix Studios">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg></a></li>
+      </ul>
+    </div>
+
+    <div class="foot__bar">
+      <p class="foot__copy">
+        &copy; <span id="year">2026</span> Voltix Studios. All game names and artwork are
+        property of Voltix Studios.
+      </p>
+      <nav class="foot__links" aria-label="Legal">
+        <a href="privacy-policy.html">Privacy policy</a>
+        <a href="terms.html">Terms &amp; virtual currency</a>
+        <a href="delete-account.html">Delete your data</a>
+        <a href="../website-privacy.html">Website privacy</a>
+      </nav>
+    </div>
+
+  </div>
+</footer>
+
+<script src="../../assets/js/main.js" defer></script>
+<script src="../../assets/js/doc.js" defer></script>
+
+<!-- /analytics/ is a Pages Function proxying Umami: no third-party script, and
+     nothing stored on the device (legal/website-privacy.html). Root-absolute on
+     purpose — it resolves only on Cloudflare, keeping the github.io mirror out. -->
+<script defer src="/analytics/script.js"
+        data-website-id="REPLACE_WITH_UMAMI_WEBSITE_ID"
+        data-exclude-hash="true"></script>
+<script src="../../assets/js/analytics.js" defer></script>
+</body>
+</html>

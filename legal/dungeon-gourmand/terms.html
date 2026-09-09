@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dungeon Gourmand — Terms &amp; Virtual Currency · Voltix Studios</title>
+<meta name="description" content="The terms for playing Dungeon Gourmand, and for buying Dragon Scales and the Innkeeper subscription. English and Spanish.">
+<meta name="theme-color" content="#05060a">
+<link rel="canonical" href="https://voltixstudios.pages.dev/legal/dungeon-gourmand/terms">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Voltix Studios">
+<meta property="og:title" content="Dungeon Gourmand — Terms &amp; Virtual Currency">
+<meta property="og:description" content="What you are buying when you buy Dragon Scales, a slot, or the Innkeeper subscription.">
+<meta property="og:url" content="https://voltixstudios.pages.dev/legal/dungeon-gourmand/terms">
+<meta property="og:image" content="https://voltixstudios.pages.dev/assets/img/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@voltix_studios">
+
+<link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../assets/css/style.css?v=4">
+<link rel="stylesheet" href="../../assets/css/doc.css">
+
+<!-- Picks the language before the first paint, so the other one never flashes.
+     Order: explicit ?lang= / #es, then the browser's own preference. Nothing
+     is written to storage — see assets/js/doc.js. -->
+<script>
+(function () {
+  var d = document.documentElement;
+  d.className += " js";
+  var m = /[?&]lang=(en|es)/.exec(location.search) || /^#(en|es)$/.exec(location.hash);
+  var lang = m ? m[1]
+    : (((navigator.language || navigator.userLanguage || "en").toLowerCase().indexOf("es") === 0) ? "es" : "en");
+  d.setAttribute("data-doclang", lang);
+  d.setAttribute("lang", lang);
+})();
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-x" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z"/>
+  </symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/>
+  </symbol>
+  <symbol id="i-tt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07Z"/>
+  </symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M2.75 5.75h18.5v12.5H2.75z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m3.4 6.4 8.6 6.6 8.6-6.6"/>
+  </symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2.1c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/>
+  </symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="../../index.html">
+      <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" decoding="async">
+      <span>Voltix<em>Studios</em></span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="../../index.html#games">Games</a>
+      <a href="../../index.html#paper-squadron">Paper Squadron</a>
+      <a href="../../index.html#coreward">CoreWard</a>
+      <a href="../../index.html#dungeon-gourmand">Dungeon Gourmand</a>
+    </nav>
+    <a class="btn btn--sm" href="mailto:voltix.studios.gaming@gmail.com">Contact</a>
+  </div>
+</header>
+
+<main id="main" class="doc--dg">
+
+  <div class="doc-head">
+    <div class="wrap">
+      <p class="crumbs">
+        <a href="../../index.html">Voltix Studios</a>
+        <span aria-hidden="true">/</span>
+        <a href="../../index.html#dungeon-gourmand">Dungeon Gourmand</a>
+        <span aria-hidden="true">/</span>
+        <span data-lang="en">Terms &amp; Virtual Currency</span>
+        <span data-lang="es" lang="es">Términos y moneda virtual</span>
+      </p>
+
+      <div class="lang" role="group" aria-label="Document language">
+        <button type="button" data-set-lang="en" aria-pressed="true">English</button>
+        <button type="button" data-set-lang="es" aria-pressed="false">Español</button>
+      </div>
+
+      <h1 class="doc__title" data-lang="en">Dungeon Gourmand — Terms &amp; Virtual Currency</h1>
+      <h1 class="doc__title" data-lang="es" lang="es">Dungeon Gourmand — Términos y moneda virtual</h1>
+
+      <p class="lead" data-lang="en">
+        Dungeon Gourmand is free to play and free to finish. It also sells Dragon Scales, its
+        premium currency, along with extra expedition slots, a starter pack, colours for your
+        dragon, a one-time purchase that removes the interstitial ad, and a monthly
+        subscription. This page sets out what you are buying when you buy any of that — in
+        particular that Scales are a virtual item, not money, and cannot be turned back into
+        money.
+      </p>
+      <p class="lead" data-lang="es" lang="es">
+        Dungeon Gourmand es gratuito para jugar y gratuito para terminar. También vende escamas
+        de dragón, su moneda premium, además de ranuras de expedición adicionales, un paquete
+        inicial, colores para tu dragón, una compra única que elimina el anuncio intersticial y
+        una suscripción mensual. Esta página explica qué estás comprando cuando compras
+        cualquiera de esas cosas; en particular, que las escamas son un artículo virtual, no
+        dinero, y que no pueden convertirse de nuevo en dinero.
+      </p>
+
+      <dl class="doc-meta" data-lang="en">
+        <div><dt>Effective date</dt><dd>9 September 2026</dd></div>
+        <div><dt>App</dt><dd>Dungeon Gourmand <code>com.voltixstudios.dungeongourmand</code></dd></div>
+        <div><dt>Developer</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+      </dl>
+      <dl class="doc-meta" data-lang="es" lang="es">
+        <div><dt>Fecha de entrada en vigor</dt><dd>9 de septiembre de 2026</dd></div>
+        <div><dt>Aplicación</dt><dd>Dungeon Gourmand <code>com.voltixstudios.dungeongourmand</code></dd></div>
+        <div><dt>Desarrollador</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="doc">
+    <div class="wrap">
+
+      <!-- ─────────────────────────── English ─────────────────────────── -->
+      <div data-lang="en">
+
+        <nav class="toc" aria-label="On this page">
+          <p class="toc__title">On this page</p>
+          <ol>
+            <li><a href="#licence">Your licence to play</a></li>
+            <li><a href="#currencies">Gold, Scales and Map Fragments</a></li>
+            <li><a href="#catalogue">What is on sale</a></li>
+            <li><a href="#subscription">The Innkeeper subscription</a></li>
+            <li><a href="#ads">Ads, and buying them off</a></li>
+            <li><a href="#outcomes">What money never buys</a></li>
+            <li><a href="#no-chance">No loot boxes, no randomised purchases</a></li>
+            <li><a href="#refunds">Refunds and withdrawal</a></li>
+            <li><a href="#loss">Losing your progress</a></li>
+            <li><a href="#changes">Changes to the game</a></li>
+            <li><a href="#liability">Liability</a></li>
+            <li><a href="#law">Governing law</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ol>
+        </nav>
+
+        <div class="note">
+          <p>
+            <strong>Dungeon Gourmand is still in development and is not yet on Google Play.</strong>
+            These terms describe the game as it will ship, and take effect with the first build
+            released to testers. Prices, packs and perks may change before then; what cannot
+            change is the section on <a href="#outcomes">what money never buys</a>.
+          </p>
+        </div>
+
+        <h2 id="licence">Your licence to play</h2>
+        <p>
+          Downloading Dungeon Gourmand gives you a personal, non-exclusive, non-transferable
+          licence to play it on devices you control, for as long as it is available. The game,
+          its artwork, its writing, its music and its name remain the property of Voltix Studios.
+          You may record and stream your own play — including monetised video — and you may not
+          resell the game, redistribute its files, or modify it to alter what a purchase or an
+          ad grants.
+        </p>
+
+        <h2 id="currencies">Gold, Scales and Map Fragments</h2>
+        <div class="note">
+          <p>
+            <strong>Dragon Scales are a virtual item, not money.</strong> They have no value
+            outside the game, cannot be exchanged for cash, and cannot be transferred to another
+            player or to another account.
+          </p>
+        </div>
+        <p>
+          The game has three currencies, and only one of them is ever sold:
+        </p>
+        <ul>
+          <li><strong>Gold</strong> is earned by playing — cleared dungeons, sold ingredients,
+              the market. It is never sold for money.</li>
+          <li><strong>Map Fragments</strong> are found on expeditions and spent on leads. They
+              are never sold for money.</li>
+          <li><strong>Dragon Scales</strong> are the premium currency. They are earned in play —
+              from achievements, from the daily hooks, and as a subscriber's daily drip — and
+              they can also be bought in packs.</li>
+        </ul>
+        <p>
+          Buying a pack of Scales buys a limited licence to use a feature of the game, not an
+          asset you own. Unspent Scales are not property, cannot be redeemed for money, and are
+          lost with the save that holds them. If your account is closed by Google, or the game is
+          withdrawn, unspent balances cannot be refunded or exchanged. Nothing in this paragraph
+          limits a statutory right you have as a consumer.
+        </p>
+
+        <h2 id="catalogue">What is on sale</h2>
+        <p>
+          The catalogue at launch is expected to be:
+        </p>
+        <ul>
+          <li><strong>Dragon Scales</strong> — five pack sizes.</li>
+          <li><strong>A second and a third expedition slot</strong> — one-time purchases, kept
+              permanently.</li>
+          <li><strong>The Hatchling Pack</strong> — a one-time starter pack of Scales, Gold and a
+              colour, offered a couple of days in and never on first launch.</li>
+          <li><strong>A pack of colour morphs</strong> for your dragon — cosmetic only.</li>
+          <li><strong>Remove interstitials</strong> — a one-time purchase.</li>
+          <li><strong>The Innkeeper</strong> — a monthly subscription, described below.</li>
+        </ul>
+        <p>
+          Every price you are shown comes from Google Play, in your own currency, including any
+          tax that applies where you live. No price appears in this document, because the one in
+          the store is the one that governs.
+        </p>
+
+        <h2 id="subscription">The Innkeeper subscription</h2>
+        <p>
+          The Innkeeper is a monthly, auto-renewing subscription sold through Google Play. While
+          it is active it grants an extra expedition slot, a daily drip of Dragon Scales, extra
+          larder space, automatic collection of finished expeditions, and no interstitial ad.
+        </p>
+        <p>
+          It renews each month at the price shown in the store until you cancel, and you cancel
+          it from <span class="ui">Google Play → Subscriptions</span> — not from inside the game,
+          which cannot cancel it for you. Cancelling stops the next renewal; the subscription
+          keeps running until the period you have paid for ends. Any free trial converts to a
+          paid period unless you cancel before it ends.
+        </p>
+        <p>
+          When a subscription lapses, its perks stop. Nothing you already earned while subscribed
+          is taken back: Scales already dripped stay yours, and an expedition already running in
+          the extra slot finishes and can be collected. The slot itself is simply no longer
+          offered for the next dispatch.
+        </p>
+
+        <h2 id="ads">Ads, and buying them off</h2>
+        <p>
+          Most of the game's ads are rewarded: you choose to start one, you are told what it
+          grants first, and you can decline. There is one interstitial, shown after you close a
+          Ledger and nowhere else.
+        </p>
+        <p>
+          <strong>Remove interstitials and The Innkeeper remove the interstitial only.</strong>
+          Rewarded ads stay available to paying players, because a rewarded ad is a feature and
+          not a tax. A rewarded ad only ever grants; it never takes something away. A reward that
+          lasts a day — the extra party slot, for instance — ending is not a loss, and an
+          expedition already in flight in that slot is never cancelled by it.
+        </p>
+        <p>
+          When no ad is available, the game offers the same thing for Scales instead of showing
+          you a dead button, wherever that price exists.
+        </p>
+
+        <h2 id="outcomes">What money never buys</h2>
+        <p>
+          This is the rule the design is built around, and it is written here so it can be held
+          against us. <strong>Money buys time and identity. It never buys outcomes.</strong>
+          There is nothing on sale, and nothing an ad grants, that raises an expedition's success
+          rate, improves a loot roll, changes a hazard, or skips a timer that is already running.
+          What a purchase can do is give you another party to run at the same time, another
+          colour for your dragon, or a stock of a currency you could also have earned.
+        </p>
+
+        <h2 id="no-chance">No loot boxes, no randomised purchases</h2>
+        <p>
+          Nothing sold in Dungeon Gourmand is randomised. There are no chests, no odds, no
+          surprise contents and no mechanic where money buys a chance at something. You always
+          know exactly what a purchase contains before you make it. Loot found on an expedition
+          is random, as a dungeon-crawler's loot is — but that randomness is never something you
+          can pay to roll again for money.
+        </p>
+
+        <h2 id="refunds">Refunds and withdrawal</h2>
+        <p>
+          All purchases are processed by Google Play, and refunds are handled under
+          <a href="https://support.google.com/googleplay/answer/2479637" rel="noopener" target="_blank">Google
+          Play's refund policy</a>. Contact us at the address below if something went wrong with
+          a purchase and we will help where we can.
+        </p>
+        <p>
+          If you are a consumer in the European Union or the United Kingdom, you normally have a
+          14-day right to withdraw from a digital purchase. That right ends once delivery of the
+          digital content has begun with your consent — and because Scales, slots, colours and
+          the ad-removal entitlement are delivered to your game immediately on purchase, that is
+          generally at once. Nothing here limits any consumer right you have that cannot be
+          waived by agreement.
+        </p>
+
+        <h2 id="loss">Losing your progress</h2>
+        <p>
+          Your hearth is stored on your device. If you are signed in to Google Play Games, a copy
+          is also kept in your Google account and will come back on a reinstall or a new phone.
+          If you are not signed in, there is no copy anywhere: uninstalling the game, clearing
+          its data, or moving to a new device will lose your progress and any unspent Scales with
+          it. One-time purchases and the subscription are the exception — they are tied to your
+          Google account and can be restored. Please keep this in mind before uninstalling.
+        </p>
+
+        <h2 id="changes">Changes to the game</h2>
+        <p>
+          We may update Dungeon Gourmand, adjust game balance, and add, change or retire content.
+          If the game is discontinued, we will make reasonable efforts to give notice through the
+          store listing beforehand; unspent Scales cannot be refunded or exchanged at that point,
+          which is part of why they are described as they are above. If these terms change, the
+          updated version will be published at this URL with a new effective date.
+        </p>
+
+        <h2 id="liability">Liability</h2>
+        <p>
+          Dungeon Gourmand is provided as is. To the extent permitted by law, Voltix Studios is
+          not liable for indirect or consequential loss arising from your use of the game.
+          Nothing in these terms excludes liability for death or personal injury caused by
+          negligence, for fraud, or for anything else that cannot lawfully be excluded —
+          including your statutory rights as a consumer.
+        </p>
+
+        <h2 id="law">Governing law</h2>
+        <p>
+          These terms are governed by the law of Spain. If you are a consumer, you keep the
+          protection of the mandatory rules of the country where you live, and you may bring
+          proceedings there.
+        </p>
+
+        <h2 id="contact">Contact</h2>
+        <p>
+          Voltix Studios —
+          <a href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a>.
+        </p>
+
+        <div class="note">
+          <p>
+            This document is published in English and Spanish. If the two versions ever
+            disagree, the English text is the one that governs.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>What data the game handles, and what it does not.</p>
+          <a class="btn" href="privacy-policy.html">Privacy Policy</a>
+        </div>
+      </div>
+
+      <!-- ─────────────────────────── Español ─────────────────────────── -->
+      <div data-lang="es" lang="es">
+
+        <nav class="toc" aria-label="En esta página">
+          <p class="toc__title">En esta página</p>
+          <ol>
+            <li><a href="#licence-es">Tu licencia para jugar</a></li>
+            <li><a href="#currencies-es">Oro, escamas y fragmentos de mapa</a></li>
+            <li><a href="#catalogue-es">Qué está a la venta</a></li>
+            <li><a href="#subscription-es">La suscripción The Innkeeper</a></li>
+            <li><a href="#ads-es">Los anuncios, y comprar su ausencia</a></li>
+            <li><a href="#outcomes-es">Lo que el dinero nunca compra</a></li>
+            <li><a href="#no-chance-es">Sin cajas de botín ni compras aleatorias</a></li>
+            <li><a href="#refunds-es">Reembolsos y desistimiento</a></li>
+            <li><a href="#loss-es">Perder tu progreso</a></li>
+            <li><a href="#changes-es">Cambios en el juego</a></li>
+            <li><a href="#liability-es">Responsabilidad</a></li>
+            <li><a href="#law-es">Legislación aplicable</a></li>
+            <li><a href="#contact-es">Contacto</a></li>
+          </ol>
+        </nav>
+
+        <div class="note">
+          <p>
+            <strong>Dungeon Gourmand todavía está en desarrollo y aún no está en Google Play.</strong>
+            Estos términos describen el juego tal y como se publicará, y entran en vigor con la
+            primera versión entregada a los probadores. Los precios, los paquetes y las ventajas
+            pueden cambiar hasta entonces; lo que no puede cambiar es la sección sobre
+            <a href="#outcomes-es">lo que el dinero nunca compra</a>.
+          </p>
+        </div>
+
+        <h2 id="licence-es">Tu licencia para jugar</h2>
+        <p>
+          Descargar Dungeon Gourmand te concede una licencia personal, no exclusiva e
+          intransferible para jugarlo en dispositivos que controles, mientras siga disponible. El
+          juego, su arte, sus textos, su música y su nombre siguen siendo propiedad de Voltix
+          Studios. Puedes grabar y retransmitir tus propias partidas —incluido el vídeo
+          monetizado— y no puedes revender el juego, redistribuir sus archivos ni modificarlo
+          para alterar lo que concede una compra o un anuncio.
+        </p>
+
+        <h2 id="currencies-es">Oro, escamas y fragmentos de mapa</h2>
+        <div class="note">
+          <p>
+            <strong>Las escamas de dragón son un artículo virtual, no dinero.</strong> No tienen
+            valor fuera del juego, no pueden cambiarse por efectivo y no pueden transferirse a
+            otro jugador ni a otra cuenta.
+          </p>
+        </div>
+        <p>
+          El juego tiene tres monedas, y solo una de ellas se vende:
+        </p>
+        <ul>
+          <li>El <strong>oro</strong> se gana jugando: mazmorras superadas, ingredientes vendidos,
+              el mercado. Nunca se vende por dinero.</li>
+          <li>Los <strong>fragmentos de mapa</strong> se encuentran en las expediciones y se
+              gastan en pistas. Nunca se venden por dinero.</li>
+          <li>Las <strong>escamas de dragón</strong> son la moneda premium. Se ganan jugando —con
+              los logros, con los alicientes diarios y como goteo diario de la suscripción— y
+              además pueden comprarse en paquetes.</li>
+        </ul>
+        <p>
+          Comprar un paquete de escamas compra una licencia limitada para usar una función del
+          juego, no un bien de tu propiedad. Las escamas sin gastar no son propiedad, no pueden
+          canjearse por dinero y se pierden con la partida que las contiene. Si Google cierra tu
+          cuenta, o el juego se retira, los saldos sin gastar no pueden reembolsarse ni
+          canjearse. Nada de este párrafo limita ningún derecho legal que tengas como consumidor.
+        </p>
+
+        <h2 id="catalogue-es">Qué está a la venta</h2>
+        <p>
+          Se espera que el catálogo en el lanzamiento sea:
+        </p>
+        <ul>
+          <li><strong>Escamas de dragón</strong> — cinco tamaños de paquete.</li>
+          <li><strong>Una segunda y una tercera ranura de expedición</strong> — compras únicas,
+              que se conservan de forma permanente.</li>
+          <li><strong>The Hatchling Pack</strong> — un paquete inicial único con escamas, oro y
+              un color, ofrecido un par de días después de empezar y nunca en el primer
+              arranque.</li>
+          <li><strong>Un paquete de colores</strong> para tu dragón — puramente estético.</li>
+          <li><strong>Remove interstitials</strong> — una compra única.</li>
+          <li><strong>The Innkeeper</strong> — una suscripción mensual, descrita más abajo.</li>
+        </ul>
+        <p>
+          Todos los precios que ves vienen de Google Play, en tu propia moneda e incluyendo los
+          impuestos que correspondan donde vives. En este documento no aparece ningún precio,
+          porque el que rige es el de la tienda.
+        </p>
+
+        <h2 id="subscription-es">La suscripción The Innkeeper</h2>
+        <p>
+          The Innkeeper es una suscripción mensual de renovación automática que se vende a través
+          de Google Play. Mientras está activa concede una ranura de expedición adicional, un
+          goteo diario de escamas de dragón, más espacio en la despensa, recogida automática de
+          las expediciones terminadas y ningún anuncio intersticial.
+        </p>
+        <p>
+          Se renueva cada mes al precio indicado en la tienda hasta que la canceles, y se cancela
+          desde <span class="ui">Google Play → Suscripciones</span>, no desde dentro del juego,
+          que no puede cancelarla por ti. Cancelar detiene la siguiente renovación; la
+          suscripción sigue funcionando hasta que termine el periodo que ya has pagado. Cualquier
+          prueba gratuita se convierte en un periodo de pago salvo que canceles antes de que
+          acabe.
+        </p>
+        <p>
+          Cuando una suscripción caduca, sus ventajas se detienen. No se te retira nada de lo que
+          ya hubieras ganado mientras estabas suscrito: las escamas ya recibidas siguen siendo
+          tuyas, y una expedición que ya esté en marcha en la ranura adicional termina y puede
+          recogerse. Simplemente, esa ranura deja de ofrecerse para el siguiente envío.
+        </p>
+
+        <h2 id="ads-es">Los anuncios, y comprar su ausencia</h2>
+        <p>
+          La mayoría de los anuncios del juego son recompensados: eliges empezar uno, se te dice
+          antes qué concede y puedes rechazarlo. Hay un único intersticial, que se muestra al
+          cerrar un registro y en ningún otro sitio.
+        </p>
+        <p>
+          <strong>Remove interstitials y The Innkeeper eliminan únicamente el intersticial.</strong>
+          Los anuncios recompensados siguen disponibles para quienes pagan, porque un anuncio
+          recompensado es una función y no un impuesto. Un anuncio recompensado solo concede;
+          nunca quita nada. Que una recompensa que dura un día —la ranura de partida adicional,
+          por ejemplo— termine no es una pérdida, y una expedición que ya esté en curso en esa
+          ranura nunca se cancela por ello.
+        </p>
+        <p>
+          Cuando no hay ningún anuncio disponible, el juego ofrece lo mismo a cambio de escamas
+          en lugar de mostrarte un botón muerto, allí donde ese precio existe.
+        </p>
+
+        <h2 id="outcomes-es">Lo que el dinero nunca compra</h2>
+        <p>
+          Esta es la regla sobre la que está construido el diseño, y se escribe aquí para que
+          puedas exigírnosla. <strong>El dinero compra tiempo e identidad. Nunca compra
+          resultados.</strong> No hay nada a la venta, ni nada que conceda un anuncio, que suba
+          la tasa de éxito de una expedición, mejore una tirada de botín, cambie un peligro o
+          salte un temporizador que ya está corriendo. Lo que sí puede hacer una compra es darte
+          otra partida que enviar a la vez, otro color para tu dragón o una reserva de una moneda
+          que también podrías haber ganado.
+        </p>
+
+        <h2 id="no-chance-es">Sin cajas de botín ni compras aleatorias</h2>
+        <p>
+          Nada de lo que se vende en Dungeon Gourmand es aleatorio. No hay cofres, ni
+          probabilidades, ni contenidos sorpresa, ni ninguna mecánica en la que el dinero compre
+          una posibilidad de obtener algo. Siempre sabes exactamente qué contiene una compra
+          antes de hacerla. El botín que se encuentra en una expedición sí es aleatorio, como lo
+          es el botín de un juego de mazmorras, pero esa aleatoriedad nunca es algo que puedas
+          pagar por volver a tirar.
+        </p>
+
+        <h2 id="refunds-es">Reembolsos y desistimiento</h2>
+        <p>
+          Todas las compras las procesa Google Play, y los reembolsos se gestionan según la
+          <a href="https://support.google.com/googleplay/answer/2479637" rel="noopener" target="_blank">política
+          de reembolsos de Google Play</a>. Escríbenos a la dirección de abajo si algo ha salido
+          mal con una compra y te ayudaremos en lo que podamos.
+        </p>
+        <p>
+          Si eres consumidor en la Unión Europea o el Reino Unido, normalmente dispones de un
+          derecho de desistimiento de 14 días sobre una compra digital. Ese derecho se extingue
+          una vez que la entrega del contenido digital ha comenzado con tu consentimiento y, dado
+          que las escamas, las ranuras, los colores y la compra que elimina anuncios se entregan
+          a tu juego de inmediato, eso ocurre por lo general al instante. Nada de lo aquí escrito
+          limita ningún derecho de consumidor que no pueda renunciarse por acuerdo.
+        </p>
+
+        <h2 id="loss-es">Perder tu progreso</h2>
+        <p>
+          Tu hogar se guarda en tu dispositivo. Si has iniciado sesión en Google Play Games,
+          también se conserva una copia en tu cuenta de Google que volverá tras una
+          reinstalación o en un teléfono nuevo. Si no has iniciado sesión, no hay copia en ningún
+          sitio: desinstalar el juego, borrar sus datos o pasar a un dispositivo nuevo hará que
+          pierdas tu progreso y con él las escamas sin gastar. Las compras únicas y la
+          suscripción son la excepción: están vinculadas a tu cuenta de Google y pueden
+          restaurarse. Tenlo presente antes de desinstalar.
+        </p>
+
+        <h2 id="changes-es">Cambios en el juego</h2>
+        <p>
+          Podemos actualizar Dungeon Gourmand, ajustar el equilibrio del juego y añadir, cambiar
+          o retirar contenido. Si el juego se descontinúa, haremos esfuerzos razonables por
+          avisar previamente a través de la ficha de la tienda; llegado ese punto las escamas sin
+          gastar no pueden reembolsarse ni canjearse, que es parte del motivo por el que se
+          describen como se describen arriba. Si estos términos cambian, la versión actualizada
+          se publicará en esta misma URL con una nueva fecha de entrada en vigor.
+        </p>
+
+        <h2 id="liability-es">Responsabilidad</h2>
+        <p>
+          Dungeon Gourmand se ofrece tal cual. En la medida en que lo permita la ley, Voltix
+          Studios no se hace responsable de daños indirectos o consecuentes derivados del uso del
+          juego. Nada en estos términos excluye la responsabilidad por muerte o lesiones
+          personales causadas por negligencia, por fraude, ni por cualquier otra cosa que no
+          pueda excluirse legalmente, incluidos tus derechos legales como consumidor.
+        </p>
+
+        <h2 id="law-es">Legislación aplicable</h2>
+        <p>
+          Estos términos se rigen por la legislación española. Si eres consumidor, conservas la
+          protección de las normas imperativas del país donde resides y puedes iniciar acciones
+          allí.
+        </p>
+
+        <h2 id="contact-es">Contacto</h2>
+        <p>
+          Voltix Studios —
+          <a href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a>.
+        </p>
+
+        <div class="note">
+          <p>
+            Este documento se publica en inglés y en español. Si ambas versiones difieren en
+            algún punto, prevalece el texto en inglés.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>Qué datos maneja el juego y qué no.</p>
+          <a class="btn" href="privacy-policy.html">Política de Privacidad</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+
+    <div class="foot__top">
+      <a class="brand" href="../../index.html">
+        <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" loading="lazy">
+        <span>Voltix<em>Studios</em></span>
+      </a>
+
+      <ul class="social social--compact" aria-label="Voltix Studios elsewhere">
+        <li><a class="social__btn social__btn--x" href="https://x.com/voltix_studios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on X">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></a></li>
+        <li><a class="social__btn social__btn--yt" href="https://www.youtube.com/@VoltixStudiosGaming"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on YouTube">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-yt"></use></svg></a></li>
+        <li><a class="social__btn social__btn--tt" href="https://www.tiktok.com/@voltixstudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on TikTok">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-tt"></use></svg></a></li>
+        <li><a class="social__btn" href="https://github.com/VoltixStudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on GitHub">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-gh"></use></svg></a></li>
+        <li><a class="social__btn" href="mailto:voltix.studios.gaming@gmail.com"
+               aria-label="Email Voltix Studios">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg></a></li>
+      </ul>
+    </div>
+
+    <div class="foot__bar">
+      <p class="foot__copy">
+        &copy; <span id="year">2026</span> Voltix Studios. All game names and artwork are
+        property of Voltix Studios.
+      </p>
+      <nav class="foot__links" aria-label="Legal">
+        <a href="privacy-policy.html">Privacy policy</a>
+        <a href="terms.html">Terms &amp; virtual currency</a>
+        <a href="delete-account.html">Delete your data</a>
+        <a href="../website-privacy.html">Website privacy</a>
+      </nav>
+    </div>
+
+  </div>
+</footer>
+
+<script src="../../assets/js/main.js" defer></script>
+<script src="../../assets/js/doc.js" defer></script>
+
+<!-- /analytics/ is a Pages Function proxying Umami: no third-party script, and
+     nothing stored on the device (legal/website-privacy.html). Root-absolute on
+     purpose — it resolves only on Cloudflare, keeping the github.io mirror out. -->
+<script defer src="/analytics/script.js"
+        data-website-id="REPLACE_WITH_UMAMI_WEBSITE_ID"
+        data-exclude-hash="true"></script>
+<script src="../../assets/js/analytics.js" defer></script>
+</body>
+</html>

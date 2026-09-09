@@ -150,20 +150,36 @@ def build_coreward(root):
         save(strata.crop((left, top, right, bottom)), f"cw-strata-{name}.webp", width=240)
 
 
+def build_dungeon_gourmand(root):
+    print("dungeon gourmand")
+    logos = root / "logos"
+    # These two are full-bleed painted scenes rather than a logo on a matte, so
+    # neither trim_black nor black_to_alpha applies — cropping a lit scene to
+    # its bbox is a no-op, and keying it would eat the artwork's own shadows.
+    save(Image.open(logos / "dungeon_gourmand_key_art.png").convert("RGB"),
+         "dungeongourmand-key.webp", width=1600)
+    save(Image.open(logos / "dungeon_gourmand_mark.png").convert("RGB"),
+         "dungeongourmand-poster.webp", width=760)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--logo", type=Path, default=Path.home() / "voltix_studios/logos/voltix_logo_1.png")
     ap.add_argument("--paper", type=Path, default=Path.home() / "paper_ace")
     ap.add_argument("--coreward", type=Path, default=Path.home() / "voltix_studios/CoreWard")
+    ap.add_argument("--gourmand", type=Path,
+                    default=Path.home() / "voltix_studios/DungeonGourmand")
     args = ap.parse_args()
 
-    for label, path in [("logo", args.logo), ("paper", args.paper), ("coreward", args.coreward)]:
+    for label, path in [("logo", args.logo), ("paper", args.paper),
+                        ("coreward", args.coreward), ("gourmand", args.gourmand)]:
         if not path.exists():
             sys.exit(f"--{label} not found: {path}")
 
     build_voltix(args.logo)
     build_paper_squadron(args.paper)
     build_coreward(args.coreward)
+    build_dungeon_gourmand(args.gourmand)
     print(f"\nwrote {len(list(OUT.iterdir()))} files to {OUT.relative_to(REPO)}/")
 
 

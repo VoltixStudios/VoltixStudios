@@ -1,8 +1,8 @@
 # VoltixStudios
 
-The Voltix Studios website — a landing page covering the studio and its two
-games, **Paper Squadron** and **CoreWard**, plus the legal documents Google Play
-requires those games to publish.
+The Voltix Studios website — a landing page covering the studio and its three
+games, **Paper Squadron**, **CoreWard** and **Dungeon Gourmand**, plus the legal
+documents Google Play requires those games to publish.
 
 Live at <https://voltixstudios.pages.dev/>, served by Cloudflare Pages.
 
@@ -32,6 +32,7 @@ robots.txt  sitemap.xml
 app-ads.txt                authorises AdMob to sell our inventory — see below
 legal/paper-squadron/      privacy policy + account deletion, EN/ES
 legal/coreward/            privacy policy + terms & virtual currency, EN/ES
+legal/dungeon-gourmand/    privacy policy + terms + deletion, EN/ES
 legal/website-privacy.html what the *site* measures, EN/ES — see Analytics below
 functions/analytics/       Pages Function: first-party proxy for Umami
 assets/css/style.css       palette, header, buttons, social, footer
@@ -68,6 +69,9 @@ legal/coreward/terms.html             design doc §14's virtual-currency terms
 legal/coreward/delete-account.html    Play data-safety "data deletion" URL
 legal/paper-squadron/privacy-policy.html
 legal/paper-squadron/delete-account.html
+legal/dungeon-gourmand/privacy-policy.html
+legal/dungeon-gourmand/terms.html
+legal/dungeon-gourmand/delete-account.html
 legal/website-privacy.html            the site itself, not a game — no store
                                       references it, so this URL is ours to move
 ```
@@ -82,8 +86,8 @@ still stands: **the moment the app starts handling something new, the policy is
 wrong in the same commit**, along with the Play data-safety form, which has to
 agree with it.
 
-Both games now have a deletion page, because the Play data-safety form asks for a
-URL where a player can request deletion and an anchor buried in a policy is a
+All three games have a deletion page, because the Play data-safety form asks for
+a URL where a player can request deletion and an anchor buried in a policy is a
 worse answer than a page. CoreWard's is the awkward case and says so plainly:
 there is no account to delete, so the page is three routes to three different
 owners — the device, the player's own Play Games profile, and the crash and
@@ -93,6 +97,16 @@ tell us when they played.
 The Cores wording in `terms.html` is a verbatim copy of the string the game shows
 on its own store screen (`Store.CurrencyTermsKey` in the CoreWard repo, in both
 languages). If one is reworded the other has to move with it.
+
+**Dungeon Gourmand's three documents describe a game that has not shipped yet.**
+They were written from the build's own design record — `docs/design-delta-07.md`
+for the catalogue and the ad placements, `assets/data/content.json` for the
+currencies, and `docs/dev-plan.md` §7 for the service list — so each one opens
+with a note saying the game is still in development and that the document takes
+effect with the first build given to testers. Firebase, Play Games, AdMob and
+Play Billing are all Phase 4 work and are described as they are specified, not
+as they are wired. The rule above applies in reverse here: when Phase 4 lands,
+these pages are checked against what was actually built, in that commit.
 
 > **`app-ads.txt` resolves at the root — check the Play listing agrees.**
 > Crawlers take the developer website from the Play listing and fetch
@@ -113,8 +127,9 @@ the originals are multi-megabyte PNGs and the site ships trimmed WebP.
 python3 tools/build_assets.py          # needs Pillow
 ```
 
-It reads from `~/voltix_studios/logos`, `~/paper_ace` and `~/voltix_studios/CoreWard`
-by default; pass `--logo`, `--paper` or `--coreward` to point elsewhere. Re-run it
+It reads from `~/voltix_studios/logos`, `~/paper_ace`, `~/voltix_studios/CoreWard`
+and `~/voltix_studios/DungeonGourmand` by default; pass `--logo`, `--paper`,
+`--coreward` or `--gourmand` to point elsewhere. Re-run it
 whenever a logo or a piece of key art changes, and commit the result.
 
 The one hand-measured thing in it is `STRATA_BOUNDS`, the five panel edges in
@@ -207,16 +222,23 @@ in the same commit.
 
 ## Editing content
 
-Both game sections use the same markup, so a third game is a copy of one
+All three game sections use the same markup, so a fourth game is a copy of one
 `<article class="game">` block plus a `--accent` pair in the stylesheet:
 
 ```css
 .game--ps { --accent: #ff5a52; --accent-2: #4a91ea; }
 .game--cw { --accent: #ff8a2b; --accent-2: #ffc04d; }
+.game--dg { --accent: #e8a33a; --accent-2: #5fb6e0; }
 ```
 
 Status pills, feature-card rules, glows and hover borders all read `--accent`, so
 setting those two values is the whole theme for a section.
+
+The shared pieces inside a section are named for what they are rather than for
+the game they first appeared in — `.split` is the two-column block, `.data-table`
+the two-column table (CoreWard's minerals, Dungeon Gourmand's elements), and
+`.ladder` the numbered progression with no art of its own. They were `.cw-split`
+and `.minerals__table` while only CoreWard used them.
 
 Paper Squadron's copy is kept in step with `store/play-games-listing.md` in the
 game repo — if the Play listing changes, change it here too.
@@ -279,4 +301,10 @@ accent on `<main>`:
 <main id="main" class="doc--ps">   <!-- .doc--ps is defined in doc.css -->
 ```
 
-Then add the new URLs to `sitemap.xml` and the footer's `.foot__links`.
+Then add the new URLs to `sitemap.xml` and the footer's `.foot__links`, on the
+landing page and on every legal page.
+
+`legal/dungeon-gourmand/` is the most recent worked example, and it has all three
+documents — privacy policy, terms and deletion. Its chrome (head, sprite, header,
+footer) is byte-identical to CoreWard's; only the prose and the `doc--dg` accent
+differ.

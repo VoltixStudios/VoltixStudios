@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Voltix Studios — Arcade games for mobile</title>
-<meta name="description" content="Voltix Studios is an independent game studio building arcade games for Android. Makers of Paper Squadron and CoreWard.">
+<meta name="description" content="Voltix Studios is an independent game studio building arcade games for Android. Makers of Paper Squadron, CoreWard and Dungeon Gourmand.">
 <meta name="theme-color" content="#05060a">
 <link rel="canonical" href="https://voltixstudios.pages.dev/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Voltix Studios">
 <meta property="og:title" content="Voltix Studios — Arcade games for mobile">
-<meta property="og:description" content="An independent game studio building arcade games for Android. Makers of Paper Squadron and CoreWard.">
+<meta property="og:description" content="An independent game studio building arcade games for Android. Makers of Paper Squadron, CoreWard and Dungeon Gourmand.">
 <meta property="og:url" content="https://voltixstudios.pages.dev/">
 <meta property="og:image" content="https://voltixstudios.pages.dev/assets/img/og-card.png">
 <meta property="og:image:width" content="1200">
@@ -31,7 +31,7 @@
 <!-- ?v= is a cache buster. There is no build step to fingerprint the file, and a
      browser holding an old stylesheet against new markup renders the page wrong
      rather than merely stale — bump the number whenever style.css changes. -->
-<link rel="stylesheet" href="assets/css/style.css?v=3">
+<link rel="stylesheet" href="assets/css/style.css?v=4">
 
 <script type="application/ld+json">
 {
@@ -94,6 +94,7 @@
       <a href="#games">Games</a>
       <a href="#paper-squadron">Paper Squadron</a>
       <a href="#coreward">CoreWard</a>
+      <a href="#dungeon-gourmand">Dungeon Gourmand</a>
       <a href="#studio">Studio</a>
     </nav>
     <a class="btn btn--sm" href="mailto:voltix.studios.gaming@gmail.com">Contact</a>
@@ -112,7 +113,7 @@
       <p class="hero__lead">
         We are an independent studio making short, sharp mobile games — the kind you can
         pick up for three minutes on a train and still be thinking about an hour later.
-        One is on Google Play now; the second is still in the workshop.
+        One is on Google Play now; the other two are still in the workshop.
       </p>
       <div class="hero__cta">
         <a class="btn btn--primary" href="#games">See the games</a>
@@ -122,6 +123,7 @@
       <ul class="hero__chips" aria-label="Our games">
         <li><span class="dot dot--ps"></span> Paper Squadron <em>Arcade flight</em></li>
         <li><span class="dot dot--cw"></span> CoreWard <em>Descent puzzler</em></li>
+        <li><span class="dot dot--dg"></span> Dungeon Gourmand <em>Idle crawler</em></li>
       </ul>
     </div>
     <div class="hero__fade" aria-hidden="true"></div>
@@ -131,10 +133,10 @@
   <section class="section section--tight" id="games">
     <div class="wrap">
       <p class="eyebrow reveal">Our games</p>
-      <h2 class="h2 reveal">Two titles, both for Android</h2>
+      <h2 class="h2 reveal">Three titles, all for Android</h2>
       <p class="lead reveal">
-        Different genres, same brief: a run that fits in a coffee break, controls that work
-        one-handed, and a reason to start another one.
+        Different genres, same brief: a session that fits in a coffee break, controls that work
+        one-handed, and a reason to open it again.
       </p>
     </div>
   </section>
@@ -309,10 +311,10 @@
         </li>
       </ul>
 
-      <div class="cw-split reveal">
-        <section class="minerals" aria-labelledby="minerals-h">
+      <div class="split reveal">
+        <section aria-labelledby="minerals-h">
           <h3 id="minerals-h" class="roster__title">Four minerals, four outcomes</h3>
-          <table class="minerals__table">
+          <table class="data-table">
             <thead>
               <tr><th scope="col">Mineral</th><th scope="col">On fusion</th></tr>
             </thead>
@@ -369,6 +371,121 @@
         <div><dt>Orientation</dt><dd>Portrait, one thumb</dd></div>
         <div><dt>Status</dt><dd>Playable vertical slice</dd></div>
         <div><dt>Engine</dt><dd>Unity 6</dd></div>
+      </dl>
+
+    </div>
+  </article>
+
+  <!-- ───────────────────────────── dungeon gourmand ───────────────────────────── -->
+  <article class="game game--dg" id="dungeon-gourmand">
+    <div class="game__glow" aria-hidden="true"></div>
+    <div class="wrap">
+
+      <div class="game__head">
+        <figure class="game__art reveal">
+          <img src="assets/img/dungeongourmand-key.webp" alt="Dungeon Gourmand key art"
+               width="1600" height="900" loading="lazy" decoding="async">
+        </figure>
+
+        <div class="game__intro reveal">
+          <p class="status"><span class="status__dot"></span> In development</p>
+          <h2 class="game__name">Dungeon Gourmand</h2>
+          <p class="game__tag">Delve. Cook. Feed.</p>
+          <p class="game__pitch">
+            Your dragon is what you feed it, and what you feed it decides where you can go.
+          </p>
+          <p>
+            You are a retired adventurer keeping a hearth on the edge of the frontier, and in
+            your care is an egg. You hire a party, send it into a dungeon, and put the phone
+            down. Hours later it walks back in with ingredients, gold, injuries — and a written
+            account of what happened down there.
+          </p>
+          <p>
+            Then you cook what they brought home, and what you cook is what the dragon becomes.
+            The dragon flies out to find the next dungeon, and how far it can look is what
+            decides where the next party may be sent.
+          </p>
+          <p>
+            An idle dungeon-crawler and dragon-raising hybrid, played in portrait in a few
+            minutes a day.
+          </p>
+        </div>
+      </div>
+
+      <ul class="features reveal">
+        <li>
+          <h3>Absence is the mechanic</h3>
+          <p>Nothing permanent is ever lost to time. No spoilage, no decay that costs a stage,
+             no streak that dies while you are away. The wait is the game, never the penalty
+             for having a life.</p>
+        </li>
+        <li>
+          <h3>The return is the story</h3>
+          <p>Every expedition comes home as a Ledger — a written account generated from that
+             run's own stored seed, so the rolls printed are the rolls that happened and the
+             loot listed is the loot in the haul.</p>
+        </li>
+        <li>
+          <h3>The kitchen</h3>
+          <p>Ingredients become dishes, and a timing tap decides how well. Cook the same recipe
+             often enough and mastery raises its floor.</p>
+        </li>
+        <li>
+          <h3>Who you send</h3>
+          <p>Delvers, shields, scouts and healers, hired off a tavern board that turns over
+             every six hours. Each carries a trait, a favourite dish and a lead of their own.</p>
+        </li>
+        <li>
+          <h3>A drawn map</h3>
+          <p>The Valley, the Mountains and the Coast, with fog that only ever lifts. The dragon
+             flies to look; the party walks to whatever it found.</p>
+        </li>
+        <li>
+          <h3>The rules are not for sale</h3>
+          <p>Money buys time and identity — a second party, a colour, a bag of Scales. It never
+             buys a success rate, a loot roll or a skipped timer.</p>
+        </li>
+      </ul>
+
+      <div class="split reveal">
+        <section aria-labelledby="elements-h">
+          <h3 id="elements-h" class="roster__title">Four elements, four dragons</h3>
+          <table class="data-table">
+            <thead>
+              <tr><th scope="col">Element</th><th scope="col">What the dragon becomes</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row"><span class="chip" style="--c:#f0641e"></span>Ember</th>
+                  <td>Burns a path through choking ash.</td></tr>
+              <tr><th scope="row"><span class="chip" style="--c:#6fd3ef"></span>Frost</th>
+                  <td>Shrugs off whatever the deep throws.</td></tr>
+              <tr><th scope="row"><span class="chip" style="--c:#c89a5b"></span>Stone</th>
+                  <td>Brings people home in one piece.</td></tr>
+              <tr><th scope="row"><span class="chip" style="--c:#8cc06a"></span>Verdant</th>
+                  <td>Forages, and keeps the larder full.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section aria-labelledby="stages-h">
+          <h3 id="stages-h" class="roster__title">Four stages up</h3>
+          <ol class="ladder">
+            <li><h4>Egg</h4><span>Nothing to send it after yet</span></li>
+            <li><h4>Hatchling</h4><span>Scouts the Valley, flies with the party</span></li>
+            <li><h4>Juvenile</h4><span>Reaches the Mountains, and forages</span></li>
+            <li><h4>Adult</h4><span>The Coast, ferrying and nesting</span></li>
+          </ol>
+        </section>
+      </div>
+
+      <dl class="facts reveal">
+        <div><dt>Platform</dt><dd>Android</dd></div>
+        <div><dt>Genre</dt><dd>Idle dungeon-crawler</dd></div>
+        <div><dt>Session</dt><dd>Minutes a day</dd></div>
+        <div><dt>Orientation</dt><dd>Portrait, one thumb</dd></div>
+        <div><dt>Languages</dt><dd>English</dd></div>
+        <div><dt>Status</dt><dd>In development</dd></div>
+        <div><dt>Engine</dt><dd>Flutter</dd></div>
       </dl>
 
     </div>
@@ -499,6 +616,9 @@
         <a href="legal/coreward/privacy-policy.html">CoreWard privacy</a>
         <a href="legal/coreward/terms.html">CoreWard terms</a>
         <a href="legal/coreward/delete-account.html">CoreWard data deletion</a>
+        <a href="legal/dungeon-gourmand/privacy-policy.html">Dungeon Gourmand privacy</a>
+        <a href="legal/dungeon-gourmand/terms.html">Dungeon Gourmand terms</a>
+        <a href="legal/dungeon-gourmand/delete-account.html">Dungeon Gourmand data deletion</a>
         <a href="legal/website-privacy.html">Website privacy</a>
       </nav>
     </div>

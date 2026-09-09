@@ -348,6 +348,7 @@ p:last-child { margin-bottom: 0; }
 }
 .dot--ps { background: #e8413c; box-shadow: 0 0 12px #e8413c; }
 .dot--cw { background: #ff7a1a; box-shadow: 0 0 12px #ff7a1a; }
+.dot--dg { background: #e8a33a; box-shadow: 0 0 12px #e8a33a; }
 
 /* ── generic section ─────────────────────────────────────────────────────── */
 
@@ -365,6 +366,7 @@ p:last-child { margin-bottom: 0; }
 }
 .game--ps { --accent: #ff5a52; --accent-2: #4a91ea; }
 .game--cw { --accent: #ff8a2b; --accent-2: #ffc04d; }
+.game--dg { --accent: #e8a33a; --accent-2: #5fb6e0; }
 
 .game__glow {
   position: absolute;
@@ -571,9 +573,10 @@ p:last-child { margin-bottom: 0; }
   color: var(--muted);
 }
 
-/* minerals + screenshot */
+/* two-column split — a wide table beside a narrow companion: CoreWard puts a
+   phone shot there, Dungeon Gourmand a stage ladder */
 
-.cw-split {
+.split {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(0, .8fr);
   gap: clamp(28px, 4vw, 54px);
@@ -581,19 +584,19 @@ p:last-child { margin-bottom: 0; }
   margin-top: clamp(44px, 5.5vw, 62px);
 }
 
-.minerals__table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
   font-size: .95rem;
 }
-.minerals__table th,
-.minerals__table td {
+.data-table th,
+.data-table td {
   text-align: left;
   padding: 14px 16px;
   border-bottom: 1px solid var(--line-soft);
   vertical-align: baseline;
 }
-.minerals__table thead th {
+.data-table thead th {
   font-family: var(--display);
   font-size: .72rem;
   font-weight: 600;
@@ -602,15 +605,15 @@ p:last-child { margin-bottom: 0; }
   color: var(--muted);
   border-bottom-color: var(--line);
 }
-.minerals__table tbody th {
+.data-table tbody th {
   font-family: var(--display);
   font-weight: 600;
   color: var(--text);
   white-space: nowrap;
 }
-.minerals__table td { color: var(--muted); }
-.minerals__table tbody tr:last-child th,
-.minerals__table tbody tr:last-child td { border-bottom: 0; }
+.data-table td { color: var(--muted); }
+.data-table tbody tr:last-child th,
+.data-table tbody tr:last-child td { border-bottom: 0; }
 
 .chip {
   display: inline-block;
@@ -678,6 +681,46 @@ p:last-child { margin-bottom: 0; }
   font-size: .8rem;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
+}
+
+/* stage ladder — a short ordered progression with no art of its own. The
+   counter is drawn rather than listed so the numbers keep the display face and
+   survive a list-style reset. */
+
+.ladder { margin: 0; padding: 0; list-style: none; counter-reset: rung; }
+.ladder li {
+  position: relative;
+  counter-increment: rung;
+  padding: 14px 0 14px 44px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.ladder li:last-child { border-bottom: 0; }
+.ladder li::before {
+  content: counter(rung);
+  position: absolute;
+  left: 0;
+  top: 13px;
+  width: 26px; height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  font-family: var(--display);
+  font-size: .78rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--accent) 80%, white);
+}
+.ladder h4 {
+  font-size: .95rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.ladder span {
+  display: block;
+  margin-top: 3px;
+  font-size: .84rem;
+  color: var(--muted);
 }
 
 /* fact strip */
@@ -922,7 +965,7 @@ p:last-child { margin-bottom: 0; }
 
 @media (max-width: 980px) {
   .game__head,
-  .cw-split,
+  .split,
   .studio { grid-template-columns: 1fr; }
   .game__head--flip .game__art { order: 0; }
   .shot { max-width: 320px; margin-inline: auto; }
@@ -932,11 +975,14 @@ p:last-child { margin-bottom: 0; }
 }
 
 /* The nav sheds links rather than collapsing into a menu: the page is short
-   enough that a hamburger would cost more than it saves. */
+   enough that a hamburger would cost more than it saves. The per-game links go
+   first, since "Games" already reaches all of them; the indices track the order
+   in the header, so a fourth game adds a line here. */
 @media (max-width: 860px) {
   .nav__links { gap: 18px; }
   .nav__links a:nth-child(2),
-  .nav__links a:nth-child(3) { display: none; }
+  .nav__links a:nth-child(3),
+  .nav__links a:nth-child(4) { display: none; }
 }
 
 @media (max-width: 760px) {
@@ -959,7 +1005,7 @@ p:last-child { margin-bottom: 0; }
 }
 
 @media (max-width: 460px) {
-  .nav__links a:nth-child(4) { display: none; }
+  .nav__links a:nth-child(5) { display: none; }   /* Studio; the legal pages have no fifth */
   .hero__chips li { width: 100%; justify-content: center; }
   .foot__top,
   .foot__bar { justify-content: center; text-align: center; }

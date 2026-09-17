@@ -164,10 +164,10 @@ def build_dungeon_gourmand(root):
 
 def build_loom(root):
     print("loom")
-    # The logo is a rounded blue tile with transparent corners, already clean:
-    # no matte to trim, no black to key. The key art is the tile itself, and the
-    # cloth in the section is drawn in CSS from the game's own palette.
-    tile = Image.open(root / "logo.png").convert("RGBA")
+    # Loom's mark is drawn, not painted: android/tools/make-icons.py in the game's
+    # own repository writes store/key-1024.png from the same three thread colours
+    # the game uses. Nothing to trim or key here; it is already exact.
+    tile = Image.open(root / "store" / "key-1024.png").convert("RGBA")
     save(tile, "loom-key.webp", width=900)
     save(tile, "loom-icon.webp", width=192)
 

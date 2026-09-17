@@ -171,6 +171,14 @@ def build_loom(root):
     save(tile, "loom-key.webp", width=900)
     save(tile, "loom-icon.webp", width=192)
 
+    # The store screenshots, which already carry their own headline and a phone
+    # frame, so the site shows them as they are rather than captioning them again.
+    shots = sorted((root / "store" / "screenshots").glob("*.png"))
+    if not shots:
+        print("  ! no screenshots in store/screenshots")
+    for i, src in enumerate(shots, 1):
+        save(Image.open(src).convert("RGB"), f"loom-shot-{i}.webp", width=540, quality=82)
+
 
 def main():
     ap = argparse.ArgumentParser()

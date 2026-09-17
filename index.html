@@ -31,7 +31,7 @@
 <!-- ?v= is a cache buster. There is no build step to fingerprint the file, and a
      browser holding an old stylesheet against new markup renders the page wrong
      rather than merely stale — bump the number whenever style.css changes. -->
-<link rel="stylesheet" href="assets/css/style.css?v=5">
+<link rel="stylesheet" href="assets/css/style.css?v=6">
 
 <script type="application/ld+json">
 {
@@ -93,8 +93,8 @@
     <nav class="nav__links" aria-label="Primary">
       <a href="#games">Games</a>
       <a href="#paper-squadron">Paper Squadron</a>
-      <a href="#loom">Loom</a>
       <a href="#coreward">CoreWard</a>
+      <a href="#loom">Loom</a>
       <a href="#dungeon-gourmand">Dungeon Gourmand</a>
       <a href="#studio">Studio</a>
     </nav>
@@ -123,8 +123,8 @@
 
       <ul class="hero__chips" aria-label="Our games">
         <li><span class="dot dot--ps"></span> Paper Squadron <em>Arcade flight</em></li>
-        <li><span class="dot dot--loom"></span> Loom <em>Daily puzzle</em></li>
         <li><span class="dot dot--cw"></span> CoreWard <em>Descent puzzler</em></li>
+        <li><span class="dot dot--loom"></span> Loom <em>Daily puzzle</em></li>
         <li><span class="dot dot--dg"></span> Dungeon Gourmand <em>Idle crawler</em></li>
       </ul>
     </div>
@@ -243,110 +243,6 @@
         <div><dt>Languages</dt><dd>English &amp; Spanish</dd></div>
         <div><dt>Price</dt><dd>Free, optional in-app purchases</dd></div>
         <div><dt>Engine</dt><dd>Unity 6</dd></div>
-      </dl>
-
-    </div>
-  </article>
-
-  <!-- ───────────────────────────── loom ───────────────────────────── -->
-  <article class="game game--loom" id="loom">
-    <div class="game__glow" aria-hidden="true"></div>
-    <div class="wrap">
-
-      <div class="game__head game__head--flip">
-        <figure class="game__art reveal">
-          <img src="assets/img/loom-key.webp" alt="Loom: a woven cloth with four arrows around it"
-               width="900" height="900" loading="lazy" decoding="async">
-        </figure>
-
-        <div class="game__intro reveal">
-          <p class="status"><span class="status__dot"></span> Coming to Google Play</p>
-          <h2 class="game__name">Loom</h2>
-          <p class="game__tag">Every day, one pattern.</p>
-          <p class="game__pitch">
-            You know all the moves. Can you find the order?
-          </p>
-          <p>
-            A plain woven cloth, the pattern it must become, and the four moves that get
-            there: slide a row, swap two columns, mirror the cloth, turn it. Every move is
-            given. What is not given is the order. Five attempts, one puzzle a day, the
-            same for everyone in the world, and a small grid of squares to share that
-            spoils nothing.
-          </p>
-          <p>
-            Two to five minutes, one thumb, no words to read. Warm, quiet, and finished on
-            the bus.
-          </p>
-
-          <!-- A real day's cloth, drawn from the game's palette: the plain cloth on the
-               left, the pattern on the right. The order between them is the puzzle. -->
-          <div class="cloths" aria-hidden="true">
-            <figure>
-              <div class="cloth">
-                <i class="t0"></i><i class="t0"></i><i class="t0"></i><i class="t0"></i>
-                <i class="t1"></i><i class="t1"></i><i class="t1"></i><i class="t1"></i>
-                <i class="t2"></i><i class="t2"></i><i class="t2"></i><i class="t2"></i>
-                <i class="t0"></i><i class="t0"></i><i class="t0"></i><i class="t0"></i>
-              </div>
-              <figcaption>plain</figcaption>
-            </figure>
-            <span class="cloths__arrow">&#10230;</span>
-            <figure>
-              <div class="cloth">
-                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
-                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
-                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
-                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
-              </div>
-              <figcaption>pattern</figcaption>
-            </figure>
-          </div>
-        </div>
-      </div>
-
-      <ul class="features reveal">
-        <li>
-          <h3>One cloth a day</h3>
-          <p>The puzzle is a pure function of the date. Everyone weaves the same cloth, and
-             the only way to play again is tomorrow.</p>
-        </li>
-        <li>
-          <h3>Order, not content</h3>
-          <p>Every operation is on the table from the first second. Nothing to find, nothing
-             to guess at: only the sequence is hidden, and each weave tells you which slots
-             were right.</p>
-        </li>
-        <li>
-          <h3>Harder by weekday</h3>
-          <p>Monday is plain. Midweek the loom says only how many slots were right, not
-             which. Friday hides a decoy tile that belongs nowhere. Saturday has five slots.
-             Sunday has all of it on a bigger cloth.</p>
-        </li>
-        <li>
-          <h3>The quilt</h3>
-          <p>Every day's final cloth, solved or not, is sewn into your quilt, a month at a
-             time. Thirty days is a quilt, and it can be shared as a picture.</p>
-        </li>
-        <li>
-          <h3>A streak that never threatens</h3>
-          <p>It counts days played, not days solved. A lost day keeps it. Nothing ever tells
-             you not to break it.</p>
-        </li>
-        <li>
-          <h3>Nothing to buy to play</h3>
-          <p>The daily cloth, the last week of the archive, a free hint a day, the statistics
-             and the quilt are free. Loom Full, once, buys every cloth ever published and no
-             advertising, ever.</p>
-        </li>
-      </ul>
-
-      <dl class="facts reveal">
-        <div><dt>Platform</dt><dd>Android</dd></div>
-        <div><dt>Genre</dt><dd>Daily puzzle</dd></div>
-        <div><dt>Controls</dt><dd>One thumb, portrait</dd></div>
-        <div><dt>Languages</dt><dd>English, Catalan &amp; Spanish</dd></div>
-        <div><dt>Price</dt><dd>Free, with Loom Full once for &euro;2.99</dd></div>
-        <div><dt>Engine</dt><dd>None: one web page in a shell</dd></div>
       </dl>
 
     </div>
@@ -477,6 +373,132 @@
         <div><dt>Orientation</dt><dd>Portrait, one thumb</dd></div>
         <div><dt>Status</dt><dd>Playable vertical slice</dd></div>
         <div><dt>Engine</dt><dd>Unity 6</dd></div>
+      </dl>
+
+    </div>
+  </article>
+
+  <!-- ───────────────────────────── loom ───────────────────────────── -->
+  <article class="game game--loom" id="loom">
+    <div class="game__glow" aria-hidden="true"></div>
+    <div class="wrap">
+
+      <div class="game__head game__head--flip">
+        <figure class="game__art reveal">
+          <img src="assets/img/loom-key.webp" alt="Loom: a woven cloth with four arrows around it"
+               width="900" height="900" loading="lazy" decoding="async">
+        </figure>
+
+        <div class="game__intro reveal">
+          <p class="status"><span class="status__dot"></span> Coming to Google Play</p>
+          <h2 class="game__name">Loom</h2>
+          <p class="game__tag">Every day, one pattern.</p>
+          <p class="game__pitch">
+            You know all the moves. Can you find the order?
+          </p>
+          <p>
+            A plain woven cloth, the pattern it must become, and the four moves that get
+            there: slide a row, swap two columns, mirror the cloth, turn it. Every move is
+            given. What is not given is the order. Five attempts, one puzzle a day, the
+            same for everyone in the world, and a small grid of squares to share that
+            spoils nothing.
+          </p>
+          <p>
+            Two to five minutes, one thumb, no words to read. Warm, quiet, and finished on
+            the bus.
+          </p>
+
+          <!-- A real day's cloth, drawn from the game's palette: the plain cloth on the
+               left, the pattern on the right. The order between them is the puzzle. -->
+          <div class="cloths" aria-hidden="true">
+            <figure>
+              <div class="cloth">
+                <i class="t0"></i><i class="t0"></i><i class="t0"></i><i class="t0"></i>
+                <i class="t1"></i><i class="t1"></i><i class="t1"></i><i class="t1"></i>
+                <i class="t2"></i><i class="t2"></i><i class="t2"></i><i class="t2"></i>
+                <i class="t0"></i><i class="t0"></i><i class="t0"></i><i class="t0"></i>
+              </div>
+              <figcaption>plain</figcaption>
+            </figure>
+            <span class="cloths__arrow">&#10230;</span>
+            <figure>
+              <div class="cloth">
+                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
+                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
+                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
+                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
+              </div>
+              <figcaption>pattern</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <ul class="features reveal">
+        <li>
+          <h3>One cloth a day</h3>
+          <p>The puzzle is a pure function of the date. Everyone weaves the same cloth, and
+             the only way to play again is tomorrow.</p>
+        </li>
+        <li>
+          <h3>Order, not content</h3>
+          <p>Every operation is on the table from the first second. Nothing to find, nothing
+             to guess at: only the sequence is hidden, and each weave tells you which slots
+             were right.</p>
+        </li>
+        <li>
+          <h3>Harder by weekday</h3>
+          <p>Monday is plain. Midweek the loom says only how many slots were right, not
+             which. Friday hides a decoy tile that belongs nowhere. Saturday has five slots.
+             Sunday has all of it on a bigger cloth.</p>
+        </li>
+        <li>
+          <h3>The quilt</h3>
+          <p>Every day's final cloth, solved or not, is sewn into your quilt, a month at a
+             time. Thirty days is a quilt, and it can be shared as a picture.</p>
+        </li>
+        <li>
+          <h3>A streak that never threatens</h3>
+          <p>It counts days played, not days solved. A lost day keeps it. Nothing ever tells
+             you not to break it.</p>
+        </li>
+        <li>
+          <h3>Nothing to buy to play</h3>
+          <p>The daily cloth, the last week of the archive, a free hint a day, the statistics
+             and the quilt are free. Loom Full, once, buys every cloth ever published and no
+             advertising, ever.</p>
+        </li>
+      </ul>
+
+      <!-- The store screenshots, which carry their own headline and phone frame,
+           so they are shown as they are. A scrolling shelf on a phone, a grid
+           from tablet width up. -->
+      <section class="shots reveal" aria-label="Loom on a phone">
+        <ul class="shots__row">
+          <li><img src="assets/img/loom-shot-1.webp" width="540" height="960" loading="lazy" decoding="async"
+                   alt="Every day, one pattern: a plain cloth and the pattern it must become."></li>
+          <li><img src="assets/img/loom-shot-2.webp" width="540" height="960" loading="lazy" decoding="async"
+                   alt="You know all four moves. What you do not know is the order."></li>
+          <li><img src="assets/img/loom-shot-3.webp" width="540" height="960" loading="lazy" decoding="async"
+                   alt="Five attempts a day, and a result you can share without spoiling it."></li>
+          <li><img src="assets/img/loom-shot-4.webp" width="540" height="960" loading="lazy" decoding="async"
+                   alt="See how it was woven: step through the order that worked."></li>
+          <li><img src="assets/img/loom-shot-5.webp" width="540" height="960" loading="lazy" decoding="async"
+                   alt="A streak for showing up: played, solved, and how many tries each took."></li>
+          <li><img src="assets/img/loom-shot-6.webp" width="540" height="960" loading="lazy" decoding="async"
+                   alt="Every cloth you wove, kept month by month as a quilt."></li>
+          <li><img src="assets/img/loom-shot-7.webp" width="540" height="960" loading="lazy" decoding="async"
+                   alt="Seven days, all free: missed a day, go back and weave it."></li>
+        </ul>
+      </section>
+
+      <dl class="facts reveal">
+        <div><dt>Platform</dt><dd>Android</dd></div>
+        <div><dt>Genre</dt><dd>Daily puzzle</dd></div>
+        <div><dt>Controls</dt><dd>One thumb, portrait</dd></div>
+        <div><dt>Languages</dt><dd>English, Catalan &amp; Spanish</dd></div>
+        <div><dt>Price</dt><dd>Free, with Loom Full once for &euro;2.99</dd></div>
+        <div><dt>Engine</dt><dd>None: one web page in a shell</dd></div>
       </dl>
 
     </div>

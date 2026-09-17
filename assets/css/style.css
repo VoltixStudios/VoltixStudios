@@ -383,6 +383,27 @@ p:last-child { margin-bottom: 0; }
 .cloths figcaption { font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--muted); text-align: center; margin-top: 8px; font-weight: 600; }
 
+/* Screenshots. On a phone they are a shelf you push sideways, which is the one
+   layout that shows a portrait screenshot at a readable size on a portrait
+   screen; from tablet width up there is room to lay them out flat. The row is
+   allowed to bleed past the text column so the first image is not marooned in
+   the middle of the page. */
+.shots { margin: 34px 0 6px; }
+.shots__row {
+  display: flex; gap: 14px; list-style: none; margin: 0; padding: 4px 0 14px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: thin; scrollbar-color: var(--line) transparent;
+}
+.shots__row li { flex: 0 0 auto; scroll-snap-align: center; }
+.shots__row img {
+  display: block; width: 210px; height: auto; border-radius: 16px;
+  border: 1px solid var(--line); background: var(--ink-2);
+}
+@media (min-width: 760px) {
+  .shots__row { flex-wrap: wrap; justify-content: center; overflow: visible; }
+  .shots__row img { width: 236px; }
+}
+
 .game__glow {
   position: absolute;
   inset: -20% -20% auto;

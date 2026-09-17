@@ -113,6 +113,13 @@ Play Billing are all Phase 4 work and are described as they are specified, not
 as they are wired. The rule above applies in reverse here: when Phase 4 lands,
 these pages are checked against what was actually built, in that commit.
 
+Loom's section on the landing page sits third, after CoreWard, and shows the store
+screenshots. Those are not made here: `Loom/store/screenshots/` holds the finished
+1080x1920 graphics, each with its own headline and phone frame, and
+`build_assets.py --only loom` converts them to `loom-shot-N.webp` in listing order.
+Add or reorder a file there and re-run it; the site names them by number, so keep
+the numbering.
+
 **Loom's pages describe a game that has not shipped yet**, like Dungeon Gourmand's,
 and say so in a note at the top. They were written from the Loom repository's own
 record (`GDD_LOOM.md` §12, §15, §18 and the Android shell) on 17 September 2026:

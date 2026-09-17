@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loom — Privacy Policy · Voltix Studios</title>
+<meta name="description" content="What data the Loom daily puzzle handles and why. English and Spanish.">
+<meta name="theme-color" content="#05060a">
+<link rel="canonical" href="https://voltixstudios.pages.dev/legal/loom/privacy-policy">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Voltix Studios">
+<meta property="og:title" content="Loom — Privacy Policy">
+<meta property="og:description" content="What data the Loom daily puzzle handles and why.">
+<meta property="og:url" content="https://voltixstudios.pages.dev/legal/loom/privacy-policy">
+<meta property="og:image" content="https://voltixstudios.pages.dev/assets/img/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@voltix_studios">
+
+<link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../assets/css/style.css?v=5">
+<link rel="stylesheet" href="../../assets/css/doc.css">
+
+<!-- Picks the language before the first paint, so the other one never flashes.
+     Order: explicit ?lang= / #es, then the browser's own preference. Nothing
+     is written to storage — see assets/js/doc.js. -->
+<script>
+(function () {
+  var d = document.documentElement;
+  d.className += " js";
+  var m = /[?&]lang=(en|es)/.exec(location.search) || /^#(en|es)$/.exec(location.hash);
+  var lang = m ? m[1]
+    : (((navigator.language || navigator.userLanguage || "en").toLowerCase().indexOf("es") === 0) ? "es" : "en");
+  d.setAttribute("data-doclang", lang);
+  d.setAttribute("lang", lang);
+})();
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-x" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z"/>
+  </symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/>
+  </symbol>
+  <symbol id="i-tt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07Z"/>
+  </symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M2.75 5.75h18.5v12.5H2.75z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m3.4 6.4 8.6 6.6 8.6-6.6"/>
+  </symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2.1c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/>
+  </symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="../../index.html">
+      <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" decoding="async">
+      <span>Voltix<em>Studios</em></span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="../../index.html#games">Games</a>
+      <a href="../../index.html#paper-squadron">Paper Squadron</a>
+      <a href="../../index.html#loom">Loom</a>
+      <a href="../../index.html#coreward">CoreWard</a>
+      <a href="../../index.html#dungeon-gourmand">Dungeon Gourmand</a>
+    </nav>
+    <a class="btn btn--sm" href="mailto:voltix.studios.gaming@gmail.com">Contact</a>
+  </div>
+</header>
+
+<main id="main" class="doc--loom">
+
+  <div class="doc-head">
+    <div class="wrap">
+      <p class="crumbs">
+        <a href="../../index.html">Voltix Studios</a>
+        <span aria-hidden="true">/</span>
+        <a href="../../index.html#loom">Loom</a>
+        <span aria-hidden="true">/</span>
+        <span data-lang="en">Privacy Policy</span>
+        <span data-lang="es" lang="es">Política de Privacidad</span>
+      </p>
+
+      <div class="lang" role="group" aria-label="Document language">
+        <button type="button" data-set-lang="en" aria-pressed="true">English</button>
+        <button type="button" data-set-lang="es" aria-pressed="false">Español</button>
+      </div>
+
+      <h1 class="doc__title" data-lang="en">Loom — Privacy Policy</h1>
+      <h1 class="doc__title" data-lang="es" lang="es">Loom — Política de Privacidad</h1>
+
+      <p class="lead" data-lang="en">
+        Loom is a daily puzzle: one pattern a day, the same for everyone. This page explains what
+        data the app handles and why. There is no account — nothing to sign up for, nothing to
+        log in to — and your progress lives on your phone. The game collects no location and no
+        contacts, and it never reads anything you type. Everything you might want removed is
+        covered in <a href="delete-account.html">Delete Your Data</a>.
+      </p>
+      <p class="lead" data-lang="es" lang="es">
+        Loom es un puzle diario: un patrón al día, el mismo para todo el mundo. Esta página explica
+        qué datos maneja la aplicación y por qué. No hay cuenta —no hay registro ni inicio de
+        sesión— y tu progreso vive en tu teléfono. El juego no recopila ubicación ni contactos, y
+        nunca lee nada de lo que escribes. Todo lo que puedas querer borrar está en
+        <a href="delete-account.html">Eliminar tus datos</a>.
+      </p>
+
+      <dl class="doc-meta" data-lang="en">
+        <div><dt>Effective date</dt><dd>17 September 2026</dd></div>
+        <div><dt>App</dt><dd>Loom <code>com.voltixstudios.loom</code></dd></div>
+        <div><dt>Developer</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+      </dl>
+      <dl class="doc-meta" data-lang="es" lang="es">
+        <div><dt>Fecha de entrada en vigor</dt><dd>17 de septiembre de 2026</dd></div>
+        <div><dt>Aplicación</dt><dd>Loom <code>com.voltixstudios.loom</code></dd></div>
+        <div><dt>Desarrollador</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="doc">
+    <div class="wrap">
+
+      <!-- ─────────────────────────── English ─────────────────────────── -->
+      <div data-lang="en">
+
+        <div class="note">
+          <p>
+            Loom is in development and not yet on Google Play. This document describes the build
+            given to testers and takes effect with it. If the app starts handling something new,
+            this page changes in the same release.
+          </p>
+        </div>
+
+        <nav class="toc" aria-label="On this page">
+          <p class="toc__title">On this page</p>
+          <ol>
+            <li><a href="#device">Data stored on your device</a></li>
+            <li><a href="#analytics">Analytics</a></li>
+            <li><a href="#reminder">The daily reminder</a></li>
+            <li><a href="#remote-config">Remote configuration</a></li>
+            <li><a href="#ads">Advertising</a></li>
+            <li><a href="#purchases">In-app purchases</a></li>
+            <li><a href="#sharing">Sharing a result</a></li>
+            <li><a href="#deletion">Data deletion</a></li>
+            <li><a href="#children">Children</a></li>
+            <li><a href="#changes">Changes</a></li>
+          </ol>
+        </nav>
+
+        <h2 id="device">Data stored on your device</h2>
+        <p>
+          Everything the game remembers is on the phone itself: each day's result (the day number,
+          your attempts, the cloth you wove), your streak, your quilt, your settings, the hints you
+          used today, and a note of what you have bought so the archive and the threads stay
+          unlocked even when the store is slow to answer. It is written to the app's own storage
+          and nowhere else. There is no cloud copy: uninstalling the app deletes all of it, and a
+          new phone starts a new quilt.
+        </p>
+
+        <h2 id="analytics">Analytics (Google Analytics)</h2>
+        <p>
+          To learn whether the game explains itself and whether people come back, the app sends a
+          small record of what happened in it to Google Analytics. There is no analytics library
+          in the app; it makes one plain web request per event, and every event is one of a fixed
+          list. What is sent, and there is nothing else:
+        </p>
+        <ul>
+          <li>a random identifier the app invents for itself on the first event and keeps on your
+              phone, so that the same phone counts as the same player twice;</li>
+          <li>a session number, which is a timestamp;</li>
+          <li>the name of the event and plain numbers: the day number, how many attempts, how many
+              seconds, the streak, which weekday variant was played, whether a hint was used, and
+              which offer or advertisement was shown;</li>
+          <li>the time the event happened.</li>
+        </ul>
+        <p>
+          What is <strong>not</strong> sent: no name, no e-mail, no account, no contact of any
+          kind; no advertising ID, Android ID, device ID or fingerprint; nothing you typed, no
+          puzzle contents, no free text. As with any web request, Google's servers also see your
+          IP address and your browser's user agent, and the app marks every request so that Google
+          is told not to use it for advertising. Events wait on the phone while it is offline and
+          are sent later, oldest first; anything older than three days is dropped. You can switch
+          analytics off on your phone from the playtest log (press and hold the footer of the
+          game's main screen) — the switch is remembered and nothing is sent afterwards. See
+          <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Google's
+          Privacy Policy</a> for how Google processes this data.
+        </p>
+
+        <h2 id="reminder">The daily reminder</h2>
+        <p>
+          The reminder is off unless you turn it on in <span class="ui">Settings</span> or accept
+          the one offer made after your first solve. Android asks your permission at that moment,
+          never at launch. It is a single alarm on your phone that fires once a day at the time you
+          chose; no server is involved and no token is registered anywhere. The text of the
+          notification (the day number, and your streak while it is still true) is composed on the
+          phone. Turning the switch off cancels the alarm at once.
+        </p>
+
+        <h2 id="remote-config">Remote configuration</h2>
+        <p>
+          At launch the app fetches one small file from our own website,
+          <code>voltixstudios.pages.dev</code>, which says which advertising placements are
+          switched on. The request carries no identifier from the app; like any web request it
+          reaches the host that serves our site (Cloudflare) with your IP address. Nothing in that
+          file can change the puzzle, a price, or the limit on hints — those are fixed in the app.
+        </p>
+
+        <h2 id="ads">Advertising (Google AdMob)</h2>
+        <p>
+          Loom shows rewarded advertisements only. A video plays only when you press a button that
+          says what it gives you — an extra hint, one more attempt on a lost day, or one cloth from
+          the archive — never between screens, never at launch, and never on your first day. AdMob
+          may process your device's advertising ID and ad-interaction data to serve and measure
+          ads. In the European Economic Area and the UK you are shown a consent form (Google UMP)
+          before any advertisement is requested, and you can change your choice at any time from
+          <span class="ui">Settings → Ad privacy</span>. No advertising of any kind is shown to
+          anyone who has bought Loom Full. We can also switch every placement off ourselves, at
+          any time, without an update. See
+          <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Google's
+          Privacy Policy</a> for how Google processes this data.
+        </p>
+
+        <h2 id="purchases">In-app purchases (Google Play Billing)</h2>
+        <p>
+          The game offers a few optional purchases: <strong>Loom Full</strong> (every cloth ever
+          published, and no advertising), a pack of ten hints, and four thread palettes for the
+          quilt. Everything else is free and stays free: the daily puzzle, the last seven cloths,
+          one free hint a day, the statistics, the reminder and the quilt. All payments are
+          processed by Google Play Billing — the app never sees, receives or stores your payment
+          details. Google Play gives the app a purchase receipt so it can deliver what you bought
+          and restore it if you reinstall or change phone
+          (<span class="ui">Settings → Restore a purchase</span>). There is one price for each
+          item, never a discount, and nothing is a subscription. See
+          <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Google's
+          Privacy Policy</a> for how Google processes this data.
+        </p>
+
+        <h2 id="sharing">Sharing a result</h2>
+        <p>
+          When you share a day's result or your month's quilt, the text and the picture go through
+          Android's share sheet to the app you choose. We never receive them. The quilt picture is
+          written to the app's private cache for that purpose and is readable by nobody else.
+        </p>
+
+        <h2 id="deletion">Data deletion</h2>
+        <p>
+          Everything on the phone is deleted by uninstalling the app. What Google Play holds about
+          your purchases and what Google Analytics holds about your play are covered, route by
+          route, in <a href="delete-account.html">Delete Your Data</a>.
+        </p>
+
+        <h2 id="children">Children</h2>
+        <p>
+          The app is not directed at children under 13 and does not knowingly collect personal
+          information from them.
+        </p>
+
+        <h2 id="changes">Changes</h2>
+        <p>
+          If this policy changes, the updated version will be published at this URL with a new
+          effective date.
+        </p>
+
+        <div class="note">
+          <p>
+            This document is published in English and Spanish. If the two versions ever
+            disagree, the English text is the one that governs.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>Want your data removed?</p>
+          <a class="btn" href="delete-account.html">Delete Your Data</a>
+        </div>
+      </div>
+
+      <!-- ─────────────────────────── Español ─────────────────────────── -->
+      <div data-lang="es" lang="es">
+
+        <div class="note">
+          <p>
+            Loom está en desarrollo y todavía no está en Google Play. Este documento describe la
+            versión entregada a los probadores y entra en vigor con ella. Si la aplicación empieza
+            a manejar algo nuevo, esta página cambia en la misma versión.
+          </p>
+        </div>
+
+        <nav class="toc" aria-label="En esta página">
+          <p class="toc__title">En esta página</p>
+          <ol>
+            <li><a href="#device-es">Datos guardados en tu dispositivo</a></li>
+            <li><a href="#analytics-es">Analíticas</a></li>
+            <li><a href="#reminder-es">El recordatorio diario</a></li>
+            <li><a href="#remote-config-es">Configuración remota</a></li>
+            <li><a href="#ads-es">Publicidad</a></li>
+            <li><a href="#purchases-es">Compras integradas</a></li>
+            <li><a href="#sharing-es">Compartir un resultado</a></li>
+            <li><a href="#deletion-es">Eliminación de datos</a></li>
+            <li><a href="#children-es">Menores</a></li>
+            <li><a href="#changes-es">Cambios</a></li>
+          </ol>
+        </nav>
+
+        <h2 id="device-es">Datos guardados en tu dispositivo</h2>
+        <p>
+          Todo lo que el juego recuerda está en el propio teléfono: el resultado de cada día (el
+          número del día, tus intentos, la tela que tejiste), tu racha, tu colcha, tus ajustes, las
+          pistas que has usado hoy y una nota de lo que has comprado, para que el archivo y los
+          hilos sigan desbloqueados aunque la tienda tarde en responder. Se guarda en el
+          almacenamiento de la propia aplicación y en ningún otro sitio. No hay copia en la nube:
+          desinstalar la aplicación lo borra todo, y un teléfono nuevo empieza una colcha nueva.
+        </p>
+
+        <h2 id="analytics-es">Analíticas (Google Analytics)</h2>
+        <p>
+          Para saber si el juego se explica solo y si la gente vuelve, la aplicación envía a Google
+          Analytics un pequeño registro de lo que ha pasado en ella. No hay ninguna biblioteca de
+          analíticas en la aplicación: hace una petición web sencilla por evento, y cada evento es
+          uno de una lista fija. Lo que se envía, y no hay nada más:
+        </p>
+        <ul>
+          <li>un identificador aleatorio que la aplicación se inventa en el primer evento y guarda
+              en tu teléfono, para que el mismo teléfono cuente como el mismo jugador dos veces;</li>
+          <li>un número de sesión, que es una marca de tiempo;</li>
+          <li>el nombre del evento y números sencillos: el número del día, cuántos intentos,
+              cuántos segundos, la racha, qué variante del día de la semana se jugó, si se usó una
+              pista y qué oferta o anuncio se mostró;</li>
+          <li>la hora en que ocurrió el evento.</li>
+        </ul>
+        <p>
+          Lo que <strong>no</strong> se envía: ningún nombre, correo, cuenta ni contacto de ningún
+          tipo; ningún identificador de publicidad, Android ID, identificador de dispositivo ni
+          huella; nada de lo que escribes, ningún contenido del puzle, ningún texto libre. Como en
+          cualquier petición web, los servidores de Google ven también tu dirección IP y el agente
+          de usuario de tu navegador, y la aplicación marca cada petición para indicar a Google
+          que no la use con fines publicitarios. Los eventos esperan en el teléfono mientras no hay
+          conexión y se envían después, los más antiguos primero; lo que tenga más de tres días se
+          descarta. Puedes desactivar las analíticas en tu teléfono desde el registro de pruebas
+          (mantén pulsado el pie de la pantalla principal del juego): la elección se recuerda y no
+          se envía nada más. Consulta la
+          <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Política de
+          Privacidad de Google</a> para saber cómo trata Google estos datos.
+        </p>
+
+        <h2 id="reminder-es">El recordatorio diario</h2>
+        <p>
+          El recordatorio está desactivado salvo que lo actives en <span class="ui">Ajustes</span>
+          o aceptes la única propuesta que se hace tras tu primera solución. Android te pide
+          permiso en ese momento, nunca al abrir la aplicación. Es una sola alarma en tu teléfono
+          que suena una vez al día a la hora que elegiste; no interviene ningún servidor y no se
+          registra ningún token en ninguna parte. El texto de la notificación (el número del día y
+          tu racha mientras siga siendo cierta) se compone en el teléfono. Desactivar el
+          interruptor cancela la alarma al momento.
+        </p>
+
+        <h2 id="remote-config-es">Configuración remota</h2>
+        <p>
+          Al abrirse, la aplicación descarga un pequeño archivo de nuestro propio sitio web,
+          <code>voltixstudios.pages.dev</code>, que indica qué emplazamientos publicitarios están
+          activados. La petición no lleva ningún identificador de la aplicación; como cualquier
+          petición web, llega con tu dirección IP al proveedor que sirve nuestro sitio
+          (Cloudflare). Nada de ese archivo puede cambiar el puzle, un precio ni el límite de
+          pistas: eso está fijado en la aplicación.
+        </p>
+
+        <h2 id="ads-es">Publicidad (Google AdMob)</h2>
+        <p>
+          Loom muestra únicamente anuncios recompensados. Un vídeo se reproduce solo cuando pulsas
+          un botón que dice qué te da —una pista extra, un intento más en un día perdido o una
+          tela del archivo—, nunca entre pantallas, nunca al abrir la aplicación y nunca en tu
+          primer día. AdMob puede tratar el identificador de publicidad de tu dispositivo y los
+          datos de interacción con los anuncios para mostrarlos y medirlos. En el Espacio Económico
+          Europeo y el Reino Unido se te muestra un formulario de consentimiento (Google UMP) antes
+          de solicitar ningún anuncio, y puedes cambiar tu elección en cualquier momento desde
+          <span class="ui">Ajustes → Privacidad de anuncios</span>. A quien ha comprado Loom Full
+          no se le muestra publicidad de ningún tipo. Nosotros también podemos desactivar todos los
+          emplazamientos en cualquier momento, sin actualización. Consulta la
+          <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Política de
+          Privacidad de Google</a> para saber cómo trata Google estos datos.
+        </p>
+
+        <h2 id="purchases-es">Compras integradas (Google Play Billing)</h2>
+        <p>
+          El juego ofrece unas pocas compras opcionales: <strong>Loom Full</strong> (todas las
+          telas publicadas y sin publicidad), un paquete de diez pistas y cuatro paletas de hilo
+          para la colcha. Todo lo demás es gratis y seguirá siéndolo: el puzle diario, las últimas
+          siete telas, una pista gratis al día, las estadísticas, el recordatorio y la colcha.
+          Todos los pagos los procesa Google Play Billing: la aplicación nunca ve, recibe ni
+          almacena los datos de tu método de pago. Google Play entrega a la aplicación un recibo de
+          compra para que pueda darte lo que has comprado y restaurarlo si reinstalas o cambias de
+          teléfono (<span class="ui">Ajustes → Restaurar una compra</span>). Cada artículo tiene un
+          único precio, nunca un descuento, y nada es una suscripción. Consulta la
+          <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Política de
+          Privacidad de Google</a> para saber cómo trata Google estos datos.
+        </p>
+
+        <h2 id="sharing-es">Compartir un resultado</h2>
+        <p>
+          Cuando compartes el resultado de un día o la colcha del mes, el texto y la imagen pasan
+          por el panel de compartir de Android a la aplicación que elijas. Nosotros nunca los
+          recibimos. La imagen de la colcha se escribe en la caché privada de la aplicación con ese
+          fin y nadie más puede leerla.
+        </p>
+
+        <h2 id="deletion-es">Eliminación de datos</h2>
+        <p>
+          Todo lo que hay en el teléfono se elimina desinstalando la aplicación. Lo que Google Play
+          guarda sobre tus compras y lo que Google Analytics guarda sobre tus partidas se explica,
+          vía por vía, en <a href="delete-account.html">Eliminar tus datos</a>.
+        </p>
+
+        <h2 id="children-es">Menores</h2>
+        <p>
+          La aplicación no está dirigida a menores de 13 años y no recopila conscientemente
+          información personal de ellos.
+        </p>
+
+        <h2 id="changes-es">Cambios</h2>
+        <p>
+          Si esta política cambia, la versión actualizada se publicará en esta misma URL con una
+          nueva fecha de entrada en vigor.
+        </p>
+
+        <div class="note">
+          <p>
+            Este documento se publica en inglés y en español. Si ambas versiones difieren en
+            algún punto, prevalece el texto en inglés.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>¿Quieres eliminar tus datos?</p>
+          <a class="btn" href="delete-account.html">Eliminar tus datos</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+
+    <div class="foot__top">
+      <a class="brand" href="../../index.html">
+        <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" loading="lazy">
+        <span>Voltix<em>Studios</em></span>
+      </a>
+
+      <ul class="social social--compact" aria-label="Voltix Studios elsewhere">
+        <li><a class="social__btn social__btn--x" href="https://x.com/voltix_studios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on X">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></a></li>
+        <li><a class="social__btn social__btn--yt" href="https://www.youtube.com/@VoltixStudiosGaming"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on YouTube">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-yt"></use></svg></a></li>
+        <li><a class="social__btn social__btn--tt" href="https://www.tiktok.com/@voltixstudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on TikTok">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-tt"></use></svg></a></li>
+        <li><a class="social__btn" href="https://github.com/VoltixStudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on GitHub">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-gh"></use></svg></a></li>
+        <li><a class="social__btn" href="mailto:voltix.studios.gaming@gmail.com"
+               aria-label="Email Voltix Studios">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg></a></li>
+      </ul>
+    </div>
+
+    <div class="foot__bar">
+      <p class="foot__copy">
+        &copy; <span id="year">2026</span> Voltix Studios. All game names and artwork are
+        property of Voltix Studios.
+      </p>
+      <nav class="foot__links" aria-label="Legal">
+        <a href="privacy-policy.html">Privacy policy</a>
+        <a href="delete-account.html">Delete your data</a>
+        <a href="../website-privacy.html">Website privacy</a>
+      </nav>
+    </div>
+
+  </div>
+</footer>
+
+<script src="../../assets/js/main.js" defer></script>
+<script src="../../assets/js/doc.js" defer></script>
+
+<!-- /analytics/ is a Pages Function proxying Umami: no third-party script, and
+     nothing stored on the device (legal/website-privacy.html). Root-absolute on
+     purpose — it resolves only on Cloudflare, keeping the github.io mirror out. -->
+<script defer src="/analytics/script.js"
+        data-website-id="REPLACE_WITH_UMAMI_WEBSITE_ID"
+        data-exclude-hash="true"></script>
+<script src="../../assets/js/analytics.js" defer></script>
+</body>
+</html>

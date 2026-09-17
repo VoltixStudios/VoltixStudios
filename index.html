@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Voltix Studios — Arcade games for mobile</title>
-<meta name="description" content="Voltix Studios is an independent game studio building arcade games for Android. Makers of Paper Squadron, CoreWard and Dungeon Gourmand.">
+<meta name="description" content="Voltix Studios is an independent game studio building arcade games for Android. Makers of Paper Squadron, Loom, CoreWard and Dungeon Gourmand.">
 <meta name="theme-color" content="#05060a">
 <link rel="canonical" href="https://voltixstudios.pages.dev/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Voltix Studios">
 <meta property="og:title" content="Voltix Studios — Arcade games for mobile">
-<meta property="og:description" content="An independent game studio building arcade games for Android. Makers of Paper Squadron, CoreWard and Dungeon Gourmand.">
+<meta property="og:description" content="An independent game studio building arcade games for Android. Makers of Paper Squadron, Loom, CoreWard and Dungeon Gourmand.">
 <meta property="og:url" content="https://voltixstudios.pages.dev/">
 <meta property="og:image" content="https://voltixstudios.pages.dev/assets/img/og-card.png">
 <meta property="og:image:width" content="1200">
@@ -31,7 +31,7 @@
 <!-- ?v= is a cache buster. There is no build step to fingerprint the file, and a
      browser holding an old stylesheet against new markup renders the page wrong
      rather than merely stale — bump the number whenever style.css changes. -->
-<link rel="stylesheet" href="assets/css/style.css?v=4">
+<link rel="stylesheet" href="assets/css/style.css?v=5">
 
 <script type="application/ld+json">
 {
@@ -93,6 +93,7 @@
     <nav class="nav__links" aria-label="Primary">
       <a href="#games">Games</a>
       <a href="#paper-squadron">Paper Squadron</a>
+      <a href="#loom">Loom</a>
       <a href="#coreward">CoreWard</a>
       <a href="#dungeon-gourmand">Dungeon Gourmand</a>
       <a href="#studio">Studio</a>
@@ -113,7 +114,7 @@
       <p class="hero__lead">
         We are an independent studio making short, sharp mobile games — the kind you can
         pick up for three minutes on a train and still be thinking about an hour later.
-        One is on Google Play now; the other two are still in the workshop.
+        One is on Google Play now, one is about to join it, and two are still in the workshop.
       </p>
       <div class="hero__cta">
         <a class="btn btn--primary" href="#games">See the games</a>
@@ -122,6 +123,7 @@
 
       <ul class="hero__chips" aria-label="Our games">
         <li><span class="dot dot--ps"></span> Paper Squadron <em>Arcade flight</em></li>
+        <li><span class="dot dot--loom"></span> Loom <em>Daily puzzle</em></li>
         <li><span class="dot dot--cw"></span> CoreWard <em>Descent puzzler</em></li>
         <li><span class="dot dot--dg"></span> Dungeon Gourmand <em>Idle crawler</em></li>
       </ul>
@@ -133,7 +135,7 @@
   <section class="section section--tight" id="games">
     <div class="wrap">
       <p class="eyebrow reveal">Our games</p>
-      <h2 class="h2 reveal">Three titles, all for Android</h2>
+      <h2 class="h2 reveal">Four titles, all for Android</h2>
       <p class="lead reveal">
         Different genres, same brief: a session that fits in a coffee break, controls that work
         one-handed, and a reason to open it again.
@@ -241,6 +243,110 @@
         <div><dt>Languages</dt><dd>English &amp; Spanish</dd></div>
         <div><dt>Price</dt><dd>Free, optional in-app purchases</dd></div>
         <div><dt>Engine</dt><dd>Unity 6</dd></div>
+      </dl>
+
+    </div>
+  </article>
+
+  <!-- ───────────────────────────── loom ───────────────────────────── -->
+  <article class="game game--loom" id="loom">
+    <div class="game__glow" aria-hidden="true"></div>
+    <div class="wrap">
+
+      <div class="game__head game__head--flip">
+        <figure class="game__art reveal">
+          <img src="assets/img/loom-key.webp" alt="Loom: a woven cloth with four arrows around it"
+               width="900" height="900" loading="lazy" decoding="async">
+        </figure>
+
+        <div class="game__intro reveal">
+          <p class="status"><span class="status__dot"></span> Coming to Google Play</p>
+          <h2 class="game__name">Loom</h2>
+          <p class="game__tag">Every day, one pattern.</p>
+          <p class="game__pitch">
+            You know all the moves. Can you find the order?
+          </p>
+          <p>
+            A plain woven cloth, the pattern it must become, and the four moves that get
+            there: slide a row, swap two columns, mirror the cloth, turn it. Every move is
+            given. What is not given is the order. Five attempts, one puzzle a day, the
+            same for everyone in the world, and a small grid of squares to share that
+            spoils nothing.
+          </p>
+          <p>
+            Two to five minutes, one thumb, no words to read. Warm, quiet, and finished on
+            the bus.
+          </p>
+
+          <!-- A real day's cloth, drawn from the game's palette: the plain cloth on the
+               left, the pattern on the right. The order between them is the puzzle. -->
+          <div class="cloths" aria-hidden="true">
+            <figure>
+              <div class="cloth">
+                <i class="t0"></i><i class="t0"></i><i class="t0"></i><i class="t0"></i>
+                <i class="t1"></i><i class="t1"></i><i class="t1"></i><i class="t1"></i>
+                <i class="t2"></i><i class="t2"></i><i class="t2"></i><i class="t2"></i>
+                <i class="t0"></i><i class="t0"></i><i class="t0"></i><i class="t0"></i>
+              </div>
+              <figcaption>plain</figcaption>
+            </figure>
+            <span class="cloths__arrow">&#10230;</span>
+            <figure>
+              <div class="cloth">
+                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
+                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
+                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
+                <i class="t1"></i><i class="t0"></i><i class="t2"></i><i class="t0"></i>
+              </div>
+              <figcaption>pattern</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <ul class="features reveal">
+        <li>
+          <h3>One cloth a day</h3>
+          <p>The puzzle is a pure function of the date. Everyone weaves the same cloth, and
+             the only way to play again is tomorrow.</p>
+        </li>
+        <li>
+          <h3>Order, not content</h3>
+          <p>Every operation is on the table from the first second. Nothing to find, nothing
+             to guess at: only the sequence is hidden, and each weave tells you which slots
+             were right.</p>
+        </li>
+        <li>
+          <h3>Harder by weekday</h3>
+          <p>Monday is plain. Midweek the loom says only how many slots were right, not
+             which. Friday hides a decoy tile that belongs nowhere. Saturday has five slots.
+             Sunday has all of it on a bigger cloth.</p>
+        </li>
+        <li>
+          <h3>The quilt</h3>
+          <p>Every day's final cloth, solved or not, is sewn into your quilt, a month at a
+             time. Thirty days is a quilt, and it can be shared as a picture.</p>
+        </li>
+        <li>
+          <h3>A streak that never threatens</h3>
+          <p>It counts days played, not days solved. A lost day keeps it. Nothing ever tells
+             you not to break it.</p>
+        </li>
+        <li>
+          <h3>Nothing to buy to play</h3>
+          <p>The daily cloth, the last week of the archive, a free hint a day, the statistics
+             and the quilt are free. Loom Full, once, buys every cloth ever published and no
+             advertising, ever.</p>
+        </li>
+      </ul>
+
+      <dl class="facts reveal">
+        <div><dt>Platform</dt><dd>Android</dd></div>
+        <div><dt>Genre</dt><dd>Daily puzzle</dd></div>
+        <div><dt>Controls</dt><dd>One thumb, portrait</dd></div>
+        <div><dt>Languages</dt><dd>English, Catalan &amp; Spanish</dd></div>
+        <div><dt>Price</dt><dd>Free, with Loom Full once for &euro;2.99</dd></div>
+        <div><dt>Engine</dt><dd>None: one web page in a shell</dd></div>
       </dl>
 
     </div>
@@ -613,6 +719,8 @@
       <nav class="foot__links" aria-label="Legal">
         <a href="legal/paper-squadron/privacy-policy.html">Paper Squadron privacy</a>
         <a href="legal/paper-squadron/delete-account.html">Paper Squadron data deletion</a>
+        <a href="legal/loom/privacy-policy.html">Loom privacy</a>
+        <a href="legal/loom/delete-account.html">Loom data deletion</a>
         <a href="legal/coreward/privacy-policy.html">CoreWard privacy</a>
         <a href="legal/coreward/terms.html">CoreWard terms</a>
         <a href="legal/coreward/delete-account.html">CoreWard data deletion</a>

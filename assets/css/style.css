@@ -349,6 +349,7 @@ p:last-child { margin-bottom: 0; }
 .dot--ps { background: #e8413c; box-shadow: 0 0 12px #e8413c; }
 .dot--cw { background: #ff7a1a; box-shadow: 0 0 12px #ff7a1a; }
 .dot--dg { background: #e8a33a; box-shadow: 0 0 12px #e8a33a; }
+.dot--loom { background: #3b8bf0; box-shadow: 0 0 12px #3b8bf0; }
 
 /* ── generic section ─────────────────────────────────────────────────────── */
 
@@ -367,6 +368,20 @@ p:last-child { margin-bottom: 0; }
 .game--ps { --accent: #ff5a52; --accent-2: #4a91ea; }
 .game--cw { --accent: #ff8a2b; --accent-2: #ffc04d; }
 .game--dg { --accent: #e8a33a; --accent-2: #5fb6e0; }
+.game--loom { --accent: #3b8bf0; --accent-2: #f2d9a6; }
+
+/* Loom's cloth, drawn rather than photographed: the game is a 4x4 grid of three
+   thread colours, so the section can show a real day's plain cloth and pattern
+   in the game's own palette without a screenshot. */
+.cloths { display: flex; align-items: center; justify-content: center; gap: 22px; margin: 26px 0 8px; }
+.cloth { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; padding: 9px;
+  width: 132px; aspect-ratio: 1; border-radius: 22px; background: #f2e1cc;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
+.cloth i { display: block; border-radius: 7px; }
+.cloth .t0 { background: #5bc4c0; } .cloth .t1 { background: #ff8c8c; } .cloth .t2 { background: #ffd46b; }
+.cloths__arrow { color: var(--muted); font-size: 28px; }
+.cloths figcaption { font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); text-align: center; margin-top: 8px; font-weight: 600; }
 
 .game__glow {
   position: absolute;

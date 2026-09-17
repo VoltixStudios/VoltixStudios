@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loom — Delete Your Data · Voltix Studios</title>
+<meta name="description" content="How to delete everything Loom holds about you, route by route: your phone, your Google account, and our analytics. English and Spanish.">
+<meta name="theme-color" content="#05060a">
+<link rel="canonical" href="https://voltixstudios.pages.dev/legal/loom/delete-account">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Voltix Studios">
+<meta property="og:title" content="Loom — Delete Your Data">
+<meta property="og:description" content="How to delete everything Loom holds about you, route by route.">
+<meta property="og:url" content="https://voltixstudios.pages.dev/legal/loom/delete-account">
+<meta property="og:image" content="https://voltixstudios.pages.dev/assets/img/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@voltix_studios">
+
+<link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../assets/css/style.css?v=5">
+<link rel="stylesheet" href="../../assets/css/doc.css">
+
+<!-- Picks the language before the first paint, so the other one never flashes.
+     Order: explicit ?lang= / #es, then the browser's own preference. Nothing
+     is written to storage — see assets/js/doc.js. -->
+<script>
+(function () {
+  var d = document.documentElement;
+  d.className += " js";
+  var m = /[?&]lang=(en|es)/.exec(location.search) || /^#(en|es)$/.exec(location.hash);
+  var lang = m ? m[1]
+    : (((navigator.language || navigator.userLanguage || "en").toLowerCase().indexOf("es") === 0) ? "es" : "en");
+  d.setAttribute("data-doclang", lang);
+  d.setAttribute("lang", lang);
+})();
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-x" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z"/>
+  </symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/>
+  </symbol>
+  <symbol id="i-tt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07Z"/>
+  </symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M2.75 5.75h18.5v12.5H2.75z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m3.4 6.4 8.6 6.6 8.6-6.6"/>
+  </symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2.1c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/>
+  </symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="../../index.html">
+      <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" decoding="async">
+      <span>Voltix<em>Studios</em></span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="../../index.html#games">Games</a>
+      <a href="../../index.html#paper-squadron">Paper Squadron</a>
+      <a href="../../index.html#loom">Loom</a>
+      <a href="../../index.html#coreward">CoreWard</a>
+      <a href="../../index.html#dungeon-gourmand">Dungeon Gourmand</a>
+    </nav>
+    <a class="btn btn--sm" href="mailto:voltix.studios.gaming@gmail.com">Contact</a>
+  </div>
+</header>
+
+<main id="main" class="doc--loom">
+
+  <div class="doc-head">
+    <div class="wrap">
+      <p class="crumbs">
+        <a href="../../index.html">Voltix Studios</a>
+        <span aria-hidden="true">/</span>
+        <a href="../../index.html#loom">Loom</a>
+        <span aria-hidden="true">/</span>
+        <span data-lang="en">Delete Your Data</span>
+        <span data-lang="es" lang="es">Eliminar tus datos</span>
+      </p>
+
+      <div class="lang" role="group" aria-label="Document language">
+        <button type="button" data-set-lang="en" aria-pressed="true">English</button>
+        <button type="button" data-set-lang="es" aria-pressed="false">Español</button>
+      </div>
+
+      <h1 class="doc__title" data-lang="en">Loom — Delete Your Data</h1>
+      <h1 class="doc__title" data-lang="es" lang="es">Loom — Eliminar tus datos</h1>
+
+      <p class="lead" data-lang="en">
+        Loom has no account. There is nothing to sign up for, no username, and no password —
+        which means there is also no single button that erases everything, because the data
+        does not sit in one place. It sits in three, each belonging to someone different, and
+        each is cleared its own way. This page covers all three, and you can do two of them
+        yourself right now without writing to us.
+      </p>
+      <p class="lead" data-lang="es" lang="es">
+        Loom no tiene cuenta. No hay registro, ni nombre de usuario, ni contraseña — lo que
+        significa que tampoco hay un único botón que lo borre todo, porque los datos no están en
+        un solo sitio. Están en tres, cada uno pertenece a alguien distinto y cada uno se borra a
+        su manera. Esta página cubre los tres, y dos de ellos puedes hacerlos tú ahora mismo sin
+        escribirnos.
+      </p>
+
+      <dl class="doc-meta" data-lang="en">
+        <div><dt>Effective date</dt><dd>17 September 2026</dd></div>
+        <div><dt>App</dt><dd>Loom <code>com.voltixstudios.loom</code></dd></div>
+        <div><dt>Developer</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+        <div><dt>Time to complete</dt><dd>Immediate on the phone<span class="sub">or within 30 days by email</span></dd></div>
+      </dl>
+      <dl class="doc-meta" data-lang="es" lang="es">
+        <div><dt>Fecha de entrada en vigor</dt><dd>17 de septiembre de 2026</dd></div>
+        <div><dt>Aplicación</dt><dd>Loom <code>com.voltixstudios.loom</code></dd></div>
+        <div><dt>Desarrollador</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+        <div><dt>Tiempo necesario</dt><dd>Inmediato en el teléfono<span class="sub">o en un plazo de 30 días por correo</span></dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="doc">
+    <div class="wrap">
+
+      <!-- ─────────────────────────── English ─────────────────────────── -->
+      <div data-lang="en">
+
+        <nav class="toc" aria-label="On this page">
+          <p class="toc__title">On this page</p>
+          <ol>
+            <li><a href="#device">1 · On your phone</a></li>
+            <li><a href="#google">2 · Your Google account: purchases and ad choices</a></li>
+            <li><a href="#us">3 · Our analytics</a></li>
+            <li><a href="#kept">What is not deleted, and why</a></li>
+            <li><a href="#retention">Retention</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ol>
+        </nav>
+
+        <h2 id="device">1 · On your phone</h2>
+        <p>
+          Your daily results, your streak, your quilt, your settings and the note of what you have
+          bought are stored on the phone itself and nowhere else.
+        </p>
+        <p>
+          <strong>Uninstalling Loom removes all of it.</strong> There is no step after that, and
+          nothing survives locally. There is no cloud copy to come back, and no reset button inside
+          the game: uninstalling is the reset.
+        </p>
+
+        <h2 id="google">2 · Your Google account: purchases and ad choices</h2>
+        <p>
+          If you bought Loom Full, the hint pack or a thread palette, the record of that purchase
+          belongs to your Google account, not to us. It is what lets you restore a purchase on a
+          new phone. You can see it, and request a refund where Google's rules allow one, in the
+          <strong>Google Play</strong> app under <strong>Payments &amp; subscriptions → Budget &amp;
+          history</strong>, or at
+          <a href="https://play.google.com/store/account/orderhistory" rel="noopener">play.google.com/store/account/orderhistory</a>.
+          We cannot delete it for you, and we hold no copy beyond the note on your phone.
+        </p>
+        <p>
+          If you saw an advertisement, Google holds its own record of that under its own policy,
+          and your consent choice for European players is yours to change at any time from
+          <strong>Settings → Ad privacy</strong> in the game, or in your Google account at
+          <a href="https://myadcenter.google.com/" rel="noopener">myadcenter.google.com</a>.
+        </p>
+
+        <h2 id="us">3 · Our analytics</h2>
+        <p>
+          This is the only part we hold, and the only part that needs an email. It is a record of
+          what happened in the game — which day was played, how many attempts, whether it was
+          solved, which offer or advertisement was shown — sent to Google Analytics under a random
+          identifier the app invented on your phone. It carries no name, no email and no device
+          identifier, which is why we cannot find yours without your help.
+        </p>
+        <p>
+          Write to
+          <a href="mailto:voltix.studios.gaming@gmail.com?subject=Loom%20data%20deletion%20request">voltix.studios.gaming@gmail.com</a>
+          with the subject <strong>Loom data deletion request</strong> and tell us, as best you
+          can, the days you played and the streak you had. We delete every record that matches,
+          confirm by email, and do it within 30 days. You can also stop any further record before
+          you write: press and hold the footer of the game's main screen, and switch analytics off
+          in the playtest log.
+        </p>
+
+        <h2 id="kept">What is not deleted, and why</h2>
+        <ul>
+          <li><strong>Your purchase history</strong> stays in your Google account, because it is
+              Google's record of a payment and not ours.</li>
+          <li><strong>Aggregate numbers</strong> — how many people solved Sunday's cloth — stay,
+              because once your records are gone nothing in a total points back to you.</li>
+          <li><strong>The puzzle itself</strong> is the same for everyone and is not about you.</li>
+        </ul>
+
+        <h2 id="retention">Retention</h2>
+        <p>
+          On the phone, for as long as the app is installed. In Google Analytics, for the retention
+          period set on the property, which is fourteen months at most, after which the records
+          are deleted automatically; totals that carry no identifier may be kept beyond that.
+        </p>
+
+        <h2 id="contact">Contact</h2>
+        <p>
+          Voltix Studios,
+          <a href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a>.
+          We answer every deletion request, and we answer it in the language you wrote in.
+        </p>
+
+        <div class="note">
+          <p>
+            This document is published in English and Spanish. If the two versions ever
+            disagree, the English text is the one that governs.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>Want the whole picture of what the app handles?</p>
+          <a class="btn" href="privacy-policy.html">Privacy Policy</a>
+        </div>
+      </div>
+
+      <!-- ─────────────────────────── Español ─────────────────────────── -->
+      <div data-lang="es" lang="es">
+
+        <nav class="toc" aria-label="En esta página">
+          <p class="toc__title">En esta página</p>
+          <ol>
+            <li><a href="#device-es">1 · En tu teléfono</a></li>
+            <li><a href="#google-es">2 · Tu cuenta de Google: compras y elecciones de anuncios</a></li>
+            <li><a href="#us-es">3 · Nuestras analíticas</a></li>
+            <li><a href="#kept-es">Qué no se elimina, y por qué</a></li>
+            <li><a href="#retention-es">Conservación</a></li>
+            <li><a href="#contact-es">Contacto</a></li>
+          </ol>
+        </nav>
+
+        <h2 id="device-es">1 · En tu teléfono</h2>
+        <p>
+          Tus resultados diarios, tu racha, tu colcha, tus ajustes y la nota de lo que has comprado
+          se guardan en el propio teléfono y en ningún otro sitio.
+        </p>
+        <p>
+          <strong>Desinstalar Loom lo elimina todo.</strong> No hay ningún paso después, y nada
+          sobrevive localmente. No hay copia en la nube que pueda volver, ni botón de reinicio
+          dentro del juego: desinstalar es el reinicio.
+        </p>
+
+        <h2 id="google-es">2 · Tu cuenta de Google: compras y elecciones de anuncios</h2>
+        <p>
+          Si compraste Loom Full, el paquete de pistas o una paleta de hilo, el registro de esa
+          compra pertenece a tu cuenta de Google, no a nosotros. Es lo que permite restaurar una
+          compra en un teléfono nuevo. Puedes verlo, y pedir un reembolso cuando las normas de
+          Google lo permitan, en la aplicación <strong>Google Play</strong>, en
+          <strong>Pagos y suscripciones → Presupuesto e historial</strong>, o en
+          <a href="https://play.google.com/store/account/orderhistory" rel="noopener">play.google.com/store/account/orderhistory</a>.
+          Nosotros no podemos eliminarlo por ti, y no guardamos ninguna copia más allá de la nota
+          en tu teléfono.
+        </p>
+        <p>
+          Si viste un anuncio, Google conserva su propio registro bajo su propia política, y tu
+          elección de consentimiento para jugadores europeos puedes cambiarla en cualquier momento
+          desde <strong>Ajustes → Privacidad de anuncios</strong> en el juego, o en tu cuenta de
+          Google en <a href="https://myadcenter.google.com/" rel="noopener">myadcenter.google.com</a>.
+        </p>
+
+        <h2 id="us-es">3 · Nuestras analíticas</h2>
+        <p>
+          Esta es la única parte que guardamos nosotros, y la única que necesita un correo. Es un
+          registro de lo que pasó en el juego —qué día se jugó, cuántos intentos, si se resolvió,
+          qué oferta o anuncio se mostró— enviado a Google Analytics bajo un identificador
+          aleatorio que la aplicación se inventó en tu teléfono. No lleva nombre, ni correo, ni
+          identificador de dispositivo, y por eso no podemos encontrar el tuyo sin tu ayuda.
+        </p>
+        <p>
+          Escribe a
+          <a href="mailto:voltix.studios.gaming@gmail.com?subject=Loom%20solicitud%20de%20eliminaci%C3%B3n%20de%20datos">voltix.studios.gaming@gmail.com</a>
+          con el asunto <strong>Loom solicitud de eliminación de datos</strong> y dinos, lo mejor
+          que puedas, los días que jugaste y la racha que tenías. Eliminamos todos los registros
+          que coincidan, lo confirmamos por correo y lo hacemos en un plazo de 30 días. También
+          puedes impedir cualquier registro nuevo antes de escribirnos: mantén pulsado el pie de la
+          pantalla principal del juego y desactiva las analíticas en el registro de pruebas.
+        </p>
+
+        <h2 id="kept-es">Qué no se elimina, y por qué</h2>
+        <ul>
+          <li><strong>Tu historial de compras</strong> se queda en tu cuenta de Google, porque es el
+              registro de un pago de Google y no nuestro.</li>
+          <li><strong>Las cifras agregadas</strong> —cuánta gente resolvió la tela del domingo— se
+              conservan, porque una vez borrados tus registros nada en un total apunta a ti.</li>
+          <li><strong>El propio puzle</strong> es el mismo para todo el mundo y no trata de ti.</li>
+        </ul>
+
+        <h2 id="retention-es">Conservación</h2>
+        <p>
+          En el teléfono, mientras la aplicación esté instalada. En Google Analytics, durante el
+          periodo de conservación configurado en la propiedad, que es de catorce meses como máximo,
+          tras lo cual los registros se eliminan automáticamente; los totales sin identificador
+          pueden conservarse más allá.
+        </p>
+
+        <h2 id="contact-es">Contacto</h2>
+        <p>
+          Voltix Studios,
+          <a href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a>.
+          Respondemos a todas las solicitudes de eliminación, y las respondemos en el idioma en que
+          nos escribas.
+        </p>
+
+        <div class="note">
+          <p>
+            Este documento se publica en inglés y en español. Si ambas versiones difieren en
+            algún punto, prevalece el texto en inglés.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>¿Quieres ver todo lo que maneja la aplicación?</p>
+          <a class="btn" href="privacy-policy.html">Política de Privacidad</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+
+    <div class="foot__top">
+      <a class="brand" href="../../index.html">
+        <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" loading="lazy">
+        <span>Voltix<em>Studios</em></span>
+      </a>
+
+      <ul class="social social--compact" aria-label="Voltix Studios elsewhere">
+        <li><a class="social__btn social__btn--x" href="https://x.com/voltix_studios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on X">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></a></li>
+        <li><a class="social__btn social__btn--yt" href="https://www.youtube.com/@VoltixStudiosGaming"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on YouTube">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-yt"></use></svg></a></li>
+        <li><a class="social__btn social__btn--tt" href="https://www.tiktok.com/@voltixstudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on TikTok">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-tt"></use></svg></a></li>
+        <li><a class="social__btn" href="https://github.com/VoltixStudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on GitHub">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-gh"></use></svg></a></li>
+        <li><a class="social__btn" href="mailto:voltix.studios.gaming@gmail.com"
+               aria-label="Email Voltix Studios">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg></a></li>
+      </ul>
+    </div>
+
+    <div class="foot__bar">
+      <p class="foot__copy">
+        &copy; <span id="year">2026</span> Voltix Studios. All game names and artwork are
+        property of Voltix Studios.
+      </p>
+      <nav class="foot__links" aria-label="Legal">
+        <a href="privacy-policy.html">Privacy policy</a>
+        <a href="delete-account.html">Delete your data</a>
+        <a href="../website-privacy.html">Website privacy</a>
+      </nav>
+    </div>
+
+  </div>
+</footer>
+
+<script src="../../assets/js/main.js" defer></script>
+<script src="../../assets/js/doc.js" defer></script>
+
+<!-- /analytics/ is a Pages Function proxying Umami: no third-party script, and
+     nothing stored on the device (legal/website-privacy.html). Root-absolute on
+     purpose — it resolves only on Cloudflare, keeping the github.io mirror out. -->
+<script defer src="/analytics/script.js"
+        data-website-id="REPLACE_WITH_UMAMI_WEBSITE_ID"
+        data-exclude-hash="true"></script>
+<script src="../../assets/js/analytics.js" defer></script>
+</body>
+</html>

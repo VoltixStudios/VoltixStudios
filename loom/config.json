@@ -1,0 +1,5 @@
+{
+  "_": "Loom's remote configuration, read once at launch by the app (Config.java in the Loom repo). Every placement is off until it is true AND its unit is a real AdMob rewarded ad unit id (the form with a slash, ca-app-pub-8715619194809926/NNNNNNNNNN). The app id (the form with a tilde) is not a unit and never goes here. Nothing in this file can change the puzzle, a price or the hint limit.",
+  "ads":   { "unpick": false, "more": false, "cloth": false },
+  "units": { "unpick": "", "more": "", "cloth": "" }
+}

@@ -162,6 +162,16 @@ def build_dungeon_gourmand(root):
          "dungeongourmand-poster.webp", width=760)
 
 
+def build_loom(root):
+    print("loom")
+    # The logo is a rounded blue tile with transparent corners, already clean:
+    # no matte to trim, no black to key. The key art is the tile itself, and the
+    # cloth in the section is drawn in CSS from the game's own palette.
+    tile = Image.open(root / "logo.png").convert("RGBA")
+    save(tile, "loom-key.webp", width=900)
+    save(tile, "loom-icon.webp", width=192)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--logo", type=Path, default=Path.home() / "voltix_studios/logos/voltix_logo_1.png")
@@ -169,17 +179,23 @@ def main():
     ap.add_argument("--coreward", type=Path, default=Path.home() / "voltix_studios/CoreWard")
     ap.add_argument("--gourmand", type=Path,
                     default=Path.home() / "voltix_studios/DungeonGourmand")
+    ap.add_argument("--loom", type=Path, default=Path.home() / "voltix_studios/Loom")
+    ap.add_argument("--only", nargs="*", choices=["logo", "paper", "coreward", "gourmand", "loom"],
+                    help="rebuild only these; the other source roots need not exist")
     args = ap.parse_args()
 
-    for label, path in [("logo", args.logo), ("paper", args.paper),
-                        ("coreward", args.coreward), ("gourmand", args.gourmand)]:
+    builders = [("logo", args.logo, build_voltix), ("paper", args.paper, build_paper_squadron),
+                ("coreward", args.coreward, build_coreward),
+                ("gourmand", args.gourmand, build_dungeon_gourmand), ("loom", args.loom, build_loom)]
+    if args.only:
+        builders = [b for b in builders if b[0] in args.only]
+
+    for label, path, _ in builders:
         if not path.exists():
             sys.exit(f"--{label} not found: {path}")
 
-    build_voltix(args.logo)
-    build_paper_squadron(args.paper)
-    build_coreward(args.coreward)
-    build_dungeon_gourmand(args.gourmand)
+    for _, path, build in builders:
+        build(path)
     print(f"\nwrote {len(list(OUT.iterdir()))} files to {OUT.relative_to(REPO)}/")
 
 

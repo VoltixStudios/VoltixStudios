@@ -1,8 +1,9 @@
 # VoltixStudios
 
-The Voltix Studios website — a landing page covering the studio and its three
-games, **Paper Squadron**, **CoreWard** and **Dungeon Gourmand**, plus the legal
-documents Google Play requires those games to publish.
+The Voltix Studios website — a landing page covering the studio and its four
+games, **Paper Squadron**, **Loom**, **CoreWard** and **Dungeon Gourmand**, plus the
+legal documents Google Play requires those games to publish, and the one file
+Loom reads at launch.
 
 Live at <https://voltixstudios.pages.dev/>, served by Cloudflare Pages.
 
@@ -31,9 +32,11 @@ index.html                 the landing page
 robots.txt  sitemap.xml
 app-ads.txt                authorises AdMob to sell our inventory — see below
 legal/paper-squadron/      privacy policy + account deletion, EN/ES
+legal/loom/                privacy policy + data deletion, EN/ES
 legal/coreward/            privacy policy + terms & virtual currency, EN/ES
 legal/dungeon-gourmand/    privacy policy + terms + deletion, EN/ES
 legal/website-privacy.html what the *site* measures, EN/ES — see Analytics below
+loom/config.json           Loom's remote switch: which rewarded placements are on — see below
 functions/analytics/       Pages Function: first-party proxy for Umami
 assets/css/style.css       palette, header, buttons, social, footer
 assets/css/doc.css         long-form document pages only
@@ -69,6 +72,8 @@ legal/coreward/terms.html             design doc §14's virtual-currency terms
 legal/coreward/delete-account.html    Play data-safety "data deletion" URL
 legal/paper-squadron/privacy-policy.html
 legal/paper-squadron/delete-account.html
+legal/loom/privacy-policy.html        Play Console "Privacy policy" + AdMob
+legal/loom/delete-account.html        Play data-safety "data deletion" URL
 legal/dungeon-gourmand/privacy-policy.html
 legal/dungeon-gourmand/terms.html
 legal/dungeon-gourmand/delete-account.html
@@ -86,7 +91,7 @@ still stands: **the moment the app starts handling something new, the policy is
 wrong in the same commit**, along with the Play data-safety form, which has to
 agree with it.
 
-All three games have a deletion page, because the Play data-safety form asks for
+All four games have a deletion page, because the Play data-safety form asks for
 a URL where a player can request deletion and an anchor buried in a policy is a
 worse answer than a page. CoreWard's is the awkward case and says so plainly:
 there is no account to delete, so the page is three routes to three different
@@ -108,6 +113,26 @@ Play Billing are all Phase 4 work and are described as they are specified, not
 as they are wired. The rule above applies in reverse here: when Phase 4 lands,
 these pages are checked against what was actually built, in that commit.
 
+**Loom's pages describe a game that has not shipped yet**, like Dungeon Gourmand's,
+and say so in a note at the top. They were written from the Loom repository's own
+record (`GDD_LOOM.md` §12, §15, §18 and the Android shell) on 17 September 2026:
+local storage only, Google Analytics by Measurement Protocol with a made-up client
+id, one local reminder alarm, one JSON of remote configuration from this site,
+rewarded AdMob only behind a consent form, Play Billing for six one-time products.
+Loom has no account, so its deletion page is the CoreWard shape: three routes to
+three owners.
+
+## Loom's remote switch
+
+`loom/config.json` is fetched once at launch by the Loom app and kept. It says
+which of the three rewarded placements (`unpick`, `more`, `cloth`) are on and
+which AdMob **ad unit** id each uses. Everything is off until a placement is `true`
+*and* its unit is filled in; the app also refuses advertising on a player's first
+day and to anyone who owns Loom Full, whatever this file says. Turning a placement
+on is an edit here and a push, not an app update. A unit id has a slash in it
+(`ca-app-pub-…/…`); the app id with the tilde is a different thing and does not
+belong in this file. Nothing in it can change the puzzle, a price or the hint limit.
+
 > **`app-ads.txt` resolves at the root — check the Play listing agrees.**
 > Crawlers take the developer website from the Play listing and fetch
 > `/app-ads.txt` at the *root of that domain*. Cloudflare Pages serves the site
@@ -127,9 +152,10 @@ the originals are multi-megabyte PNGs and the site ships trimmed WebP.
 python3 tools/build_assets.py          # needs Pillow
 ```
 
-It reads from `~/voltix_studios/logos`, `~/paper_ace`, `~/voltix_studios/CoreWard`
-and `~/voltix_studios/DungeonGourmand` by default; pass `--logo`, `--paper`,
-`--coreward` or `--gourmand` to point elsewhere. Re-run it
+It reads from `~/voltix_studios/logos`, `~/paper_ace`, `~/voltix_studios/CoreWard`,
+`~/voltix_studios/DungeonGourmand` and `~/voltix_studios/Loom` by default; pass
+`--logo`, `--paper`, `--coreward`, `--gourmand` or `--loom` to point elsewhere, and
+`--only loom` (or any subset) to rebuild one game without the other roots present. Re-run it
 whenever a logo or a piece of key art changes, and commit the result.
 
 The one hand-measured thing in it is `STRATA_BOUNDS`, the five panel edges in
@@ -222,7 +248,7 @@ in the same commit.
 
 ## Editing content
 
-All three game sections use the same markup, so a fourth game is a copy of one
+All four game sections use the same markup, so a fifth game is a copy of one
 `<article class="game">` block plus a `--accent` pair in the stylesheet:
 
 ```css

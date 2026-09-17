@@ -151,6 +151,7 @@
             <li><a href="#device">Data stored on your device</a></li>
             <li><a href="#backup">Backup to your Google account</a></li>
             <li><a href="#analytics">Analytics</a></li>
+            <li><a href="#scores">Comparing your day with other players</a></li>
             <li><a href="#reminder">The daily reminder</a></li>
             <li><a href="#remote-config">Remote configuration</a></li>
             <li><a href="#ads">Advertising</a></li>
@@ -215,6 +216,39 @@
           game's main screen) — the switch is remembered and nothing is sent afterwards. See
           <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Google's
           Privacy Policy</a> for how Google processes this data.
+        </p>
+
+        <h2 id="scores">Comparing your day with other players</h2>
+        <p>
+          When you finish a day&rsquo;s puzzle, the end screen can tell you how your result compares
+          with everyone else who played the same cloth &mdash; &ldquo;better than 78% of
+          players today&rdquo;, or &ldquo;first to solve it today&rdquo;. To do that the app sends
+          three plain numbers about that one day to our own server (a small function on our website,
+          <code>voltixstudios.pages.dev</code>, backed by Cloudflare):
+        </p>
+        <ul>
+          <li>the day number of the puzzle;</li>
+          <li>how many attempts it took, or that it was not solved;</li>
+          <li>how many seconds it took.</li>
+        </ul>
+        <p>
+          The server keeps only running totals per day &mdash; how many people solved that cloth in
+          one attempt, in two, and so on, how many did not, and how many finished within a few broad
+          time bands. It stores counts, not people. What is <strong>not</strong> sent, and never
+          stored: no name, no e-mail, no account, no advertising ID, no device ID, no Android ID, no
+          location, no cloth and no order of moves &mdash; nothing that could identify you or your
+          phone.
+        </p>
+        <p>
+          So that a lost signal and a later retry cannot count the same phone twice, the app makes
+          up one random number, keeps it on your phone and never shows it; what reaches the server
+          is a one-way hash of that number mixed with the day, which is deleted after a week and
+          cannot be tied back to you or linked from one day to another. This feature needs the
+          network: with no connection nothing is sent, no comparison is shown, and the rest of the
+          end screen &mdash; your result, your streak, your quilt &mdash; works exactly as it always
+          does. Like any web request, our host (Cloudflare) sees your IP address to answer it; we do
+          not store it. A comparison against your own past cloths is worked out entirely on your
+          phone and needs no network at all.
         </p>
 
         <h2 id="reminder">The daily reminder</h2>
@@ -322,6 +356,7 @@
             <li><a href="#device-es">Datos guardados en tu dispositivo</a></li>
             <li><a href="#backup-es">Copia de seguridad en tu cuenta de Google</a></li>
             <li><a href="#analytics-es">Analíticas</a></li>
+            <li><a href="#scores-es">Comparar tu día con otros jugadores</a></li>
             <li><a href="#reminder-es">El recordatorio diario</a></li>
             <li><a href="#remote-config-es">Configuración remota</a></li>
             <li><a href="#ads-es">Publicidad</a></li>
@@ -389,6 +424,40 @@
           se envía nada más. Consulta la
           <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Política de
           Privacidad de Google</a> para saber cómo trata Google estos datos.
+        </p>
+
+        <h2 id="scores-es">Comparar tu día con otros jugadores</h2>
+        <p>
+          Cuando terminas el puzle de un día, la pantalla final puede decirte cómo se compara tu
+          resultado con el de todas las demás personas que jugaron la misma tela &mdash; &laquo;mejor
+          que el 78% de los jugadores de hoy&raquo;, o &laquo;el primero en resolverla hoy&raquo;.
+          Para ello la aplicación envía tres números sencillos sobre ese único día a nuestro propio
+          servidor (una pequeña función en nuestra web, <code>voltixstudios.pages.dev</code>, sobre
+          Cloudflare):
+        </p>
+        <ul>
+          <li>el número del día del puzle;</li>
+          <li>cuántos intentos costó, o que no se resolvió;</li>
+          <li>cuántos segundos costó.</li>
+        </ul>
+        <p>
+          El servidor solo guarda totales por día &mdash; cuántas personas resolvieron esa tela en
+          un intento, en dos, y así, cuántas no lo lograron, y cuántas terminaron dentro de unas
+          pocas franjas amplias de tiempo. Guarda recuentos, no personas. Lo que <strong>no</strong>
+          se envía, ni se guarda nunca: ningún nombre, correo, cuenta, ID de publicidad, ID de
+          dispositivo, ID de Android, ubicación, tela ni orden de movimientos &mdash; nada que pueda
+          identificarte a ti o a tu teléfono.
+        </p>
+        <p>
+          Para que una señal perdida y un reintento posterior no cuenten dos veces el mismo teléfono,
+          la aplicación inventa un número aleatorio, lo guarda en tu teléfono y nunca lo muestra; lo
+          que llega al servidor es un hash irreversible de ese número mezclado con el día, que se
+          borra al cabo de una semana y no puede vincularse contigo ni enlazar un día con otro. Esta
+          función necesita la red: sin conexión no se envía nada, no se muestra ninguna comparación,
+          y el resto de la pantalla final &mdash; tu resultado, tu racha, tu colcha &mdash; funciona
+          exactamente como siempre. Como en cualquier petición web, nuestro proveedor (Cloudflare) ve
+          tu dirección IP para responder; nosotros no la guardamos. La comparación con tus propias
+          telas pasadas se calcula por completo en tu teléfono y no necesita red alguna.
         </p>
 
         <h2 id="reminder-es">El recordatorio diario</h2>

@@ -209,6 +209,14 @@
           you write: press and hold the footer of the game's main screen, and switch analytics off
           in the playtest log.
         </p>
+        <p>
+          There is one more thing we run, and it holds nothing to delete: when you finish a day,
+          the app sends the day number, your attempts and your seconds to our own server so the end
+          screen can compare you with everyone who played that cloth. That server keeps only
+          per-day totals &mdash; counts, never people &mdash; and the one per-phone value it uses to
+          avoid double-counting is a one-way hash that is erased after a week and can name nobody.
+          There is no record there that is yours, so there is nothing there to ask us to remove.
+        </p>
 
         <h2 id="kept">What is not deleted, and why</h2>
         <ul>
@@ -324,7 +332,16 @@
           pantalla principal del juego y desactiva las analíticas en el registro de pruebas.
         </p>
 
-        <h2 id="kept-es">Qué no se elimina, y por qué</h2>
+                <p>
+          Hay una cosa más que gestionamos, y no guarda nada que borrar: cuando terminas un día, la
+          aplicación envía el número del día, tus intentos y tus segundos a nuestro propio servidor
+          para que la pantalla final te compare con todos los que jugaron esa tela. Ese servidor solo
+          guarda totales por día &mdash; recuentos, nunca personas &mdash; y el único valor por
+          teléfono que usa para no contar dos veces es un hash irreversible que se borra al cabo de
+          una semana y no identifica a nadie. Allí no hay ningún registro tuyo, así que no hay nada
+          que pedirnos que quitemos.
+        </p>
+<h2 id="kept-es">Qué no se elimina, y por qué</h2>
         <ul>
           <li><strong>Tu historial de compras</strong> se queda en tu cuenta de Google, porque es el
               registro de un pago de Google y no nuestro.</li>

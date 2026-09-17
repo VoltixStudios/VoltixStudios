@@ -38,6 +38,8 @@ legal/dungeon-gourmand/    privacy policy + terms + deletion, EN/ES
 legal/website-privacy.html what the *site* measures, EN/ES — see Analytics below
 loom/config.json           Loom's remote switch: which rewarded placements are on — see below
 functions/analytics/       Pages Function: first-party proxy for Umami
+functions/loom/            Pages Function: Loom's day counters, and how to turn
+                           them on (SETUP.md). Needs a D1 binding called LOOM
 assets/css/style.css       palette, header, buttons, social, footer
 assets/css/doc.css         long-form document pages only
 assets/js/main.js          sticky header, scroll reveal, scroll-spy — all optional

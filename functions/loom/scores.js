@@ -31,20 +31,32 @@ const MAXTRIES = 6;
    of exact times is a fingerprint and a histogram of bands is not. */
 const BANDS = [30, 60, 120, 240, 480];
 
+/* The game runs from file:// inside a WebView, so its origin is "null" and a
+   POST carrying Content-Type: application/json is preflighted before it is
+   sent. There is nothing here to protect with an origin check: the endpoint
+   holds no secrets, sets no cookie and answers the same to everyone. */
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
+};
+
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store",
-      /* The game runs from file:// inside a WebView, so its origin is "null".
-         There is nothing here to protect with an origin check: the endpoint
-         holds no secrets, sets no cookie and answers the same to everyone. */
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    },
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store", ...CORS },
   });
+
+/* The preflight, and the reason this endpoint spent its life answering GET
+   perfectly while never recording a single result.
+
+   204 is a null-body status. Handing Response a body with it throws inside the
+   Workers runtime, the exception leaves as a 500 (Cloudflare error 1101), and
+   a browser whose preflight fails does not send the POST behind it. Every
+   result the game ever produced died here, silently, on the phone. The body
+   must be null, and test.sh now asks. */
+const preflight = () => new Response(null, { status: 204, headers: CORS });
 
 const today = () => Math.floor((Date.now() - DAY0) / 86400000);
 
@@ -76,7 +88,7 @@ async function readDay(db, day) {
 }
 
 export async function onRequest({ request, env }) {
-  if (request.method === "OPTIONS") return json({}, 204);
+  if (request.method === "OPTIONS") return preflight();
   /* A D1 binding, not a text variable called LOOM: a variable would arrive here
      as the string "loom", pass a plain truthiness check, and then throw on the
      first query, which reads as a broken endpoint rather than a missing one. */

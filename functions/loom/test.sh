@@ -43,6 +43,19 @@ is () {  # is <label> <got> <want>
   else fail=$((fail+1)); printf '  FAIL  %s\n          got  %s\n          want %s\n' "$1" "$2" "$3"; fi
 }
 
+# The preflight first, because the game cannot reach anything below it without
+# one. It is a POST from a file:// WebView carrying a JSON content type, so the
+# browser asks before it sends, and for a long time this answered 500.
+pre=$(curl -s -o /dev/null -w '%{http_code}' -X OPTIONS "localhost:$PORT/loom/scores" \
+      -H 'Origin: null' -H 'Access-Control-Request-Method: POST' \
+      -H 'Access-Control-Request-Headers: content-type')
+is "the preflight a WebView sends is answered"        "$pre" "204"
+allow=$(curl -s -D - -o /dev/null -X OPTIONS "localhost:$PORT/loom/scores" \
+        -H 'Origin: null' -H 'Access-Control-Request-Method: POST' \
+        -H 'Access-Control-Request-Headers: content-type' \
+        | grep -io 'access-control-allow-origin: \*' | tr -d '\r' | tr 'A-Z' 'a-z')
+is "and it allows the null origin the game has"       "$allow" "access-control-allow-origin: *"
+
 first=$(post "{\"d\":$DAY,\"a\":3,\"s\":95,\"k\":\"aaaaaaaaaaaaaaaa\"}")
 is "a solved day is counted, and is the first"        "$(echo "$first" | grep -o '"rank":1')" '"rank":1'
 again=$(post "{\"d\":$DAY,\"a\":3,\"s\":95,\"k\":\"aaaaaaaaaaaaaaaa\"}")

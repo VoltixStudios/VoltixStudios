@@ -25,8 +25,14 @@ OUT="$HERE/loom/play"
 ID="$(grep -o 'data-website-id="[^"]*"' "$HERE/index.html" | head -n 1 | cut -d'"' -f2)"
 [ -n "$ID" ] || { echo "no data-website-id in index.html" >&2; exit 1; }
 
+# The commit the game file comes from, marked if the file itself has uncommitted
+# edits. Only the game counts: other files in the Loom tree do not reach the copy.
+REV="$(git -C "$LOOM" log -1 --format=%h -- game/index.html 2>/dev/null || true)"
+[ -n "$REV" ] || REV=unknown
+git -C "$LOOM" diff --quiet HEAD -- game/index.html 2>/dev/null || REV="$REV-modified"
+
 mkdir -p "$OUT"
-python3 - "$SRC" "$OUT/index.html" "$ID" "$(git -C "$LOOM" describe --always --dirty 2>/dev/null || echo unknown)" <<'PY'
+python3 - "$SRC" "$OUT/index.html" "$ID" "$REV" <<'PY'
 import sys
 src, out, umami_id, rev = sys.argv[1:5]
 s = open(src, encoding="utf-8").read()

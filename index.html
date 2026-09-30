@@ -31,7 +31,7 @@
 <!-- ?v= is a cache buster. There is no build step to fingerprint the file, and a
      browser holding an old stylesheet against new markup renders the page wrong
      rather than merely stale — bump the number whenever style.css changes. -->
-<link rel="stylesheet" href="assets/css/style.css?v=6">
+<link rel="stylesheet" href="assets/css/style.css?v=7">
 
 <script type="application/ld+json">
 {
@@ -101,6 +101,7 @@
       <a href="#loom">Loom</a>
       <a href="#dungeon-gourmand">Dungeon Gourmand</a>
       <a href="#studio">Studio</a>
+      <a class="nav__play" href="#play">Play</a>
     </nav>
     <a class="btn btn--sm" href="mailto:voltix.studios.gaming@gmail.com">Contact</a>
   </div>
@@ -121,7 +122,11 @@
         One is on Google Play now, one is about to join it, and two are still in the workshop.
       </p>
       <div class="hero__cta">
-        <a class="btn btn--primary" href="#games">See the games</a>
+        <a class="btn btn--primary" href="#play">
+          <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-start"></use></svg>
+          Play in your browser
+        </a>
+        <a class="btn" href="#games">See the games</a>
         <a class="btn" href="mailto:voltix.studios.gaming@gmail.com">Get in touch</a>
       </div>
 
@@ -133,6 +138,36 @@
       </ul>
     </div>
     <div class="hero__fade" aria-hidden="true"></div>
+  </section>
+
+  <!-- ───────────────────────────── play in the browser ───────────────────────────── -->
+  <!-- The games that run on this site, one card each. A card is the game's own
+       page on the site; Loom's is loom/play/, a copy of the game made by
+       tools/sync-loom.sh. A second playable game is a second <li>. -->
+  <section class="section section--tight" id="play">
+    <div class="wrap">
+      <p class="eyebrow reveal">Play now</p>
+      <h2 class="h2 reveal">Play in your browser</h2>
+      <p class="lead reveal">
+        No install, no account and nothing to buy. Open it on a phone or a computer and play.
+      </p>
+
+      <ul class="playable reveal">
+        <li class="playable__card playable__card--loom">
+          <img class="playable__icon" src="assets/img/loom-icon.webp" alt=""
+               width="192" height="192" loading="lazy" decoding="async">
+          <div class="playable__body">
+            <h3>Loom <em>Daily puzzle</em></h3>
+            <p>Today's cloth, the same one for everyone in the world. Five attempts, two to
+               five minutes, and a result to share that spoils nothing.</p>
+          </div>
+          <a class="btn btn--primary" href="loom/play/">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-start"></use></svg>
+            Play today's cloth
+          </a>
+        </li>
+      </ul>
+    </div>
   </section>
 
   <!-- ───────────────────────────── games intro ───────────────────────────── -->

@@ -6,6 +6,11 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://voltixstudios.pages.dev/loom/play/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://voltixstudios.pages.dev/legal/paper-squadron/privacy-policy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>

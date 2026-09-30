@@ -37,6 +37,7 @@ legal/coreward/            privacy policy + terms & virtual currency, EN/ES
 legal/dungeon-gourmand/    privacy policy + terms + deletion, EN/ES
 legal/website-privacy.html what the *site* measures, EN/ES — see Analytics below
 loom/config.json           Loom's remote switch: which rewarded placements are on — see below
+loom/play/                 today's Loom cloth, playable here: a copy of the game — see below
 functions/analytics/       Pages Function: first-party proxy for Umami
 functions/loom/            Pages Function: Loom's day counters, and how to turn
                            them on (SETUP.md). Needs a D1 binding called LOOM
@@ -48,6 +49,7 @@ assets/js/analytics.js     click and scroll-depth events — also optional
 assets/img/                generated, committed
 tools/build_assets.py
 tools/build_qr.py          the Play Store QR in the Paper Squadron section
+tools/sync-loom.sh         copies Loom's game into loom/play/
 ```
 
 There is no build step. Edit, commit, push; Cloudflare Pages serves it as-is.
@@ -130,6 +132,29 @@ id, one local reminder alarm, one JSON of remote configuration from this site,
 rewarded AdMob only behind a consent form, Play Billing for six one-time products.
 Loom has no account, so its deletion page is the CoreWard shape: three routes to
 three owners.
+
+## Loom in the browser
+
+`loom/play/` is the Loom game itself, today's cloth only, linked from the Loom
+section as *Play today's cloth*. **Do not edit it here.** It is generated from
+the Loom repository's `game/index.html` by
+
+```bash
+bash tools/sync-loom.sh          # reads ../Loom; LOOM=/path/to/Loom to override
+```
+
+which copies the game, its logo and its store icon, and adds to the copy only:
+`window.LoomWeb` (the switch that puts the game in its website mode — `WEB` in the
+game), a description, canonical link and link preview, and the Umami tag with the
+website id read from `index.html`. The website mode hides the archive, the quilt,
+the reminder and the statistics switch, sends nothing to Google and nothing to the
+day counters, and makes a shared result link back to `/loom/play/`, so a friend
+who receives it can play the same cloth at once. It counts four events on Umami
+(`loom_puzzle_started`, `loom_puzzle_solved`, `loom_puzzle_failed`,
+`loom_share_pressed`), and keeps its save in the browser's local storage — the one
+page on the site that writes anything, which `legal/website-privacy.html` says.
+The Loom repository's `check.sh` asserts all of it. Re-run the script whenever a
+change to the game should reach the site, and commit `loom/play/` with it.
 
 ## Loom's remote switch
 

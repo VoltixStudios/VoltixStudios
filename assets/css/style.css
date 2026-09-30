@@ -314,45 +314,6 @@ p:last-child { margin-bottom: 0; }
   margin-top: 34px;
 }
 
-.hero__chips {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  list-style: none;
-  margin: 46px 0 0;
-  padding: 0;
-}
-.hero__chips li {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 18px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .025);
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: .9rem;
-  letter-spacing: .03em;
-}
-.hero__chips em {
-  font-style: normal;
-  font-weight: 400;
-  font-family: var(--body);
-  color: var(--muted);
-  font-size: .82rem;
-}
-
-.dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex: none;
-}
-.dot--ps { background: #e8413c; box-shadow: 0 0 12px #e8413c; }
-.dot--cw { background: #ff7a1a; box-shadow: 0 0 12px #ff7a1a; }
-.dot--dg { background: #e8a33a; box-shadow: 0 0 12px #e8a33a; }
-.dot--loom { background: #3b8bf0; box-shadow: 0 0 12px #3b8bf0; }
 
 /* ── generic section ─────────────────────────────────────────────────────── */
 
@@ -525,6 +486,101 @@ p:last-child { margin-bottom: 0; }
   font-size: .72rem;
   color: var(--muted);
 }
+
+/* game cards: the home page's index of the games, and the three "other games"
+   at the foot of each game's page. A card is a way into games/<slug>/; the
+   per-game accent comes from the same .game--xx class the game pages use. */
+
+.cards {
+  list-style: none;
+  margin: clamp(28px, 4vw, 44px) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
+  gap: 18px;
+}
+.cards--3 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: linear-gradient(180deg, var(--ink-2), var(--ink-1));
+  overflow: hidden;
+  transition: border-color .3s var(--ease), transform .3s var(--ease);
+}
+.card:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  transform: translateY(-3px);
+}
+/* The key arts have different ratios; a fixed frame and `contain` on black give
+   every card the same shape, as .game__art does on the game pages. */
+.card__art {
+  display: block;
+  background: #000;
+  border-bottom: 1px solid var(--line-soft);
+}
+.card__art img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+}
+.card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px 22px 24px;
+}
+.card .status { align-self: flex-start; margin-bottom: 12px; }
+.card__name {
+  font-size: 1.45rem;
+  letter-spacing: -.01em;
+  margin: 0;
+}
+.card__name a { text-decoration: none; }
+.card__name a:hover { color: var(--accent); }
+.card__tag {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: .76rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 6px 0 12px;
+}
+.card__pitch {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: .97rem;
+}
+.card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+/* a game's own page: the article is the page, so it starts under the header
+   with a way back above it, and the "other games" block sits tighter. */
+.page-game { border-top: 0; padding-top: clamp(24px, 3.5vw, 44px); }
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: clamp(22px, 3vw, 34px);
+  font-family: var(--display);
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .2s var(--ease);
+}
+.crumb::before { content: "\2190"; }
+.crumb:hover { color: var(--text); }
+.more { border-top: 1px solid var(--line-soft); }
 
 /* games that run on this site */
 
@@ -1060,16 +1116,10 @@ p:last-child { margin-bottom: 0; }
   .strata__grid span { font-size: .72rem; padding-inline: 10px; }
 }
 
-/* The nav sheds links rather than collapsing into a menu: the page is short
-   enough that a hamburger would cost more than it saves. The per-game links go
-   first, since "Games" already reaches all of them; the indices track the order
-   in the header, so a fourth game adds a line here. */
+/* The nav is three links - Games, Play, Studio - and sheds Studio rather than
+   collapsing into a menu: a hamburger would cost more than it saves. */
 @media (max-width: 860px) {
   .nav__links { gap: 18px; }
-  .nav__links a:nth-child(2),
-  .nav__links a:nth-child(3),
-  .nav__links a:nth-child(4),
-  .nav__links a:nth-child(5) { display: none; }
 }
 
 @media (max-width: 760px) {
@@ -1094,8 +1144,7 @@ p:last-child { margin-bottom: 0; }
 }
 
 @media (max-width: 460px) {
-  .nav__links a:nth-child(6) { display: none; }   /* Studio, leaving Games and Play; the legal pages have no sixth */
-  .hero__chips li { width: 100%; justify-content: center; }
+  .nav__links a:nth-child(3) { display: none; }   /* Studio, leaving Games and Play */
   .foot__top,
   .foot__bar { justify-content: center; text-align: center; }
   .foot__links { width: 100%; justify-content: center; }

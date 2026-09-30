@@ -1,9 +1,9 @@
 # VoltixStudios
 
-The Voltix Studios website — a landing page covering the studio and its four
-games, **Paper Squadron**, **Loom**, **CoreWard** and **Dungeon Gourmand**, plus the
-legal documents Google Play requires those games to publish, and the one file
-Loom reads at launch.
+The Voltix Studios website — a short home page for the studio, one page for
+each of its four games, **Paper Squadron**, **Loom**, **CoreWard** and **Dungeon
+Gourmand**, Loom's daily cloth playable in the browser, the legal documents Google
+Play requires those games to publish, and the one file Loom reads at launch.
 
 Live at <https://voltixstudios.pages.dev/>, served by Cloudflare Pages.
 
@@ -27,7 +27,8 @@ Live at <https://voltixstudios.pages.dev/>, served by Cloudflare Pages.
 ## Layout
 
 ```
-index.html                 the landing page
+index.html                 the home page: hero, Play now, the four game cards, studio, contact
+games/<game>/index.html    one page per game — everything the home page once said about it
 404.html                   self-contained; no assets, works at any depth
 robots.txt  sitemap.xml
 app-ads.txt                authorises AdMob to sell our inventory — see below
@@ -53,6 +54,13 @@ tools/sync-loom.sh         copies Loom's game into loom/play/
 ```
 
 There is no build step. Edit, commit, push; Cloudflare Pages serves it as-is.
+The header, the footer and the "other games" cards are repeated by hand in every
+page, the way the legal pages already repeat theirs; a change to one is a change
+to all of them, and `grep -l 'class="nav__links"'` lists them.
+
+The home page keeps an `id` per game on its card (`#paper-squadron`, `#loom`, …)
+so the anchors the old single page carried still land on the right game; the
+game's own page is `games/<game>/`.
 `functions/` is the one exception to "static": Cloudflare picks it up by path,
 with no config and nothing added to the deploy. It does not exist on the
 GitHub Pages mirror, which is deliberate — see Analytics.
@@ -117,7 +125,7 @@ Play Billing are all Phase 4 work and are described as they are specified, not
 as they are wired. The rule above applies in reverse here: when Phase 4 lands,
 these pages are checked against what was actually built, in that commit.
 
-Loom's section on the landing page sits third, after CoreWard, and shows the store
+Loom's page (`games/loom/`) shows the store
 screenshots. Those are not made here: `Loom/store/screenshots/` holds the finished
 1080x1920 graphics, each with its own headline and phone frame, and
 `build_assets.py --only loom` converts them to `loom-shot-N.webp` in listing order.

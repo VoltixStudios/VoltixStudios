@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dungeon Gourmand — Idle dungeon-crawler</title>
+<meta name="description" content="Send a party into a dungeon, put the phone down, and cook what they bring home. An idle dungeon-crawler and dragon-raising hybrid, in development for Android.">
+<meta name="theme-color" content="#05060a">
+<link rel="canonical" href="https://voltixstudios.pages.dev/games/dungeon-gourmand/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Voltix Studios">
+<meta property="og:title" content="Dungeon Gourmand — Idle dungeon-crawler">
+<meta property="og:description" content="Send a party into a dungeon, put the phone down, and cook what they bring home. An idle dungeon-crawler and dragon-raising hybrid, in development for Android.">
+<meta property="og:url" content="https://voltixstudios.pages.dev/games/dungeon-gourmand/">
+<meta property="og:image" content="https://voltixstudios.pages.dev/assets/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Voltix Studios">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@voltix_studios">
+<meta name="twitter:creator" content="@voltix_studios">
+
+<link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<!-- ?v= is a cache buster. There is no build step to fingerprint the file, and a
+     browser holding an old stylesheet against new markup renders the page wrong
+     rather than merely stale — bump the number whenever style.css changes. -->
+<link rel="stylesheet" href="../../assets/css/style.css?v=8">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "Dungeon Gourmand",
+  "url": "https://voltixstudios.pages.dev/games/dungeon-gourmand/",
+  "description": "Send a party into a dungeon, put the phone down, and cook what they bring home. An idle dungeon-crawler and dragon-raising hybrid, in development for Android.",
+  "genre": "Idle crawler",
+  "applicationCategory": "Game",
+  "operatingSystem": "Android",
+  "image": "https://voltixstudios.pages.dev/assets/img/dungeongourmand-key.webp",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Voltix Studios",
+    "url": "https://voltixstudios.pages.dev/"
+  }
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Icon sprite. Defined once; every social link below is a <use> of it. -->
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-x" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z"/>
+  </symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/>
+  </symbol>
+  <symbol id="i-tt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07Z"/>
+  </symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M2.75 5.75h18.5v12.5H2.75z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m3.4 6.4 8.6 6.6 8.6-6.6"/>
+  </symbol>
+  <!-- The Play mark keeps its own four colours rather than currentColor: it is a
+       brand icon, and the recognition is the whole point of putting it on the
+       button. Traced off the official asset — blue left, green top, yellow tip,
+       red bottom. -->
+  <symbol id="i-play" viewBox="0 0 24 24">
+    <path fill="#4285f4" d="M2.88 2.88 11.31 12 2.88 21.12Z"/>
+    <path fill="#34a853" d="M2.88 2.88 5.46 1.5 15.44 7.7 11.31 12Z"/>
+    <path fill="#fbbc04" d="M15.44 7.7 21.12 11.14 21.12 12.86 15.44 16.3 11.31 12Z"/>
+    <path fill="#ea4335" d="M11.31 12 15.44 16.3 5.46 22.5 2.88 21.12Z"/>
+  </symbol>
+  <!-- A plain start triangle, for a game that runs on this site rather than in a store. -->
+  <symbol id="i-start" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M7 4.6v14.8a1 1 0 0 0 1.52.85l11.6-7.4a1 1 0 0 0 0-1.7L8.52 3.75A1 1 0 0 0 7 4.6Z"/>
+  </symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2.1c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/>
+  </symbol>
+</svg>
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="../../index.html">
+      <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" decoding="async">
+      <span>Voltix<em>Studios</em></span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="../../index.html#games">Games</a>
+      <a class="nav__play" href="../../index.html#play">Play</a>
+      <a href="../../index.html#studio">Studio</a>
+    </nav>
+    <a class="btn btn--sm" href="mailto:voltix.studios.gaming@gmail.com">Contact</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ───────────────────────────── dungeon gourmand ───────────────────────────── -->
+    <article class="game game--dg page-game" id="dungeon-gourmand">
+    <div class="game__glow" aria-hidden="true"></div>
+    <div class="wrap">
+      <a class="crumb" href="../../index.html#games">All games</a>
+
+      <div class="game__head">
+        <figure class="game__art reveal">
+          <img src="../../assets/img/dungeongourmand-key.webp" alt="Dungeon Gourmand key art"
+               width="1600" height="900" loading="lazy" decoding="async">
+        </figure>
+
+        <div class="game__intro reveal">
+          <p class="status"><span class="status__dot"></span> In development</p>
+          <h2 class="game__name">Dungeon Gourmand</h2>
+          <p class="game__tag">Delve. Cook. Feed.</p>
+          <p class="game__pitch">
+            Your dragon is what you feed it, and what you feed it decides where you can go.
+          </p>
+          <p>
+            You are a retired adventurer keeping a hearth on the edge of the frontier, and in
+            your care is an egg. You hire a party, send it into a dungeon, and put the phone
+            down. Hours later it walks back in with ingredients, gold, injuries — and a written
+            account of what happened down there.
+          </p>
+          <p>
+            Then you cook what they brought home, and what you cook is what the dragon becomes.
+            The dragon flies out to find the next dungeon, and how far it can look is what
+            decides where the next party may be sent.
+          </p>
+          <p>
+            An idle dungeon-crawler and dragon-raising hybrid, played in portrait in a few
+            minutes a day.
+          </p>
+        </div>
+      </div>
+
+      <ul class="features reveal">
+        <li>
+          <h3>Absence is the mechanic</h3>
+          <p>Nothing permanent is ever lost to time. No spoilage, no decay that costs a stage,
+             no streak that dies while you are away. The wait is the game, never the penalty
+             for having a life.</p>
+        </li>
+        <li>
+          <h3>The return is the story</h3>
+          <p>Every expedition comes home as a Ledger — a written account generated from that
+             run's own stored seed, so the rolls printed are the rolls that happened and the
+             loot listed is the loot in the haul.</p>
+        </li>
+        <li>
+          <h3>The kitchen</h3>
+          <p>Ingredients become dishes, and a timing tap decides how well. Cook the same recipe
+             often enough and mastery raises its floor.</p>
+        </li>
+        <li>
+          <h3>Who you send</h3>
+          <p>Delvers, shields, scouts and healers, hired off a tavern board that turns over
+             every six hours. Each carries a trait, a favourite dish and a lead of their own.</p>
+        </li>
+        <li>
+          <h3>A drawn map</h3>
+          <p>The Valley, the Mountains and the Coast, with fog that only ever lifts. The dragon
+             flies to look; the party walks to whatever it found.</p>
+        </li>
+        <li>
+          <h3>The rules are not for sale</h3>
+          <p>Money buys time and identity — a second party, a colour, a bag of Scales. It never
+             buys a success rate, a loot roll or a skipped timer.</p>
+        </li>
+      </ul>
+
+      <div class="split reveal">
+        <section aria-labelledby="elements-h">
+          <h3 id="elements-h" class="roster__title">Four elements, four dragons</h3>
+          <table class="data-table">
+            <thead>
+              <tr><th scope="col">Element</th><th scope="col">What the dragon becomes</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row"><span class="chip" style="--c:#f0641e"></span>Ember</th>
+                  <td>Burns a path through choking ash.</td></tr>
+              <tr><th scope="row"><span class="chip" style="--c:#6fd3ef"></span>Frost</th>
+                  <td>Shrugs off whatever the deep throws.</td></tr>
+              <tr><th scope="row"><span class="chip" style="--c:#c89a5b"></span>Stone</th>
+                  <td>Brings people home in one piece.</td></tr>
+              <tr><th scope="row"><span class="chip" style="--c:#8cc06a"></span>Verdant</th>
+                  <td>Forages, and keeps the larder full.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section aria-labelledby="stages-h">
+          <h3 id="stages-h" class="roster__title">Four stages up</h3>
+          <ol class="ladder">
+            <li><h4>Egg</h4><span>Nothing to send it after yet</span></li>
+            <li><h4>Hatchling</h4><span>Scouts the Valley, flies with the party</span></li>
+            <li><h4>Juvenile</h4><span>Reaches the Mountains, and forages</span></li>
+            <li><h4>Adult</h4><span>The Coast, ferrying and nesting</span></li>
+          </ol>
+        </section>
+      </div>
+
+      <dl class="facts reveal">
+        <div><dt>Platform</dt><dd>Android</dd></div>
+        <div><dt>Genre</dt><dd>Idle dungeon-crawler</dd></div>
+        <div><dt>Session</dt><dd>Minutes a day</dd></div>
+        <div><dt>Orientation</dt><dd>Portrait, one thumb</dd></div>
+        <div><dt>Languages</dt><dd>English</dd></div>
+        <div><dt>Status</dt><dd>In development</dd></div>
+        <div><dt>Engine</dt><dd>Flutter</dd></div>
+      </dl>
+
+    </div>
+  </article>
+
+  <!-- ───────────────────────────── the other games ───────────────────────────── -->
+  <section class="section section--tight more" aria-labelledby="more-h">
+    <div class="wrap">
+      <p class="eyebrow reveal">More from the studio</p>
+      <h2 class="h2 reveal" id="more-h">The other games</h2>
+      <ul class="cards cards--3 reveal">
+      <li class="card game--ps" id="paper-squadron">
+        <a class="card__art" href="../../games/paper-squadron/" tabindex="-1" aria-hidden="true">
+          <img src="../../assets/img/papersquadron-key.webp" alt="" width="1086" height="703"
+               loading="lazy" decoding="async">
+        </a>
+        <div class="card__body">
+          <p class="status"><span class="status__dot"></span> Out now on Google Play</p>
+          <h3 class="card__name"><a href="../../games/paper-squadron/">Paper Squadron</a></h3>
+          <p class="card__tag">Arcade flight</p>
+          <p class="card__pitch">Fold a paper plane, launch it off the desk, and fly.</p>
+          <div class="card__actions">
+          <a class="btn btn--sm" href="../../games/paper-squadron/">About the game</a>
+          <a class="btn btn--sm btn--primary" href="https://play.google.com/store/apps/details?id=com.voltixstudios.papersquadron" rel="noopener" target="_blank">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg>
+            Google Play
+          </a>
+          </div>
+        </div>
+      </li>
+      <li class="card game--cw" id="coreward">
+        <a class="card__art" href="../../games/coreward/" tabindex="-1" aria-hidden="true">
+          <img src="../../assets/img/coreward-key.webp" alt="" width="1254" height="1254"
+               loading="lazy" decoding="async">
+        </a>
+        <div class="card__body">
+          <p class="status"><span class="status__dot"></span> Coming soon</p>
+          <h3 class="card__name"><a href="../../games/coreward/">CoreWard</a></h3>
+          <p class="card__tag">Descent puzzler</p>
+          <p class="card__pitch">Drill down. Read the collapse before it happens.</p>
+          <div class="card__actions">
+          <a class="btn btn--sm" href="../../games/coreward/">About the game</a>
+          </div>
+        </div>
+      </li>
+      <li class="card game--loom" id="loom">
+        <a class="card__art" href="../../games/loom/" tabindex="-1" aria-hidden="true">
+          <img src="../../assets/img/loom-key.webp" alt="" width="900" height="900"
+               loading="lazy" decoding="async">
+        </a>
+        <div class="card__body">
+          <p class="status"><span class="status__dot"></span> Coming to Google Play</p>
+          <h3 class="card__name"><a href="../../games/loom/">Loom</a></h3>
+          <p class="card__tag">Daily puzzle</p>
+          <p class="card__pitch">Every day, one pattern. You know all the moves. Can you find the order?</p>
+          <div class="card__actions">
+          <a class="btn btn--sm" href="../../games/loom/">About the game</a>
+          <a class="btn btn--sm btn--primary" href="../../loom/play/">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-start"></use></svg>
+            Play today's cloth
+          </a>
+          </div>
+        </div>
+      </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────── contact ───────────────────────────── -->
+  <section class="section contact" id="contact">
+    <div class="wrap contact__inner reveal">
+      <h2 class="h2">Press, playtesting, or just curious</h2>
+      <p class="lead">
+        Builds and press material are available on request. If you would like early access to
+        a closed test, say hello.
+      </p>
+      <a class="btn btn--primary btn--lg" href="mailto:voltix.studios.gaming@gmail.com">
+        voltix.studios.gaming@gmail.com
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+
+    <div class="foot__top">
+      <a class="brand" href="../../index.html">
+        <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" loading="lazy">
+        <span>Voltix<em>Studios</em></span>
+      </a>
+
+      <ul class="social social--compact" aria-label="Voltix Studios elsewhere">
+        <li><a class="social__btn social__btn--x" href="https://x.com/voltix_studios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on X">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></a></li>
+        <li><a class="social__btn social__btn--yt" href="https://www.youtube.com/@VoltixStudiosGaming"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on YouTube">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-yt"></use></svg></a></li>
+        <li><a class="social__btn social__btn--tt" href="https://www.tiktok.com/@voltixstudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on TikTok">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-tt"></use></svg></a></li>
+        <li><a class="social__btn" href="https://github.com/VoltixStudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on GitHub">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-gh"></use></svg></a></li>
+        <li><a class="social__btn" href="mailto:voltix.studios.gaming@gmail.com"
+               aria-label="Email Voltix Studios">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg></a></li>
+      </ul>
+    </div>
+
+    <div class="foot__bar">
+      <p class="foot__copy">
+        &copy; <span id="year">2026</span> Voltix Studios. All game names and artwork are
+        property of Voltix Studios.
+      </p>
+      <!-- Named per game now that both have documents. "Privacy policy" on its own
+           was unambiguous with one game and is a coin flip with two — and so was
+           "Delete your data", once the second game grew a deletion page of its own. -->
+      <nav class="foot__links" aria-label="Legal">
+        <a href="../../legal/paper-squadron/privacy-policy.html">Paper Squadron privacy</a>
+        <a href="../../legal/paper-squadron/delete-account.html">Paper Squadron data deletion</a>
+        <a href="../../legal/loom/privacy-policy.html">Loom privacy</a>
+        <a href="../../legal/loom/delete-account.html">Loom data deletion</a>
+        <a href="../../legal/coreward/privacy-policy.html">CoreWard privacy</a>
+        <a href="../../legal/coreward/terms.html">CoreWard terms</a>
+        <a href="../../legal/coreward/delete-account.html">CoreWard data deletion</a>
+        <a href="../../legal/dungeon-gourmand/privacy-policy.html">Dungeon Gourmand privacy</a>
+        <a href="../../legal/dungeon-gourmand/terms.html">Dungeon Gourmand terms</a>
+        <a href="../../legal/dungeon-gourmand/delete-account.html">Dungeon Gourmand data deletion</a>
+        <a href="../../legal/website-privacy.html">Website privacy</a>
+      </nav>
+    </div>
+
+  </div>
+</footer>
+
+<script src="../../assets/js/main.js" defer></script>
+
+<!-- /analytics/ is a Pages Function proxying Umami: no third-party script, and
+     nothing stored on the device (legal/website-privacy.html). Root-absolute on
+     purpose — it resolves only on Cloudflare, keeping the github.io mirror out. -->
+<script defer src="/analytics/script.js"
+        data-website-id="REPLACE_WITH_UMAMI_WEBSITE_ID"
+        data-exclude-hash="true"></script>
+<script src="../../assets/js/analytics.js" defer></script>
+</body>
+</html>

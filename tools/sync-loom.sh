@@ -65,7 +65,7 @@ once("<title>Loom — daily pattern</title>", f"""<title>Loom — today's cloth<
 <meta property="og:image:height" content="512">
 <!-- The website mode: see WEB in the game. `more` is relative so that it also
      resolves on the github.io mirror. -->
-<script>window.LoomWeb={{share:'{URL}',more:'../../#loom'}};</script>""")
+<script>window.LoomWeb={{share:'{URL}',more:'../../games/loom/'}};</script>""")
 
 once("</body>", f"""<!-- /analytics/ is the site's Pages Function proxying Umami (legal/website-privacy.html).
      Root-absolute on purpose: it resolves only on Cloudflare. -->

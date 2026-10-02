@@ -45,7 +45,7 @@ def once(anchor, new):
 
 URL = "https://voltixstudios.pages.dev/loom/play/"
 DESC = ("Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the "
-        "browser: the same one for everyone, five attempts.")
+        "browser: the same one for everyone, three attempts.")
 
 once("<title>Loom — daily pattern</title>", f"""<title>Loom — today's cloth</title>
 <!-- Copied from the Loom repository (game/index.html at {rev}) by

@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at c003970) by
+<!-- Copied from the Loom repository (game/index.html at 5308650) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
-<meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, five attempts.">
+<meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
 <link rel="canonical" href="https://voltixstudios.pages.dev/loom/play/">
 <link rel="icon" href="icon-512.png">
 <link rel="apple-touch-icon" href="icon-512.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Voltix Studios">
 <meta property="og:title" content="Loom — today's cloth">
-<meta property="og:description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, five attempts.">
+<meta property="og:description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
 <meta property="og:url" content="https://voltixstudios.pages.dev/loom/play/">
 <meta property="og:image" content="https://voltixstudios.pages.dev/loom/play/icon-512.png">
 <meta property="og:image:width" content="512">
@@ -278,6 +278,18 @@ button.tiny{border:0;background:transparent;color:var(--accent2);font:inherit;fo
 .slot.locked .glyph{color:#E0A93A}
 .slot.locked .pin{color:#E0A93A}
 .hb.hinted{background:#F2CF6B}
+/* The lost day's offer: a sheet over the result, one card, no scrolling. */
+.sheet{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;
+  box-sizing:border-box;padding:16px calc(16px + var(--sar)) calc(16px + var(--sab)) calc(16px + var(--sal));
+  background:rgba(90,74,66,.42)}
+.sheet[hidden]{display:none}
+.sheet__card{width:100%;max-width:400px;box-sizing:border-box;padding:22px 18px 12px;border-radius:24px;
+  background:var(--card);text-align:center;box-shadow:0 12px 32px rgba(90,74,66,.3)}
+.sheet__card b{display:block;font-size:20px;color:var(--accent);margin-bottom:6px}
+.sheet__art{width:112px;height:112px;margin:-6px auto 8px}
+.sheet__art svg{width:100%;height:100%;display:block}
+.sheet__card .lines{font-size:14px;font-weight:700;line-height:1.6;color:var(--ink)}
+.sheet__card .note{margin-top:8px}
 /* §12: the offer, one screen, no scrolling; the settings rows; the thread swatches. */
 #offerPanel .big-price{display:block;font-size:22px;color:var(--ink);margin:10px 0 2px}
 #offerPanel .lines{font-size:14px;font-weight:700;line-height:1.7;margin-bottom:4px}
@@ -549,7 +561,7 @@ body.marks .sym{display:block}
       <li data-t="The starting cloth has to become the pattern. Both are at the top of the screen.">The starting cloth has to become the pattern. Both are at the top of the screen.</li>
       <li data-t="Every operation you need is already in the tray. What is missing is their order.">Every operation you need is already in the tray. What is missing is their order.</li>
       <li data-t="Tap them into the slots, then press Weave. They run on the cloth one at a time.">Tap them into the slots, then press Weave. They run on the cloth one at a time.</li>
-      <li data-t="Each slot is then marked: this one was in the right place, this one was not. Change the order and weave again.">Each slot is then marked: this one was in the right place, this one was not. Change the order and weave again.</li>
+      <li data-t="Then the slots are ticked from the first one, for as long as the order is right. Change what comes after and weave again.">Then the slots are ticked from the first one, for as long as the order is right. Change what comes after and weave again.</li>
     </ol>
     <div class="note" data-t="Tap the mark on an operation to watch what it does to a cloth. It never costs an attempt.">Tap the mark on an operation to watch what it does to a cloth. It never costs an attempt.</div>
   </div>
@@ -648,8 +660,22 @@ body.marks .sym{display:block}
     <a class="link" id="webMore" hidden></a>
   </div>
 
+  <!-- On a lost day: one more weave, every way there is to have one, in one place. -->
+  <div class="sheet" id="moreSheet" hidden role="dialog" aria-modal="true" aria-labelledby="moreSheetTitle">
+    <div class="sheet__card">
+      <div class="sheet__art" id="moreSheetArt"></div>
+      <b id="moreSheetTitle" data-t="One more weave?">One more weave?</b>
+      <div class="lines" id="moreSheetLine"></div>
+      <button class="act" id="moreSheetPack" hidden></button>
+      <button class="act" id="moreSheetBuy" hidden></button>
+      <button class="link" id="moreSheetAd" hidden></button>
+      <button class="link" id="moreSheetNo" data-t="Not now">Not now</button>
+      <div class="note" id="moreSheetNote" data-t="Two extra weaves a day at most. The shared result shows them.">Two extra weaves a day at most. The shared result shows them.</div>
+    </div>
+  </div>
+
   <div id="logPanel"></div>
-  <div class="foot" id="foot">
+  <div class="foot" id="foot" role="link">
     <span>Loom — Voltix Studios.</span><br>
     <span data-t="One puzzle a day, the same for everyone.">One puzzle a day, the same for everyone.</span>
   </div>
@@ -694,7 +720,7 @@ ca:{
  'The starting cloth has to become the pattern. Both are at the top of the screen.':'La tela de sortida ha d’arribar a ser el patró. Totes dues són a dalt de tot de la pantalla.',
  'Every operation you need is already in the tray. What is missing is their order.':'Totes les operacions que et calen ja són a la safata. El que falta és el seu ordre.',
  'Tap them into the slots, then press Weave. They run on the cloth one at a time.':'Toca-les per posar-les a les caselles i prem Teixeix. S’apliquen a la tela d’una en una.',
- 'Each slot is then marked: this one was in the right place, this one was not. Change the order and weave again.':'Després cada casella queda marcada: aquesta era al lloc correcte, aquesta no. Canvia l’ordre i torna a teixir.',
+ 'Then the slots are ticked from the first one, for as long as the order is right. Change what comes after and weave again.':'Després les caselles es marquen des de la primera, mentre l’ordre sigui correcte. Canvia el que ve després i torna a teixir.',
  'Tap the mark on an operation to watch what it does to a cloth. It never costs an attempt.':'Toca la marca d’una operació per veure què fa a una tela. No costa mai cap intent.',
  'Settings':'Configuració','Sound':'So','Shuttles, ticks and the finished chord.':'Llançadores, marques i l’acord final.',
  'Reduced motion':'Menys moviment','No pulsing, no weave animation.':'Sense pulsacions ni animació del teixit.',
@@ -713,11 +739,11 @@ ca:{
  'Tap an operation to put it in the first slot.':'Toca una operació per posar-la a la primera casella.',
  'Keep going - all {n}, in the order you think weaves the pattern.':'Continua: totes {n}, en l’ordre que creus que teixeix el patró.',
  'Now weave, and see how close it comes.':'Ara teixeix, i mira com s’hi acosta.',
- 'A tick means that slot is right. Put the {n} back in a different order.':'Una marca vol dir que aquella casella és correcta. Torna a posar les {n} en un altre ordre.',
+ 'Ticks run from the first slot while the order is right. Change what comes after them.':'Les marques van des de la primera casella mentre l’ordre és correcte. Canvia el que ve després.',
  'The number says how many were in the right place. Put the {n} back in a different order.':'El número diu quantes eren al lloc correcte. Torna a posar les {n} en un altre ordre.',
- 'four':'quatre','five':'cinc','six':'sis',
+ 'three':'tres','four':'quatre','five':'cinc','six':'sis',
  'in what order?':'en quin ordre?','{n} tries':'{n} intents',
- 'A tick means that operation is in the right place. ':'Una marca vol dir que aquella operació és al lloc correcte. ',
+ 'Every ticked slot, from the first, is right. ':'Cada casella marcada, des de la primera, és correcta. ',
  '{n} of {t} in place, but which? ':'{n} de {t} al seu lloc, però quines? ',
  '{n} attempt left. Tap a tile to take it back out.':'Queda {n} intent. Toca una fitxa per treure-la.',
  '{n} attempts left. Tap a tile to take it back out.':'Queden {n} intents. Toca una fitxa per treure-la.',
@@ -767,6 +793,12 @@ ca:{
  '{n} weaves left in your pack.':'Et queden {n} teixits al paquet.',
  'Extra weaves':'Teixits addicionals',
  'For a day you have lost: one more attempt, two a day at most.':'Per a un dia perdut: un intent més, com a molt dos al dia.',
+ 'One more weave?':'Un teixit més?',
+ 'Your {t} attempts are used. One more try?':'Has fet servir els {t} intents. Un intent més?',
+ 'Use one of your {n} weaves':'Fes servir un dels teus {n} teixits',
+ 'Five more weaves · {p}':'Cinc teixits més · {p}',
+ 'Watch an advert for one more':'Mira un anunci per tenir-ne un més',
+ 'Two extra weaves a day at most. The shared result shows them.':'Com a molt dos teixits addicionals al dia. El resultat compartit els mostra.',
  'Unpick a thread · ten for {p}':'Desfés un fil · deu per {p}',
  'yours':'teu',
  'buy':'compra',
@@ -785,7 +817,7 @@ es:{
  'The starting cloth has to become the pattern. Both are at the top of the screen.':'La tela de salida tiene que convertirse en el patrón. Las dos están arriba del todo.',
  'Every operation you need is already in the tray. What is missing is their order.':'Todas las operaciones que necesitas ya están en la bandeja. Lo que falta es su orden.',
  'Tap them into the slots, then press Weave. They run on the cloth one at a time.':'Tócalas para colocarlas en las casillas y pulsa Tejer. Se aplican a la tela una a una.',
- 'Each slot is then marked: this one was in the right place, this one was not. Change the order and weave again.':'Después cada casilla queda marcada: esta estaba en el lugar correcto, esta no. Cambia el orden y vuelve a tejer.',
+ 'Then the slots are ticked from the first one, for as long as the order is right. Change what comes after and weave again.':'Después las casillas se marcan desde la primera, mientras el orden sea correcto. Cambia lo que viene después y vuelve a tejer.',
  'Tap the mark on an operation to watch what it does to a cloth. It never costs an attempt.':'Toca la marca de una operación para ver qué le hace a una tela. Nunca cuesta un intento.',
  'Settings':'Ajustes','Sound':'Sonido','Shuttles, ticks and the finished chord.':'Lanzaderas, marcas y el acorde final.',
  'Reduced motion':'Menos movimiento','No pulsing, no weave animation.':'Sin pulsaciones ni animación del tejido.',
@@ -804,11 +836,11 @@ es:{
  'Tap an operation to put it in the first slot.':'Toca una operación para ponerla en la primera casilla.',
  'Keep going - all {n}, in the order you think weaves the pattern.':'Sigue: las {n}, en el orden que crees que teje el patrón.',
  'Now weave, and see how close it comes.':'Ahora teje, y mira cuánto se acerca.',
- 'A tick means that slot is right. Put the {n} back in a different order.':'Una marca significa que esa casilla es correcta. Vuelve a poner las {n} en otro orden.',
+ 'Ticks run from the first slot while the order is right. Change what comes after them.':'Las marcas van desde la primera casilla mientras el orden es correcto. Cambia lo que viene después.',
  'The number says how many were in the right place. Put the {n} back in a different order.':'El número dice cuántas estaban en su sitio. Vuelve a poner las {n} en otro orden.',
- 'four':'cuatro','five':'cinco','six':'seis',
+ 'three':'tres','four':'cuatro','five':'cinco','six':'seis',
  'in what order?':'¿en qué orden?','{n} tries':'{n} intentos',
- 'A tick means that operation is in the right place. ':'Una marca significa que esa operación está en su sitio. ',
+ 'Every ticked slot, from the first, is right. ':'Cada casilla marcada, desde la primera, es correcta. ',
  '{n} of {t} in place, but which? ':'{n} de {t} en su sitio, ¿pero cuáles? ',
  '{n} attempt left. Tap a tile to take it back out.':'Queda {n} intento. Toca una ficha para sacarla.',
  '{n} attempts left. Tap a tile to take it back out.':'Quedan {n} intentos. Toca una ficha para sacarla.',
@@ -858,6 +890,12 @@ es:{
  '{n} weaves left in your pack.':'Te quedan {n} tejidos en el paquete.',
  'Extra weaves':'Tejidos adicionales',
  'For a day you have lost: one more attempt, two a day at most.':'Para un día perdido: un intento más, como mucho dos al día.',
+ 'One more weave?':'¿Un tejido más?',
+ 'Your {t} attempts are used. One more try?':'Has usado tus {t} intentos. ¿Un intento más?',
+ 'Use one of your {n} weaves':'Usa uno de tus {n} tejidos',
+ 'Five more weaves · {p}':'Cinco tejidos más · {p}',
+ 'Watch an advert for one more':'Mira un anuncio para tener uno más',
+ 'Two extra weaves a day at most. The shared result shows them.':'Como mucho dos tejidos adicionales al día. El resultado compartido los muestra.',
  'Unpick a thread · ten for {p}':'Deshaz un hilo · diez por {p}',
  'yours':'tuyo',
  'buy':'comprar',
@@ -1094,7 +1132,7 @@ function adTestLine(){
      rules - no advertising on a first day, none ever to a purchaser - are
      exactly the conditions a tester cannot wait out, and this line exists to
      get past them. It shows what Google has loaded and nothing more. */
-  const on=['unpick','more','cloth'].filter(p=>{
+  const on=['unpick','more','cloth','interstitial'].filter(p=>{
     try{ return !!window.VoltixAds.available(p); }catch(e){ return false; } });
   return '<br>show an advert, which gives nothing: '+
     (on.length?on.map(p=>'<a href="#" class="logAdTest" data-p="'+p+'">'+p+'</a>').join(' &nbsp; ')
@@ -1133,7 +1171,7 @@ function showLog(){
     '<br><br>'+an+
     '<br>store: '+(SHOP.has()?'bridge present, Loom Full '+(FULL()?'owned':'not owned'):'no bridge')+
     '<br>advertising: '+(window.VoltixAds?'bridge present':'no bridge')+', placements '+
-      ['unpick','more','cloth'].map(p=>p+' '+(ADS.available(p)?'on':'off')).join(', ')+
+      ['unpick','more','cloth','interstitial'].map(p=>p+' '+(ADS.available(p)?'on':'off')).join(', ')+
     adTestLine()+
     /* Where a result got to. A day counter that never moves has three possible
        explanations - the endpoint is off in this build, the player has turned
@@ -1142,7 +1180,13 @@ function showLog(){
        they all look identical: no line. This says which. */
     '<br>day counters: '+rankLine()+
     '<br>profile: first day '+PROF.firstDay+', today '+dayNum+', stored '+(function(){ try{ const raw=localStorage.getItem(PKEY); const o=raw?JSON.parse(raw):null; return o?o.firstDay:'nothing'; }catch(e){ return 'unreadable'; } })()+
-    (PROF.firstDay===dayNum?'<br><br>advertising is never shown on a first day &nbsp; <a href="#" id="logFirst">pretend it is not my first day</a>':'')+
+    (isFinite(PROF.firstDay)&&dayNum-PROF.firstDay<INTERSTITIAL_FIRST_DAYS?'<br><br>no advertising on a first day, no interstitial in the first two &nbsp; <a href="#" id="logFirst">pretend these are not my first days</a>':'')+
+    /* Every offer and advertisement is spent once a day - the extra weaves, the
+       sheet, the interstitial, the hints - so a tester gets one go at each per
+       day. This hands today back with all of them fresh. */
+    '<br><br>offers and adverts are once a day &nbsp; <a href="#" id="logFresh">replay today with every offer fresh</a>'+
+    /* Loom Full turns every advertisement off, so testing both means un-buying it. */
+    ((PROF.owned||[]).length?'<br>bought: '+PROF.owned.join(', ')+' &nbsp; <a href="#" id="logUnbuy">forget what the preview store sold</a>':'')+
     /* The first day is the one thing a playtest cannot get back by waiting: it
        ends on the first solve and never returns. This gives it back on this
        device alone, so the lesson of 17.2 and the coach can both be watched
@@ -1153,7 +1197,17 @@ function showLog(){
     '<br><br><a href="#" id="logCopy">copy</a> &nbsp; <a href="#" id="logReset">reset for next tester</a>'+
     ' &nbsp; <a href="#" id="logClose">close</a>';
   if(document.getElementById('logFirst')) document.getElementById('logFirst').onclick=e=>{
-    e.preventDefault(); PROF.firstDay=dayNum-1; STORE.setJSON(PKEY,PROF); render(); showLog(); };
+    e.preventDefault(); PROF.firstDay=dayNum-INTERSTITIAL_FIRST_DAYS; STORE.setJSON(PKEY,PROF); render(); showLog(); };
+  if(document.getElementById('logUnbuy')) document.getElementById('logUnbuy').onclick=e=>{
+    e.preventDefault();
+    try{ window.VoltixNative.remove('loom.preview.owned'); }catch(err){}
+    PROF.owned=[]; STORE.setJSON(PKEY,PROF); afterPurchase(); showLog(); };
+  if(document.getElementById('logFresh')) document.getElementById('logFresh').onclick=e=>{
+    e.preventDefault();
+    if(!isFinite(PROF.firstDay)||dayNum-PROF.firstDay<INTERSTITIAL_FIRST_DAYS) PROF.firstDay=dayNum-INTERSTITIAL_FIRST_DAYS;
+    delete PROF.moreDay; delete PROF.moreNo; delete PROF.interDay; PROF.hintsToday=0;
+    STORE.setJSON(PKEY,PROF); STORE.del(DKEY(dayNum));
+    openDay(dayNum); showLog(); };
   if(document.getElementById('logAgain')) document.getElementById('logAgain').onclick=e=>{
     e.preventDefault();
     PROF.firstDay=dayNum; STORE.setJSON(PKEY,PROF);
@@ -1228,14 +1282,24 @@ LOG.report=function(){
 const STORE=(function(){
   const NB=window.VoltixNative;
   const native = !!(NB&&NB.save&&NB.load);
+  /* Inside the app the native copy is read first. Both are written together,
+     but SharedPreferences reaches the disk at once (and Android flushes it
+     whenever the app leaves the screen), while the WebView's local storage can
+     lag by long enough that a process killed soon after a move - an update, a
+     swipe from recents, Android reclaiming memory - comes back with an older
+     day, or a pack without what was just paid for. Seen on the emulator on
+     2 October 2026: a lost day stored natively with six tries came back from
+     local storage with three. Local storage is the fallback, and is put back
+     into the native copy when it is the only one. */
   function get(k){
     let v=null;
-    try{ v=localStorage.getItem(k); }catch(e){}
-    if(v===null&&native){
+    if(native){
       try{ v=NB.load(k); }catch(e){}
       if(v===''||v===undefined) v=null;
-      if(v!==null){ try{ localStorage.setItem(k,v); }catch(e){} }  // put it back
+      if(v!==null){ try{ if(localStorage.getItem(k)!==v) localStorage.setItem(k,v); }catch(e){} return v; }
     }
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v!==null&&native){ try{ NB.save(k,v); }catch(e){} }
     return v;
   }
   function set(k,v){
@@ -1340,21 +1404,22 @@ const COLS=3;
    this table is a release. Version 1, 16 September 2026: one dial per day,
    so the statistics can attribute a change in solve rate to one cause. */
 const FAMILIES=['row','col','swap','swapc','mirror','flip','turn','shift','fold'];
-const DIALS_VERSION=1;
+const DIALS_VERSION=2;   // 2: three tries on a 4x4 cloth, five on the 5x5 (2 October 2026)
 function dials(day){
   const wd=dateOf(day).getUTCDay();          // 0 Sunday … 6 Saturday
-  const d={v:DIALS_VERSION,N:4,NOPS:4,D:0,FEEDBACK:'which',TRIES:5,VOCAB:FAMILIES,name:'plain'};
+  const d={v:DIALS_VERSION,N:4,NOPS:4,D:0,FEEDBACK:'which',TRIES:3,VOCAB:FAMILIES,name:'plain'};
   if(wd===3||wd===4){ d.FEEDBACK='count'; d.name='count'; }                 // Wed, Thu: how many, not which
-  else if(wd===5){ d.D=1; d.TRIES=6; d.name='decoy'; }                      // Fri: one tile belongs nowhere
-  else if(wd===6){ d.NOPS=5; d.TRIES=6; d.name='five'; }                    // Sat: five slots
-  else if(wd===0){ d.N=5; d.NOPS=5; d.D=1; d.TRIES=6; d.name='sunday'; }    // Sun: both, on a bigger cloth
+  else if(wd===5){ d.D=1; d.name='decoy'; }                                 // Fri: one tile belongs nowhere
+  else if(wd===6){ d.NOPS=5; d.name='five'; }                               // Sat: five slots
+  else if(wd===0){ d.N=5; d.NOPS=5; d.D=1; d.TRIES=5; d.name='sunday'; }    // Sun: both, on a bigger cloth
+  /* The President's rule, 2 October 2026: three tries on a 4x4 cloth, five on the 5x5. */
   return d;
 }
 /* The day on the loom. Set from the date when a day opens, never anywhere else. */
-let N=4, NOPS=4, TRIES=5, FEEDBACK='which', DEC=0;
+let N=4, NOPS=4, TRIES=3, FEEDBACK='which', DEC=0;
 function setDials(d){ N=d.N; NOPS=d.NOPS; TRIES=d.TRIES; FEEDBACK=d.FEEDBACK; DEC=d.D; }
 const MAXTRIES=6;
-const WORD={4:'four',5:'five',6:'six'};
+const WORD={3:'three',4:'four',5:'five',6:'six'};
 
 /* ---------- the vocabulary (§4) --------------------------------------------
    Every operation a hand can do to a square cloth without changing a thread's
@@ -1675,6 +1740,7 @@ const SHOP=(function(){
       else offerNote(said);
     }else if(state==='none'){ offerNote(T('Nothing to restore on this account.')); }
     else{ LOG.mark('buyfail','purchase_failed',{item_id:sku,state:String(state)}); offerNote(T('Nothing was bought. You are where you were.')); }
+    moreSheetBought(sku,state,p?p.placement:'');
     afterPurchase();
   };
   return {has,owned,price,buy,restore};
@@ -1701,8 +1767,14 @@ function openDay(d){
   viewDay=d; archive=(d!==dayNum);
   P=build(d); setDials(P.dials);
   secretIdx=P.secret.map(op=>P.ops.findIndex(o=>JSON.stringify(o)===JSON.stringify(op)));
-  st=STORE.getJSON(DKEY(d),null)||{v:3,order:[],attempts:[],done:false,won:false,started:false};
+  st=STORE.getJSON(DKEY(d),null)||{v:4,order:[],attempts:[],done:false,won:false,started:false};
   st.attempts=st.attempts||[]; st.order=st.order||[];
+  /* v4 keeps st.order by slot, holes and all, so taking a tile out moves no
+     other tile. A v3 record held the free slots' tiles packed together; it is
+     laid out by slot once, the same way v3 drew it. */
+  if((st.v||3)<4){ const L=st.locked||[], packed=st.order; let k=0; st.order=[];
+    for(let i=0;i<NOPS;i++) st.order.push(L.some(x=>x.s===i)?null:(k<packed.length?packed[k++]:null));
+    st.v=4; }
   CLOCK.start(d,st.secs);          // §22.1, and it carries what earlier sittings spent
   $('backbar').classList.toggle('show',archive);
   if(archive) $('backLabel').textContent=T('Cloth No. {n}  ·  {d}',{n:d,d:dayLabel(d)});
@@ -1710,6 +1782,7 @@ function openDay(d){
   $('cheer').hidden=true; $('cheer').classList.remove('out'); $('cheerConf').innerHTML='';
   $('remOffer').hidden=true; $('remNote').hidden=true;   // the end screen is rebuilt for this day
   $('fullOffer').hidden=true; $('moreBtn').hidden=true; $('moreNote').hidden=true;
+  clearTimeout(moreSheetTimer); $('moreSheet').hidden=true;
   clearInterval(replayTimer); replayTimer=null; replay=null; $('replay').classList.remove('show');
   closeOffer(false);
   stopCountdown();
@@ -1798,18 +1871,18 @@ function coachDone(){
   return st.done;
 }
 function coachTargets(){
-  if(st.order.length<freeSlots()) return Array.from(document.querySelectorAll('.tile:not(.spent)'));
+  if(placedCount()<freeSlots()) return Array.from(document.querySelectorAll('.tile:not(.spent)'));
   return [$('weave')];
 }
 /* It teaches the INTERFACE and never the answer - which slot is wrong is the
    puzzle, and §11 puts that behind a hint. */
 function coachSay(){
-  const placed=st.order.length+(st.locked||[]).length, tried=st.attempts.length;
+  const placed=placedCount()+(st.locked||[]).length, tried=st.attempts.length;
   let t;
   if(tried>0 && placed<NOPS)
     t=T(FEEDBACK==='count'
         ? 'The number says how many were in the right place. Put the {n} back in a different order.'
-        : 'A tick means that slot is right. Put the {n} back in a different order.',{n:T(WORD[NOPS])});
+        : 'Ticks run from the first slot while the order is right. Change what comes after them.',{n:T(WORD[NOPS])});
   else if(placed===0)
     t=T('Tap an operation to put it in the first slot.');
   else if(placed<NOPS)
@@ -1861,7 +1934,7 @@ function paintHint(){
     const left=tries()-st.attempts.length, n=st.attempts[st.attempts.length-1].pins.filter(Boolean).length;
     $('hint').textContent=(FEEDBACK==='count'
         ? T('{n} of {t} in place, but which? ',{n:n,t:NOPS})
-        : T('A tick means that operation is in the right place. '))+
+        : T('Every ticked slot, from the first, is right. '))+
       T(left===1?'{n} attempt left. Tap a tile to take it back out.':'{n} attempts left. Tap a tile to take it back out.',{n:left});
   }
   /* Before the first weave of a first day this line is blank, and blank is
@@ -2231,7 +2304,7 @@ const DEMO={
      content of this. A player who has turned it off gets §17.2 and the coach. */
   eligible(){
     if(this.over||SET.get('motion')) return false;
-    if(archive||st.done||st.attempts.length||st.order.length) return false;
+    if(archive||st.done||st.attempts.length||placedCount()) return false;
     return firstLesson();
   },
   /* Held while a demonstration is running, and while the very first one is on
@@ -2361,7 +2434,7 @@ function render(){
     d.onclick=()=>{ DEMO.stop(false);
       if(st.done||locked||showing)return;
       if(justHeld){ justHeld=false; return; }       // the tap that ends a long press
-      if(idx!==undefined&&idx!==null){ st.order=st.order.filter(x=>x!==idx); SFX.play('tap');
+      if(idx!==undefined&&idx!==null){ st.order=st.order.map(x=>x===idx?null:x); tidyOrder(); SFX.play('tap');
         LOG.mark('unplace');save(st);render();} };
     /* The tray is empty once every tile is placed, and that is exactly when a
        player is deciding whether the order is right. So a placed operation is
@@ -2388,8 +2461,8 @@ function render(){
     d.onclick=()=>{
       DEMO.stop(false);                             // §17.3: a player who acts needs no demonstration
       if(justHeld){ justHeld=false; return; }       // the tap that ends a long press
-      if(st.done||fullOrder().includes(idx)||st.order.length>=freeSlots())return;
-      st.order.push(idx);
+      if(st.done||fullOrder().includes(idx)||placedCount()>=freeSlots())return;
+      st.order[firstEmptySlot()]=idx;
       SFX.op(op.t);
       if(!st.started){ st.started=true;
         LOG.mark('place','puzzle_started',{day_number:viewDay,attempt_number:st.attempts.length+1}); }
@@ -2409,7 +2482,7 @@ function render(){
 
   // With every tile placed the tray is empty. It keeps its space (§17) and
   // hides its heading, so nothing below it moves.
-  const trayEmpty = showing||st.order.length===freeSlots();
+  const trayEmpty = showing||placedCount()===freeSlots();
   paintOpsHead();
   $('opsHead').classList.toggle('done',trayEmpty);
   $('tray').classList.toggle('done',trayEmpty);
@@ -2419,7 +2492,7 @@ function render(){
   if(showing) paintReplay();
 
   $('weave').disabled=st.done;
-  $('weave').classList.toggle('idle',!st.done&&st.order.length!==freeSlots());
+  $('weave').classList.toggle('idle',!st.done&&placedCount()!==freeSlots());
   $('weave').textContent=T(st.done?'Done for today':'Weave');
   paintHint(); paintHintBtn(); paintPackNote();
 
@@ -2432,7 +2505,7 @@ function render(){
     const hinted=a.locked||[];
     if(FEEDBACK==='count'){ const k=a.pins.filter(Boolean).length, h=hinted.length;
       a.pins.forEach((p,j)=>{const b=document.createElement('div');b.className='hb'+(j<h?' hinted':j<k?' count':'');row.appendChild(b);}); }
-    else a.pins.forEach((p,j)=>{const b=document.createElement('div');b.className='hb'+(p?(hinted.indexOf(j)>=0?' hinted':' good'):'');row.appendChild(b);});
+    else a.pins.forEach((p,j)=>{const b=document.createElement('div');b.className='hb'+(hinted.indexOf(j)>=0?' hinted':p?' good':'');row.appendChild(b);});
     h.appendChild(row);
   });
   if(st.done) showResult();
@@ -2483,7 +2556,7 @@ function shareString(withLink){
     const hinted=a.locked||[];
     if(FEEDBACK==='count'){ const k=a.pins.filter(Boolean).length, h=hinted.length;
       return '🟨'.repeat(h)+'🟦'.repeat(k-h)+'⬜'.repeat(a.pins.length-k); }
-    return a.pins.map((p,i)=>p?(hinted.indexOf(i)>=0?'🟨':'🟩'):'⬜').join('');
+    return a.pins.map((p,i)=>hinted.indexOf(i)>=0?'🟨':p?'🟩':'⬜').join('');
   }).join('\n');
   const stat=shareStat();
   return head+'\n\n'+grid+(stat?'\n\n'+stat.text:'')+
@@ -2590,7 +2663,7 @@ function resultImage(){
     for(let j=0;j<len;j++){
       x.fillStyle=FEEDBACK==='count'
         ? (j<hinted.length?HEX.hint:j<k?HEX.count:HEX.none)
-        : (a.pins[j]?(hinted.indexOf(j)>=0?HEX.hint:HEX.good):HEX.none);
+        : (hinted.indexOf(j)>=0?HEX.hint:a.pins[j]?HEX.good:HEX.none);
       rrect(x,(rx+j*(cell+gap))*S,ry*S,cell*S,cell*S,6*S);
     }
   });
@@ -3087,6 +3160,12 @@ $('copyBtn').onclick=()=>{ shareResult(); };
    window.VoltixAdDone(placement, rewarded). In a browser, and until the
    remote switch is on, the bridge is absent and no placement renders. */
 let pendingAd=null;
+/* The placement whose advertisement has just been watched to the end, set only
+   while its reward is being handed over. A reward is granted on this, never on
+   ADS.available(): the video that earned it is spent by then and the next one
+   is still loading, so "available" is false at exactly the moment the player
+   is owed. */
+let adEarned=null;
 const AD_CLOTHS_PER_DAY=3;
 const ADS={
   privacyRequired(){ try{ const V=window.VoltixAds; return !!(V&&V.privacyRequired&&V.privacyRequired()); }catch(e){ return false; } },
@@ -3103,7 +3182,7 @@ const ADS={
   show(p,done){
     const V=window.VoltixAds; if(!V||!V.show){ done(false); return; }
     pendingAd={p,done};
-    LOG.mark('adstart','rewarded_ad_started',{placement:p});
+    if(p!=='interstitial') LOG.mark('adstart','rewarded_ad_started',{placement:p});
     try{ V.show(p); }catch(e){ pendingAd=null; done(false); }
   }
 };
@@ -3119,9 +3198,42 @@ window.VoltixAdReady=function(p){
 window.VoltixAdDone=function(p,rewarded){
   const a=pendingAd; pendingAd=null;
   if(!a||a.p!==p) return;
-  if(rewarded) LOG.mark('adok','rewarded_ad_completed',{placement:p});
-  a.done(!!rewarded);
+  if(rewarded&&p!=='interstitial') LOG.mark('adok','rewarded_ad_completed',{placement:p});
+  adEarned=rewarded&&p!=='interstitial'?p:null;
+  try{ a.done(!!rewarded); } finally { adEarned=null; }
 };
+
+/* ---------- §12.4 the interstitial: the President's instruction, 2 October 2026 ----
+   One full-screen advertisement between two tries: after the third failed
+   weave of today's cloth, or the fourth if none was ready at the third. Never
+   over a result - a weave that wins or ends the day shows none - never in a
+   player's first two days, never to a purchaser of Loom Full, never on an
+   archive cloth, and at most once every two days. All four numbers are
+   constants, so no remote value can make it more frequent; the remote switch
+   can only turn it off. */
+/* After which failed try, by the day's tries: on a three-try day the second
+   (one is left), on the five-try Sunday the third or the fourth. */
+const INTERSTITIAL_AFTER={3:[2],5:[3,4]}, INTERSTITIAL_FIRST_DAYS=2, INTERSTITIAL_GAP_DAYS=2, INTERSTITIAL_DELAY_MS=900;
+function interstitialDue(){
+  if(!st||archive||st.done) return false;
+  if((INTERSTITIAL_AFTER[TRIES]||[3,4]).indexOf(st.attempts.length)<0) return false;
+  if(isFinite(PROF.firstDay)&&dayNum-PROF.firstDay<INTERSTITIAL_FIRST_DAYS) return false;
+  if(isFinite(PROF.interDay)&&dayNum-PROF.interDay<INTERSTITIAL_GAP_DAYS) return false;
+  return ADS.available('interstitial');                    // also: never to Loom Full
+}
+/* After the try has been seen: the ticks land first, then the advertisement. */
+function maybeInterstitial(){
+  if(!interstitialDue()) return false;
+  const n=st.attempts.length, d=viewDay;
+  const V=window.VoltixAds;
+  pendingAd={p:'interstitial',done:shown=>{
+    if(!shown) return;                                       // not shown: the fourth try may have one
+    PROF.interDay=dayNum; STORE.setJSON(PKEY,PROF);
+    LOG.mark('inter','interstitial_shown',{day_number:d,attempt_number:n});
+  }};
+  try{ V.show('interstitial'); }catch(e){ pendingAd=null; return false; }
+  return true;
+}
 
 /* ---------- §12.2: the offer, where the player has just wanted the thing --------
    Three placements and nowhere else: a locked archive tile, once on the end
@@ -3245,6 +3357,75 @@ $('moreBtn').onclick=()=>{
   takeMore('pack');
 };
 
+/* ---------- the lost day's sheet: the President's instruction, 2 October 2026 -----
+   The end screen's one-line link was too easy to miss. When today's cloth is
+   lost and one more weave can still be had, a sheet comes up over the result a
+   moment after it lands, with every way there is to have one: a weave from the
+   pack, five for money, an advertisement. It opens at the moment of the loss
+   and never on reopening the app; "Not now" closes it for the rest of the day,
+   and the link on the end screen stays. A purchase made from it is spent at
+   once, because the press that bought it was a press for the weave. */
+const MORE_SHEET_DELAY_MS=700;
+let moreSheetTimer=null;
+function moreAdOk(){ return PROF.moreDay!==dayNum&&ADS.available('more'); }
+function moreSheetDue(){
+  return moreDue()&&PROF.moreNo!==dayNum&&(weaveBank()>0||moreAdOk()||(SHOP.has()&&!!SHOP.price(SKU.WEAVES)));
+}
+/* The pack's own picture, drawn the way android/tools/make-icons.py draws its
+   Play icon (store/iap/loom_weaves_5.png): three cloths still to weave, fanned
+   up and to the right, the front one plain - in the player's own threads, so
+   it is the product exactly as their game wears it. */
+function weavesArt(){
+  const c=threadColours(), th=[c.t0,c.t1,c.t2], W=512, S=Math.round(W*.62), step=Math.round(W*.095);
+  const x0=Math.round(W*.08), y0=W-S-Math.round(W*.08);
+  const pad=S*.085, gap=S*.035, cell=(S-pad*2-gap*3)/4, r=cell*.30, R=S*.22;
+  const orders=[[0,1,2,0],[1,2,0,1],[2,0,1,2]], f=v=>v.toFixed(1);
+  const box=(x,y,w,rx,fill)=>'<rect x="'+f(x)+'" y="'+f(y)+'" width="'+f(w)+'" height="'+f(w)+'" rx="'+f(rx)+'" fill="'+fill+'"/>';
+  let out='';
+  for(let k=2;k>=0;k--){                                     // back to front
+    const x=x0+k*step, y=y0-k*step;
+    out+=box(x+W*.012,y+W*.016,S,R,'#D6C2AA')+box(x,y,S,R,'#F2E1CC');
+    for(let row=0;row<4;row++) for(let col=0;col<4;col++)
+      out+=box(x+pad+col*(cell+gap),y+pad+row*(cell+gap),cell,r,th[orders[k][row]]);
+  }
+  return '<svg viewBox="0 0 512 512" aria-hidden="true">'+out+'</svg>';
+}
+function paintMoreSheet(){
+  $('moreSheetArt').innerHTML=weavesArt();
+  const n=weaveBank(), ad=moreAdOk(), pr=n>0||!SHOP.has()?'':SHOP.price(SKU.WEAVES);
+  $('moreSheetLine').textContent=T('Your {t} attempts are used. One more try?',{t:tries()});
+  $('moreSheetPack').hidden=!(n>0); $('moreSheetPack').textContent=n>0?T('Use one of your {n} weaves',{n:n}):'';
+  $('moreSheetBuy').hidden=!pr; $('moreSheetBuy').textContent=pr?T('Five more weaves · {p}',{p:pr}):'';
+  $('moreSheetAd').hidden=!ad; $('moreSheetAd').textContent=ad?T('Watch an advert for one more'):'';
+  if(ad&&adOfferedMore!==viewDay){ adOfferedMore=viewDay; LOG.mark('adoffer','rewarded_ad_offered',{placement:'more',day_number:viewDay}); }
+}
+function openMoreSheet(){
+  moreSheetTimer=null;
+  if(!moreSheetDue()) return false;
+  $('moreSheetNote').textContent=T('Two extra weaves a day at most. The shared result shows them.');
+  paintMoreSheet();
+  $('moreSheet').hidden=false;
+  LOG.mark('offer','offer_shown',{placement:'more'});
+  return true;
+}
+function closeMoreSheet(dismissed){
+  if($('moreSheet').hidden) return;
+  $('moreSheet').hidden=true;
+  if(dismissed){ PROF.moreNo=dayNum; STORE.setJSON(PKEY,PROF); LOG.mark('offerno','offer_dismissed',{placement:'more'}); }
+}
+/* What Play said about a purchase made from the sheet. */
+function moreSheetBought(sku,state,placement){
+  if(placement!=='more_sheet'||$('moreSheet').hidden) return;
+  if(state==='consumed'&&sku===SKU.WEAVES&&moreDue()){ moreSaid=null; closeMoreSheet(false); takeMore('pack'); return; }
+  if(state!=='owned'&&state!=='consumed'){ $('moreSheetNote').textContent=T('Nothing was bought. You are where you were.'); paintMoreSheet(); }
+}
+$('moreSheetPack').onclick=()=>{ SFX.play('tap'); closeMoreSheet(false); takeMore('pack'); };
+$('moreSheetBuy').onclick=()=>{ SFX.play('tap');
+  if(!SHOP.buy(SKU.WEAVES,'more_sheet')) $('moreSheetNote').textContent=T('The store is not available right now.'); };
+$('moreSheetAd').onclick=()=>{ SFX.play('tap');
+  ADS.show('more',ok=>{ if(!ok) return; closeMoreSheet(false); takeMore('ad'); }); };
+$('moreSheetNo').onclick=()=>{ SFX.play('tap'); closeMoreSheet(true); };
+
 /* ---------- §12.1 the Quilt threads: the only cosmetics, reached only from the Quilt ----- */
 /* Every thread must stand off the cream frame (#F2E1CC) and off its two
    neighbours, or a row of the cloth vanishes: the first indigo set had a
@@ -3304,16 +3485,26 @@ function lockedSlots(){ return (st.locked||[]).map(l=>l.s); }
 function freeSlots(){ return NOPS-(st.locked||[]).length; }
 /* The whole loom: the pinned operations in their slots, the player's tiles in
    the rest, in the order they were placed. Empty slots are null. */
-function fullOrder(){ const out=[]; let k=0; const L=st.locked||[];
-  for(let i=0;i<NOPS;i++){ const l=L.find(x=>x.s===i); out.push(l?l.i:(k<st.order.length?st.order[k++]:null)); }
+function fullOrder(){ const out=[]; const L=st.locked||[];
+  for(let i=0;i<NOPS;i++){ const l=L.find(x=>x.s===i); out.push(l?l.i:(st.order[i]!=null?st.order[i]:null)); }
   return out; }
+/* The player's tiles, counted: st.order is kept by slot and may have holes. */
+function placedCount(){ const L=lockedSlots(); let n=0;
+  for(let i=0;i<NOPS;i++) if(L.indexOf(i)<0&&st.order[i]!=null) n++;
+  return n; }
+/* Where a tapped tile goes: the first slot that is neither pinned nor taken. */
+/* Holes at the end mean nothing; they are dropped so a cleared loom is []. */
+function tidyOrder(){ while(st.order.length&&st.order[st.order.length-1]==null) st.order.pop(); }
+function firstEmptySlot(){ const L=lockedSlots();
+  for(let i=0;i<NOPS;i++) if(L.indexOf(i)<0&&st.order[i]==null) return i;
+  return -1; }
 function takeHint(source){
   if(!P||st.done) return false;
   const used=hintsUsedToday();
   if(used>=HINTS_PER_DAY_MAX) return false;                         // the ceiling, whatever the source
   if(source==='free'&&used>=HINTS_FREE_PER_DAY) return false;
   if(source==='pack'&&hintBank()<=0) return false;
-  if(source==='ad'&&!ADS.available('unpick')) return false;         // no advertising here, no hint from it
+  if(source==='ad'&&adEarned!=='unpick') return false;              // only for an advert watched to the end
   if(source!=='free'&&source!=='pack'&&source!=='ad') return false;
   const L=st.locked||[], full=fullOrder();
   const last=st.attempts.length&&FEEDBACK==='which'?st.attempts[st.attempts.length-1]:null;
@@ -3326,9 +3517,9 @@ function takeHint(source){
   if(slot<0) return false;                                            // nothing left to reveal
   if(source==='pack') PROF.hintBank=hintBank()-1;
   const idx=secretIdx[slot];
-  st.order=st.order.filter(i=>i!==idx);                               // out of wherever it was
-  const room=NOPS-L.length-1;
-  if(st.order.length>room) st.order.length=room;                      // the loom was full: the last tile goes back
+  st.order=st.order.map(i=>i===idx?null:i);                           // out of wherever it was
+  st.order[slot]=null;                                                // the tile in that slot goes back; nothing else moves
+  tidyOrder();
   st.locked=L.concat([{s:slot,i:idx}]);
   PROF.hintDay=dayNum; PROF.hintsToday=used+1; STORE.setJSON(PKEY,PROF);
   LOG.mark('hint','hint_taken',{day_number:viewDay,attempt_number:st.attempts.length+1,slot:slot,source:source});
@@ -3371,7 +3562,7 @@ $('archPrompt').onclick=()=>{ SFX.play('tap'); openPanel('archPanel',true); };
 $('statsPrompt').onclick=()=>{ SFX.play('tap'); openPanel('statsPanel',true); };
 $('weave').onclick=()=>{
   if(st.done)return;
-  if(st.order.length!==freeSlots()){
+  if(placedCount()!==freeSlots()){
     /* §17: the biggest target on the screen must never be a dead one. */
     $('hint').textContent=T('Place all {n} operations first.',{n:T(WORD[NOPS])});
     SFX.play('tap'); LOG.mark('earlyweave'); return;
@@ -3382,7 +3573,13 @@ $('weave').onclick=()=>{
   const full=fullOrder(), seq=full.map(i=>P.ops[i]);
   let g=P.start; const frames=[g];
   for(const op of seq){g=apply(op,g);frames.push(g);}
-  const pins=full.map((idx,i)=>idx===secretIdx[i]);
+  /* The President's rule, 2 October 2026: a tick is earned by an unbroken run
+     from the first slot. An operation in its right place after a wrong one is
+     not ticked. On a "how many" day nothing is marked, and the number stays
+     the count of operations in their right places (§5.1). */
+  let chain=true;
+  const pins=FEEDBACK==='which' ? full.map((idx,i)=>(chain=chain&&idx===secretIdx[i]))
+                                : full.map((idx,i)=>idx===secretIdx[i]);
 
   function finish(){
     st.attempts.push({order:full,pins,cloth:g,locked:lockedSlots()});
@@ -3414,6 +3611,8 @@ $('weave').onclick=()=>{
     QUILT.put(viewDay,{c:g.join(''),n:st.attempts.length,w:st.won?1:0,d:st.done?1:0,
                        h:lockedSlots().length,s:st.secs||0});
     save(st); render();
+    if(!st.done) setTimeout(maybeInterstitial,INTERSTITIAL_DELAY_MS);
+    else if(!st.won){ clearTimeout(moreSheetTimer); moreSheetTimer=setTimeout(openMoreSheet,MORE_SHEET_DELAY_MS); }
     /* Last, and never in the way: the screen above is already complete. The
        analytics switch is the off switch for this too (§22.1). */
     if(!WEB&&SCORES.url&&st.done&&!archive&&!A.isOff()){ RANK.queue(viewDay,st.won?st.attempts.length:0,st.secs||0); scoresGo(); }
@@ -3431,12 +3630,25 @@ $('weave').onclick=()=>{
 (function(){ try{ const raw=localStorage.getItem(LOG.KEY);
   if(raw){ const o=JSON.parse(raw); if(o&&o.t0&&Date.now()-o.t0<12*3600*1000){ LOG.t0=o.t0; LOG.ev=o.ev||[]; } }
 }catch(e){} })();
-(function(){ const f=document.getElementById('foot'); let timer=null;
-  const down=()=>{ if(playtestAllowed()) timer=setTimeout(showLog,600); };
+/* The footer is the way to the studio: a tap opens its site in the phone's
+   browser, never in the game's own WebView, which would leave the cloth behind
+   with no way back. On the website, which is that site, it does nothing. */
+function openSite(){
+  const N=window.VoltixNative;
+  if(WEB||!N||!N.openSite) return false;
+  LOG.mark('site','site_opened',{from:'footer'});
+  try{ N.openSite(); }catch(e){ return false; }
+  return true;
+}
+(function(){ const f=document.getElementById('foot'); let timer=null, held=false;
+  /* A long press in a debug build is the playtest log, and the tap that ends
+     it goes nowhere. */
+  const down=()=>{ held=false; if(playtestAllowed()) timer=setTimeout(()=>{ held=true; showLog(); },600); };
   const up=()=>{ clearTimeout(timer); };
   // A long press, so a stranger cannot open the debug panel by brushing the footer.
   f.addEventListener('pointerdown',down); f.addEventListener('pointerup',up);
   f.addEventListener('pointerleave',up); f.addEventListener('pointercancel',up);
+  f.onclick=()=>{ if(held){ held=false; return; } openSite(); };
 })();
 /* ---------- settings panel -------------------------------------------------
    The reminder switch is the only one that reaches outside the page, and it
@@ -3706,6 +3918,7 @@ $('quiltShare').onclick=()=>{ SFX.play('tap'); shareQuilt(); };
 /* The Android shell asks this before it closes the game. Answer true if
    something was closed, false to let back mean leave. */
 window.VoltixBack=function(){
+  if(!$('moreSheet').hidden){ closeMoreSheet(true); return true; }
   for(const p of PANELS){ if($(p).classList.contains('show')){ $(p).classList.remove('show'); return true; } }
   if(archive){ openDay(dayNum); return true; }          // back to today, not out of the game
   return false;

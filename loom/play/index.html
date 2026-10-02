@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at cadffcc) by
+<!-- Copied from the Loom repository (game/index.html at c003970) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, five attempts.">
@@ -495,6 +495,8 @@ body.marks .sym{display:block}
       <span class="price" id="fullRowPrice"></span></div>
     <div class="row" id="packRow" hidden><div><span data-t="Your pack">Your pack</span><div class="why" data-t="Threads to unpick, one a day at most.">Threads to unpick, one a day at most.</div></div>
       <span class="price" id="packCount"></span></div>
+    <div class="row" id="weaveRow" hidden><div><span data-t="Extra weaves">Extra weaves</span><div class="why" data-t="For a day you have lost: one more attempt, two a day at most.">For a day you have lost: one more attempt, two a day at most.</div></div>
+      <span class="price" id="weaveCount"></span></div>
     <div class="row buy" id="restoreRow" hidden><div data-t="Restore a purchase">Restore a purchase</div></div>
     <div class="row buy" id="adPrivacyRow" hidden><div><span data-t="Ad privacy">Ad privacy</span><div class="why" data-t="Change what you told the advertising consent form.">Change what you told the advertising consent form.</div></div></div>
     <div class="note" id="setNote"></div>
@@ -633,6 +635,7 @@ body.marks .sym{display:block}
     </div>
     <div class="note" id="remNote" hidden></div>
     <button class="link" id="moreBtn" hidden></button>
+    <div class="note" id="moreNote" hidden></div>
     <div class="offer" id="fullOffer" hidden>
       <div class="ask" id="fullOfferLine"></div>
       <div class="btns"><button id="fullOfferSee" data-t="Have a look">Have a look</button>
@@ -758,6 +761,12 @@ ca:{
  'Have a look':'Fes-hi un cop d’ull',
  'Asking the store…':'Preguntant a la botiga…',
  'One more weave · watch an advert':'Un teixit més · mira un anunci',
+ 'One more weave · {n} in your pack':'Un teixit més · {n} al teu paquet',
+ 'One more weave · five for {p}':'Un teixit més · cinc per {p}',
+ 'Done. Five more weaves in your pack.':'Fet. Cinc teixits més al teu paquet.',
+ '{n} weaves left in your pack.':'Et queden {n} teixits al paquet.',
+ 'Extra weaves':'Teixits addicionals',
+ 'For a day you have lost: one more attempt, two a day at most.':'Per a un dia perdut: un intent més, com a molt dos al dia.',
  'Unpick a thread · ten for {p}':'Desfés un fil · deu per {p}',
  'yours':'teu',
  'buy':'compra',
@@ -843,6 +852,12 @@ es:{
  'Have a look':'Echa un vistazo',
  'Asking the store…':'Preguntando a la tienda…',
  'One more weave · watch an advert':'Un tejido más · ver un anuncio',
+ 'One more weave · {n} in your pack':'Un tejido más · {n} en tu paquete',
+ 'One more weave · five for {p}':'Un tejido más · cinco por {p}',
+ 'Done. Five more weaves in your pack.':'Hecho. Cinco tejidos más en tu paquete.',
+ '{n} weaves left in your pack.':'Te quedan {n} tejidos en el paquete.',
+ 'Extra weaves':'Tejidos adicionales',
+ 'For a day you have lost: one more attempt, two a day at most.':'Para un día perdido: un intento más, como mucho dos al día.',
  'Unpick a thread · ten for {p}':'Deshaz un hilo · diez por {p}',
  'yours':'tuyo',
  'buy':'comprar',
@@ -1096,7 +1111,19 @@ function rankLine(){
     : 'day '+viewDay+': no answer yet';
   return said+', '+waiting+' waiting to send &nbsp; <a href="#" id="logScores">send now</a>';
 }
+/* The playtest log is a tester's tool, not a player's: it can hand today back
+   as a fresh day (five new attempts, for nothing), lift the first-day rule,
+   show an advertisement and wipe the device. So it opens in a debug build,
+   which the app says through isDebug(), and in the file opened straight from
+   disk; never in a release build and never on the website. */
+function playtestAllowed(){
+  if(WEB) return false;
+  const N=window.VoltixNative;
+  if(!N) return true;
+  try{ const d=N.isDebug&&N.isDebug(); return d===true||d==='true'; }catch(e){ return false; }
+}
 function showLog(){
+  if(!playtestAllowed()) return;
   const p=document.getElementById('logPanel');
   /* The analytics line is also the off switch on this device. */
   const an = !A.configured() ? 'analytics: not configured, nothing is sent'
@@ -1604,7 +1631,7 @@ const QUILT=(function(){
    until the app has billing, nothing is for sale and no offer renders.
    Entitlements are also cached in the profile, so a store that is slow to
    answer never locks the archive for a second. */
-const SKU={FULL:'loom_full',HINTS:'loom_hints_10',
+const SKU={FULL:'loom_full',HINTS:'loom_hints_10',WEAVES:'loom_weaves_5',
   THREADS:{indigo:'loom_thread_indigo',madder:'loom_thread_madder',wool:'loom_thread_wool',contrast:'loom_thread_contrast'}};
 const SHOP=(function(){
   /* The store may sit on its own object (the debug preview does) or on the main bridge. */
@@ -1631,6 +1658,7 @@ const SHOP=(function(){
   function grant(sku,state){
     if(state==='owned'){ PROF.owned=PROF.owned||[]; if(PROF.owned.indexOf(sku)<0) PROF.owned.push(sku); }
     if(state==='consumed'&&sku===SKU.HINTS) PROF.hintBank=(PROF.hintBank||0)+10;
+    if(state==='consumed'&&sku===SKU.WEAVES) PROF.weaveBank=(PROF.weaveBank||0)+5;
     STORE.setJSON(PKEY,PROF);
   }
   window.VoltixPurchase=function(sku,state){
@@ -1638,10 +1666,13 @@ const SHOP=(function(){
     if(state==='owned'||state==='consumed'){
       grant(sku,state);
       LOG.mark('bought',p?'purchase_completed':'purchase_restored',{item_id:sku,placement:p?p.placement:''});
-      /* The pack is bought from the hint button, with no panel open, and a note
-         written into the offer panel would be a sentence nobody can see. */
-      if(state==='consumed'&&!$('offerPanel').classList.contains('show')) packSaid=T('Done. Ten more threads to unpick.');
-      else offerNote(state==='consumed'?T('Done. Ten more threads to unpick.'):T('Done. It is yours.'));
+      /* A pack is bought from its own button - hints from the hint button,
+         weaves from the end screen - with no panel open, and a note written
+         into the offer panel would be a sentence nobody can see. */
+      const said=state!=='consumed'?T('Done. It is yours.')
+        :sku===SKU.WEAVES?T('Done. Five more weaves in your pack.'):T('Done. Ten more threads to unpick.');
+      if(state==='consumed'&&!$('offerPanel').classList.contains('show')){ if(sku===SKU.WEAVES) moreSaid=said; else packSaid=said; }
+      else offerNote(said);
     }else if(state==='none'){ offerNote(T('Nothing to restore on this account.')); }
     else{ LOG.mark('buyfail','purchase_failed',{item_id:sku,state:String(state)}); offerNote(T('Nothing was bought. You are where you were.')); }
     afterPurchase();
@@ -1678,7 +1709,7 @@ function openDay(d){
   $('msg').classList.remove('show');
   $('cheer').hidden=true; $('cheer').classList.remove('out'); $('cheerConf').innerHTML='';
   $('remOffer').hidden=true; $('remNote').hidden=true;   // the end screen is rebuilt for this day
-  $('fullOffer').hidden=true; $('moreBtn').hidden=true;
+  $('fullOffer').hidden=true; $('moreBtn').hidden=true; $('moreNote').hidden=true;
   clearInterval(replayTimer); replayTimer=null; replay=null; $('replay').classList.remove('show');
   closeOffer(false);
   stopCountdown();
@@ -3082,7 +3113,8 @@ const ADS={
    either. Only the day's own screen is repainted here; a panel paints itself
    when it opens. */
 window.VoltixAdReady=function(p){
-  try{ if(p==='unpick'&&!st.done){ paintHintBtn(); paintPackNote(); } }catch(e){}
+  try{ if(p==='unpick'&&!st.done){ paintHintBtn(); paintPackNote(); }
+       if(p==='more'&&st.done) paintMore(); }catch(e){}
 };
 window.VoltixAdDone=function(p,rewarded){
   const a=pendingAd; pendingAd=null;
@@ -3157,20 +3189,61 @@ $('fullRow').onclick=()=>{ if(FULL()) return; SFX.play('tap'); showOffer('settin
 $('restoreRow').onclick=()=>{ SFX.play('tap'); if(SHOP.restore()) $('setNote').textContent=T('Asking the store…'); };
 $('adPrivacyRow').onclick=()=>{ SFX.play('tap'); LOG.mark('adprivacy','ad_privacy_opened',{}); ADS.showPrivacy(); };
 
-/* ---------- §12.4 "one more weave": a sixth attempt for an advertisement, once a day ---- */
+/* ---------- "one more weave": a further attempt on a day that is lost ---------
+   §12.4 gives one for an advertisement, once a day; §12.1 sells five for a
+   euro, on the President's instruction of 2 October 2026. Whatever the source,
+   no day gets more than EXTRA_WEAVES_PER_DAY_MAX: a constant, like the hint
+   ceiling, so it cannot be raised remotely in pursuit of a quarter. The share
+   grid says how many were added (6/5+1), so a rescued day never passes for a
+   clean one. Like the hint pack, a bought weave is spent only by the player's
+   own press, never by the purchase arriving. */
+const EXTRA_WEAVES_PER_DAY_MAX=2;
 const tries=()=>TRIES+(st&&st.extra?st.extra:0);
-function paintMore(){
-  const b=$('moreBtn');
-  const due=st.done&&!st.won&&!archive&&!(st.extra>0)&&PROF.moreDay!==dayNum&&ADS.available('more');
-  b.hidden=!due; if(!due) return;
-  b.textContent=T('One more weave · watch an advert');
-  if(adOfferedMore!==viewDay){ adOfferedMore=viewDay; LOG.mark('adoffer','rewarded_ad_offered',{placement:'more',day_number:viewDay}); }
+function weaveBank(){ return PROF.weaveBank||0; }
+function moreDue(){ return !!st&&st.done&&!st.won&&!archive&&(st.extra||0)<EXTRA_WEAVES_PER_DAY_MAX; }
+/* What the next extra weave would come from: 'pack', 'ad', or null when none can be had. */
+function moreSource(){
+  if(!moreDue()) return null;
+  if(weaveBank()>0) return 'pack';
+  if(PROF.moreDay!==dayNum&&ADS.available('more')) return 'ad';
+  return null;
 }
-let adOfferedMore=null;
-$('moreBtn').onclick=()=>{ SFX.play('tap'); ADS.show('more',ok=>{ if(!ok||!st.done||st.won) return;
+/* Offered for money only when nothing else would give one, and only once Play
+   has priced it: a product not yet live in Play is never a button. */
+function moreCanBuy(){ return moreDue()&&moreSource()===null&&SHOP.has()&&!!SHOP.price(SKU.WEAVES); }
+let moreSaid=null, adOfferedMore=null;
+function paintMore(){
+  const b=$('moreBtn'), src=moreSource(), buy=!src&&moreCanBuy();
+  b.hidden=!src&&!buy;
+  b.textContent= buy ? T('One more weave · five for {p}',{p:SHOP.price(SKU.WEAVES)})
+               : src==='pack' ? T('One more weave · {n} in your pack',{n:weaveBank()})
+               : src==='ad' ? T('One more weave · watch an advert') : '';
+  if(src==='ad'&&adOfferedMore!==viewDay){ adOfferedMore=viewDay; LOG.mark('adoffer','rewarded_ad_offered',{placement:'more',day_number:viewDay}); }
+  /* What the pack still holds, when the button cannot say it: the day's two are spent. */
+  const lost=!!st&&st.done&&!st.won&&!archive;
+  const t=moreSaid||(lost&&src!=='pack'&&weaveBank()>0?T('{n} weaves left in your pack.',{n:weaveBank()}):'');
+  moreSaid=null;
+  $('moreNote').hidden=!t; $('moreNote').textContent=t;
+}
+function takeMore(source){
+  if(!moreDue()) return false;                                       // the ceiling, whatever the source
+  if(source==='pack'&&weaveBank()<=0) return false;
+  if(source==='ad'&&PROF.moreDay===dayNum) return false;
+  if(source!=='pack'&&source!=='ad') return false;
   stopReplay();
-  st.extra=(st.extra||0)+1; st.done=false; PROF.moreDay=dayNum; STORE.setJSON(PKEY,PROF);
-  $('msg').classList.remove('show'); stopCountdown(); save(st); render(); }); };
+  if(source==='pack') PROF.weaveBank=weaveBank()-1; else PROF.moreDay=dayNum;
+  st.extra=(st.extra||0)+1; st.done=false; STORE.setJSON(PKEY,PROF);
+  LOG.mark('more','extra_weave_taken',{day_number:viewDay,attempt_number:st.attempts.length+1,source:source});
+  $('msg').classList.remove('show'); stopCountdown(); save(st); render();
+  return true;
+}
+$('moreBtn').onclick=()=>{
+  const src=moreSource();
+  if(!src){ if(moreCanBuy()){ SFX.play('tap'); SHOP.buy(SKU.WEAVES,'more'); } return; }
+  SFX.play('tap');
+  if(src==='ad'){ ADS.show('more',ok=>{ if(ok) takeMore('ad'); }); return; }
+  takeMore('pack');
+};
 
 /* ---------- §12.1 the Quilt threads: the only cosmetics, reached only from the Quilt ----- */
 /* Every thread must stand off the cream frame (#F2E1CC) and off its two
@@ -3359,7 +3432,7 @@ $('weave').onclick=()=>{
   if(raw){ const o=JSON.parse(raw); if(o&&o.t0&&Date.now()-o.t0<12*3600*1000){ LOG.t0=o.t0; LOG.ev=o.ev||[]; } }
 }catch(e){} })();
 (function(){ const f=document.getElementById('foot'); let timer=null;
-  const down=()=>{ timer=setTimeout(showLog,600); };
+  const down=()=>{ if(playtestAllowed()) timer=setTimeout(showLog,600); };
   const up=()=>{ clearTimeout(timer); };
   // A long press, so a stranger cannot open the debug panel by brushing the footer.
   f.addEventListener('pointerdown',down); f.addEventListener('pointerup',up);
@@ -3388,6 +3461,8 @@ function paintSettings(){
      somewhere that does not depend on today's hints being left. */
   $('packRow').hidden=hintBank()<=0;
   $('packCount').textContent=String(hintBank());
+  $('weaveRow').hidden=weaveBank()<=0;
+  $('weaveCount').textContent=String(weaveBank());
   $('setNote').textContent=WEB?'':T(canRemind()
     ? 'The reminder is one notification a day and nothing else. Turning it off stops it at once.'
     : 'The reminder needs the Android app; in a browser the choice is remembered and nothing is scheduled.');

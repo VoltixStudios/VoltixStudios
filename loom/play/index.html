@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at 36ca1ef) by
+<!-- Copied from the Loom repository (game/index.html at 685dee2) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
@@ -237,6 +237,11 @@ button.act[disabled]{background:var(--none);color:#C9B7A6;box-shadow:none;cursor
 .hb{width:18px;height:18px;border-radius:6px;background:var(--none)}
 .hb.good{background:var(--good)}
 .hb.count{background:#8FBDE3}
+/* What the squares mean, under the rows, and only the colours the rows use. */
+.histkey{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:8px;
+  font-size:11px;font-weight:700;color:var(--muted);line-height:1.4}
+.histkey span{display:inline-flex;align-items:center;gap:5px}
+.histkey .hb{width:12px;height:12px;border-radius:4px;flex:0 0 auto}
 .msg{margin-top:18px;padding:18px;border-radius:22px;background:var(--card);
   text-align:center;display:none;box-shadow:var(--shadow)}
 .msg.show{display:block}
@@ -625,6 +630,7 @@ body.marks .sym{display:block}
   <button class="act idle" id="weave">Weave</button>
 
   <div class="hist" id="hist"></div>
+  <div class="histkey" id="histKey" hidden></div>
 
   <!-- §8.1: the end screen, in the order a player wants it. -->
   <div class="msg" id="msg">
@@ -745,6 +751,7 @@ ca:{
  'in what order?':'en quin ordre?','{n} tries':'{n} intents',
  'Every ticked slot, from the first, is right. ':'Cada casella marcada, des de la primera, és correcta. ',
  '{n} of {t} in place. ':'{n} de {t} al seu lloc. ',
+ 'right, from the first slot':'correcta, des de la primera casella','also in place, not saying which':'també al seu lloc, sense dir quina','pinned by a hint':'fixada per una pista','in place, not saying which':'al seu lloc, sense dir quina',
  '{n} of {t} in place, but which? ':'{n} de {t} al seu lloc, però quines? ',
  '{n} attempt left. Tap a tile to take it back out.':'Queda {n} intent. Toca una fitxa per treure-la.',
  '{n} attempts left. Tap a tile to take it back out.':'Queden {n} intents. Toca una fitxa per treure-la.',
@@ -843,6 +850,7 @@ es:{
  'in what order?':'¿en qué orden?','{n} tries':'{n} intentos',
  'Every ticked slot, from the first, is right. ':'Cada casilla marcada, desde la primera, es correcta. ',
  '{n} of {t} in place. ':'{n} de {t} en su sitio. ',
+ 'right, from the first slot':'correcta, desde la primera casilla','also in place, not saying which':'también en su sitio, sin decir cuál','pinned by a hint':'fijada por una pista','in place, not saying which':'en su sitio, sin decir cuál',
  '{n} of {t} in place, but which? ':'{n} de {t} en su sitio, ¿pero cuáles? ',
  '{n} attempt left. Tap a tile to take it back out.':'Queda {n} intento. Toca una ficha para sacarla.',
  '{n} attempts left. Tap a tile to take it back out.':'Quedan {n} intentos. Toca una ficha para sacarla.',
@@ -1880,9 +1888,17 @@ function coachTargets(){
    puzzle, and §11 puts that behind a hint. */
 function coachSay(){
   const placed=placedCount()+(st.locked||[]).length, tried=st.attempts.length;
+  const last=tried?st.attempts[tried-1]:null;
+  /* After a weave the count stays in front: it is the one thing the try said,
+     and the coach speaking over it hid it (2 October 2026). "Now weave" waits
+     until the order has actually been changed. */
+  const unchanged=!!last&&JSON.stringify(fullOrder())===JSON.stringify(last.order||[]);
+  const lead=!last?'':FEEDBACK==='count'
+    ? T('{n} of {t} in place, but which? ',{n:last.pins.filter(Boolean).length,t:NOPS})
+    : T('{n} of {t} in place. ',{n:rightCount(last),t:NOPS});
   let t;
-  if(tried>0 && placed<NOPS)
-    t=T(FEEDBACK==='count'
+  if(tried>0 && (placed<NOPS||unchanged))
+    t=lead+T(FEEDBACK==='count'
         ? 'The number says how many were in the right place. Put the {n} back in a different order.'
         : 'Ticks run from the first slot while the order is right. Change what comes after them.',{n:T(WORD[NOPS])});
   else if(placed===0)
@@ -2508,6 +2524,7 @@ function render(){
     rowCells(a).forEach(c=>{const b=document.createElement('div');b.className='hb'+(c==='hint'?' hinted':c==='none'?'':' '+c);row.appendChild(b);});
     h.appendChild(row);
   });
+  paintHistKey();
   if(st.done) showResult();
   /* Everything that moves the Weave button - a second tray row, five slots, a
      finished day, a replay - goes through here, so the room is measured again
@@ -2570,6 +2587,19 @@ function rowCells(a){
   for(let j=0;j<more;j++) out.push('count');
   while(out.length<len) out.push('none');
   return out;
+}
+/* The key under the history: nothing on screen said what a blue square was
+   (the President, 2 October 2026). Only the colours the rows actually use are
+   named, so a day with no hint never mentions hints. */
+const HIST_KEY=[['good','good','right, from the first slot'],['count','count','also in place, not saying which'],['hint','hinted','pinned by a hint']];
+function paintHistKey(){
+  const k=$('histKey'), used={};
+  st.attempts.forEach(a=>rowCells(a).forEach(c=>{ used[c]=1; }));
+  const items=HIST_KEY.filter(([c])=>used[c]);
+  k.hidden=!items.length;
+  /* Blue says "also" only beside green; on its own it is simply "in place". */
+  k.innerHTML=items.map(([c,cls,t])=>'<span><i class="hb '+cls+'"></i>'+
+    T(c==='count'&&!used.good?'in place, not saying which':t)+'</span>').join('');
 }
 /* The text that goes out. On screen it is shown without the link, which is
    for the person who receives it and only noise for the one who sends it. */

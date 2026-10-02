@@ -278,6 +278,14 @@ those, so an event would add an unload race for information already in hand.
 `data-exclude-hash` is set on the loader. Without it every `#games` nav click on
 the landing page counts as a page view and buries the real paths.
 
+> **`data-host-url="/analytics"` is on every loader, and it is load-bearing.**
+> Umami Cloud's tracker no longer reports to the origin it was loaded from: it
+> posts to `gateway.umami.is` unless told otherwise, which would walk straight
+> past the proxy and make `legal/website-privacy.html` untrue. The attribute
+> sends it to `/analytics/api/send` instead. Found on 2 October 2026, the day
+> the website id went in; the check is the Network tab on any page — the only
+> `api/send` must be to `voltixstudios.pages.dev`.
+
 The script tag's `src` is root-absolute (`/analytics/script.js`) where everything
 else in the site is relative. That is the exception that keeps the old
 `voltixstudios.github.io` copy out of the data: the path resolves only on

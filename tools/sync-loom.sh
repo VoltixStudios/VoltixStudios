@@ -71,6 +71,7 @@ once("</body>", f"""<!-- /analytics/ is the site's Pages Function proxying Umami
      Root-absolute on purpose: it resolves only on Cloudflare. -->
 <script defer src="/analytics/script.js"
         data-website-id="{umami_id}"
+        data-host-url="/analytics"
         data-exclude-hash="true"></script>
 </body>""")
 

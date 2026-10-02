@@ -14,6 +14,10 @@
  * There is no build step and no wrangler.toml — Pages picks this up by path.
  */
 
+/* Where the tracker is fetched from, and where it reports to. The tracker
+   itself defaults to gateway.umami.is and would go there directly, past this
+   proxy, unless every loader tag sets data-host-url="/analytics" — which is why
+   that attribute is on every page. cloud.umami.is accepts the sends as well. */
 const UPSTREAM = "https://cloud.umami.is";
 
 /* A Map rather than an object literal: `params.path` comes off the URL, and an
@@ -26,8 +30,12 @@ const ROUTES = new Map([
 
 /* Everything else the browser sends — cookies, Referer, the CF-* headers — is
    deliberately dropped. The tracker puts the referrer in the request body, so
-   nothing here needs the header. */
-const FORWARD = ["User-Agent", "Accept", "Accept-Language", "Content-Type"];
+   nothing here needs the header. The three x-umami-* headers are the tracker's
+   own: the id and hostname it already puts in the body, and a short-lived token
+   Umami hands back so it need not look the session up again. None of them names
+   the visitor. */
+const FORWARD = ["User-Agent", "Accept", "Accept-Language", "Content-Type",
+                 "x-umami-website-id", "x-umami-hostname", "x-umami-cache"];
 
 export async function onRequest({ request, params }) {
   const path = Array.isArray(params.path) ? params.path.join("/") : String(params.path || "");

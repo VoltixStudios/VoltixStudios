@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at d7fc0b3) by
+<!-- Copied from the Loom repository (game/index.html at 9d66ee0) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
@@ -510,9 +510,9 @@ body.marks .sym{display:block}
       <button class="sw" id="swStats" role="switch"></button></div>
     <div class="row buy" id="fullRow" hidden><div><span data-t="Loom Full">Loom Full</span><div class="why" data-t="Every cloth ever published, forever. No advertising, ever.">Every cloth ever published, forever. No advertising, ever.</div></div>
       <span class="price" id="fullRowPrice"></span></div>
-    <div class="row" id="packRow" hidden><div><span data-t="Your pack">Your pack</span><div class="why" data-t="Threads to unpick, one a day at most.">Threads to unpick, one a day at most.</div></div>
+    <div class="row" id="packRow" hidden><div><span data-t="Your pack">Your pack</span><div class="why" data-t="Threads to unpick, one per cloth at most.">Threads to unpick, one per cloth at most.</div></div>
       <span class="price" id="packCount"></span></div>
-    <div class="row" id="weaveRow" hidden><div><span data-t="Extra weaves">Extra weaves</span><div class="why" data-t="For a day you have lost: one more attempt, two a day at most.">For a day you have lost: one more attempt, two a day at most.</div></div>
+    <div class="row" id="weaveRow" hidden><div><span data-t="Extra weaves">Extra weaves</span><div class="why" data-t="For a cloth you have lost: one more attempt, two per cloth at most.">For a cloth you have lost: one more attempt, two per cloth at most.</div></div>
       <span class="price" id="weaveCount"></span></div>
     <div class="row buy" id="restoreRow" hidden><div data-t="Restore a purchase">Restore a purchase</div></div>
     <div class="row buy" id="adPrivacyRow" hidden><div><span data-t="Ad privacy">Ad privacy</span><div class="why" data-t="Change what you told the advertising consent form.">Change what you told the advertising consent form.</div></div></div>
@@ -676,7 +676,7 @@ body.marks .sym{display:block}
       <button class="act" id="moreSheetBuy" hidden></button>
       <button class="link" id="moreSheetAd" hidden></button>
       <button class="link" id="moreSheetNo" data-t="Not now">Not now</button>
-      <div class="note" id="moreSheetNote" data-t="Two extra weaves a day at most. The shared result shows them.">Two extra weaves a day at most. The shared result shows them.</div>
+      <div class="note" id="moreSheetNote" data-t="Two extra weaves per cloth at most. The shared result shows them.">Two extra weaves per cloth at most. The shared result shows them.</div>
     </div>
   </div>
 
@@ -772,8 +772,8 @@ ca:{
  'The reminder is one notification a day and nothing else. Turning it off stops it at once.':'El recordatori és una notificació al dia i res més. Si el desactives, s’atura de seguida.',
  'The reminder needs the Android app; in a browser the choice is remembered and nothing is scheduled.':'El recordatori necessita l’app d’Android; en un navegador es recorda la tria i no es programa res.',
  'Notifications are switched off for Loom in the phone’s settings, so no reminder can be sent.':'Les notificacions de Loom estan desactivades a la configuració del telèfon, així que no es pot enviar cap recordatori.',
- 'Unpick a thread · one free today':'Desfés un fil · un de franc avui',
- '{n} left in your pack.':'Et queden {n} fils al paquet.','Your pack':'El teu paquet','Threads to unpick, one a day at most.':'Fils per desfer, com a molt un al dia.','Unpick a thread · {n} in your pack':'Desfés un fil · {n} al teu paquet','Unpick a thread · watch an advert':'Desfés un fil · mira un anunci',
+ 'Unpick a thread · one free':'Desfés un fil · un de franc',
+ '{n} left in your pack.':'Et queden {n} fils al paquet.','Your pack':'El teu paquet','Threads to unpick, one per cloth at most.':'Fils per desfer, com a molt un per tela.','Unpick a thread · {n} in your pack':'Desfés un fil · {n} al teu paquet','Unpick a thread · watch an advert':'Desfés un fil · mira un anunci',
  'Loom · {m} · {n} cloth woven, {w} solved':'Loom · {m} · {n} tela teixida, {w} resolta','Loom · {m} · {n} cloths woven, {w} solved':'Loom · {m} · {n} teles teixides, {w} resoltes',
  '{m} {y}':'{m} de {y}','M,T,W,T,F,S,S':'dl,dt,dc,dj,dv,ds,dg',
  'Loom Full':'Loom Full',
@@ -800,13 +800,13 @@ ca:{
  'Done. Five more weaves in your pack.':'Fet. Cinc teixits més al teu paquet.',
  '{n} weaves left in your pack.':'Et queden {n} teixits al paquet.',
  'Extra weaves':'Teixits addicionals',
- 'For a day you have lost: one more attempt, two a day at most.':'Per a un dia perdut: un intent més, com a molt dos al dia.',
+ 'For a cloth you have lost: one more attempt, two per cloth at most.':'Per a una tela perduda: un intent més, com a molt dos per tela.',
  'One more weave?':'Un teixit més?',
  'Your {t} attempts are used. One more try?':'Has fet servir els {t} intents. Un intent més?',
  'Use one of your {n} weaves':'Fes servir un dels teus {n} teixits',
  'Five more weaves · {p}':'Cinc teixits més · {p}',
  'Watch an advert for one more':'Mira un anunci per tenir-ne un més',
- 'Two extra weaves a day at most. The shared result shows them.':'Com a molt dos teixits addicionals al dia. El resultat compartit els mostra.',
+ 'Two extra weaves per cloth at most. The shared result shows them.':'Com a molt dos teixits addicionals per tela. El resultat compartit els mostra.',
  'Unpick a thread · ten for {p}':'Desfés un fil · deu per {p}',
  'yours':'teu',
  'buy':'compra',
@@ -871,8 +871,8 @@ es:{
  'The reminder is one notification a day and nothing else. Turning it off stops it at once.':'El recordatorio es una notificación al día y nada más. Si lo desactivas, se detiene al momento.',
  'The reminder needs the Android app; in a browser the choice is remembered and nothing is scheduled.':'El recordatorio necesita la app de Android; en un navegador se recuerda la elección y no se programa nada.',
  'Notifications are switched off for Loom in the phone’s settings, so no reminder can be sent.':'Las notificaciones de Loom están desactivadas en los ajustes del teléfono, así que no se puede enviar ningún recordatorio.',
- 'Unpick a thread · one free today':'Deshaz un hilo · uno gratis hoy',
- '{n} left in your pack.':'Te quedan {n} hilos en el paquete.','Your pack':'Tu paquete','Threads to unpick, one a day at most.':'Hilos para deshacer, como mucho uno al día.','Unpick a thread · {n} in your pack':'Deshaz un hilo · {n} en tu paquete','Unpick a thread · watch an advert':'Deshaz un hilo · ver un anuncio',
+ 'Unpick a thread · one free':'Deshaz un hilo · uno gratis',
+ '{n} left in your pack.':'Te quedan {n} hilos en el paquete.','Your pack':'Tu paquete','Threads to unpick, one per cloth at most.':'Hilos para deshacer, como mucho uno por tela.','Unpick a thread · {n} in your pack':'Deshaz un hilo · {n} en tu paquete','Unpick a thread · watch an advert':'Deshaz un hilo · ver un anuncio',
  'Loom · {m} · {n} cloth woven, {w} solved':'Loom · {m} · {n} tela tejida, {w} resuelta','Loom · {m} · {n} cloths woven, {w} solved':'Loom · {m} · {n} telas tejidas, {w} resueltas',
  '{m} {y}':'{m} de {y}','M,T,W,T,F,S,S':'L,M,X,J,V,S,D',
  'Loom Full':'Loom Full',
@@ -899,13 +899,13 @@ es:{
  'Done. Five more weaves in your pack.':'Hecho. Cinco tejidos más en tu paquete.',
  '{n} weaves left in your pack.':'Te quedan {n} tejidos en el paquete.',
  'Extra weaves':'Tejidos adicionales',
- 'For a day you have lost: one more attempt, two a day at most.':'Para un día perdido: un intento más, como mucho dos al día.',
+ 'For a cloth you have lost: one more attempt, two per cloth at most.':'Para una tela perdida: un intento más, como mucho dos por tela.',
  'One more weave?':'¿Un tejido más?',
  'Your {t} attempts are used. One more try?':'Has usado tus {t} intentos. ¿Un intento más?',
  'Use one of your {n} weaves':'Usa uno de tus {n} tejidos',
  'Five more weaves · {p}':'Cinco tejidos más · {p}',
  'Watch an advert for one more':'Mira un anuncio para tener uno más',
- 'Two extra weaves a day at most. The shared result shows them.':'Como mucho dos tejidos adicionales al día. El resultado compartido los muestra.',
+ 'Two extra weaves per cloth at most. The shared result shows them.':'Como mucho dos tejidos adicionales por tela. El resultado compartido los muestra.',
  'Unpick a thread · ten for {p}':'Deshaz un hilo · diez por {p}',
  'yours':'tuyo',
  'buy':'comprar',
@@ -1215,7 +1215,7 @@ function showLog(){
   if(document.getElementById('logFresh')) document.getElementById('logFresh').onclick=e=>{
     e.preventDefault();
     if(!isFinite(PROF.firstDay)||dayNum-PROF.firstDay<INTERSTITIAL_FIRST_DAYS) PROF.firstDay=dayNum-INTERSTITIAL_FIRST_DAYS;
-    delete PROF.moreDay; delete PROF.moreNo; delete PROF.interDay; PROF.hintsToday=0;
+    delete PROF.interDay;                       // the rest lives in today's record, deleted below
     STORE.setJSON(PKEY,PROF); STORE.del(DKEY(dayNum));
     openDay(dayNum); showLog(); };
   if(document.getElementById('logAgain')) document.getElementById('logAgain').onclick=e=>{
@@ -3263,7 +3263,7 @@ window.VoltixAdDone=function(p,rewarded){
    (one is left), on the five-try Sunday the third or the fourth. */
 const INTERSTITIAL_AFTER={3:[2],5:[3,4]}, INTERSTITIAL_FIRST_DAYS=2, INTERSTITIAL_GAP_DAYS=2, INTERSTITIAL_DELAY_MS=900;
 function interstitialDue(){
-  if(!st||archive||st.done) return false;
+  if(!st||st.done) return false;
   if((INTERSTITIAL_AFTER[TRIES]||[3,4]).indexOf(st.attempts.length)<0) return false;
   if(isFinite(PROF.firstDay)&&dayNum-PROF.firstDay<INTERSTITIAL_FIRST_DAYS) return false;
   if(isFinite(PROF.interDay)&&dayNum-PROF.interDay<INTERSTITIAL_GAP_DAYS) return false;
@@ -3352,20 +3352,20 @@ $('adPrivacyRow').onclick=()=>{ SFX.play('tap'); LOG.mark('adprivacy','ad_privac
 /* ---------- "one more weave": a further attempt on a day that is lost ---------
    §12.4 gives one for an advertisement, once a day; §12.1 sells five for a
    euro, on the President's instruction of 2 October 2026. Whatever the source,
-   no day gets more than EXTRA_WEAVES_PER_DAY_MAX: a constant, like the hint
+   no day gets more than EXTRA_WEAVES_PER_CLOTH_MAX: a constant, like the hint
    ceiling, so it cannot be raised remotely in pursuit of a quarter. The share
    grid says how many were added (6/5+1), so a rescued day never passes for a
    clean one. Like the hint pack, a bought weave is spent only by the player's
    own press, never by the purchase arriving. */
-const EXTRA_WEAVES_PER_DAY_MAX=2;
+const EXTRA_WEAVES_PER_CLOTH_MAX=2;
 const tries=()=>TRIES+(st&&st.extra?st.extra:0);
 function weaveBank(){ return PROF.weaveBank||0; }
-function moreDue(){ return !!st&&st.done&&!st.won&&!archive&&(st.extra||0)<EXTRA_WEAVES_PER_DAY_MAX; }
+function moreDue(){ return !!st&&st.done&&!st.won&&(st.extra||0)<EXTRA_WEAVES_PER_CLOTH_MAX; }
 /* What the next extra weave would come from: 'pack', 'ad', or null when none can be had. */
 function moreSource(){
   if(!moreDue()) return null;
   if(weaveBank()>0) return 'pack';
-  if(PROF.moreDay!==dayNum&&ADS.available('more')) return 'ad';
+  if(!st.moreAd&&ADS.available('more')) return 'ad';
   return null;
 }
 /* Offered for money only when nothing else would give one, and only once Play
@@ -3380,7 +3380,7 @@ function paintMore(){
                : src==='ad' ? T('One more weave · watch an advert') : '';
   if(src==='ad'&&adOfferedMore!==viewDay){ adOfferedMore=viewDay; LOG.mark('adoffer','rewarded_ad_offered',{placement:'more',day_number:viewDay}); }
   /* What the pack still holds, when the button cannot say it: the day's two are spent. */
-  const lost=!!st&&st.done&&!st.won&&!archive;
+  const lost=!!st&&st.done&&!st.won;
   const t=moreSaid||(lost&&src!=='pack'&&weaveBank()>0?T('{n} weaves left in your pack.',{n:weaveBank()}):'');
   moreSaid=null;
   $('moreNote').hidden=!t; $('moreNote').textContent=t;
@@ -3388,10 +3388,10 @@ function paintMore(){
 function takeMore(source){
   if(!moreDue()) return false;                                       // the ceiling, whatever the source
   if(source==='pack'&&weaveBank()<=0) return false;
-  if(source==='ad'&&PROF.moreDay===dayNum) return false;
+  if(source==='ad'&&st.moreAd) return false;
   if(source!=='pack'&&source!=='ad') return false;
   stopReplay();
-  if(source==='pack') PROF.weaveBank=weaveBank()-1; else PROF.moreDay=dayNum;
+  if(source==='pack') PROF.weaveBank=weaveBank()-1; else st.moreAd=1;
   st.extra=(st.extra||0)+1; st.done=false; STORE.setJSON(PKEY,PROF);
   LOG.mark('more','extra_weave_taken',{day_number:viewDay,attempt_number:st.attempts.length+1,source:source});
   $('msg').classList.remove('show'); stopCountdown(); save(st); render();
@@ -3415,9 +3415,9 @@ $('moreBtn').onclick=()=>{
    once, because the press that bought it was a press for the weave. */
 const MORE_SHEET_DELAY_MS=700;
 let moreSheetTimer=null;
-function moreAdOk(){ return PROF.moreDay!==dayNum&&ADS.available('more'); }
+function moreAdOk(){ return !st.moreAd&&ADS.available('more'); }
 function moreSheetDue(){
-  return moreDue()&&PROF.moreNo!==dayNum&&(weaveBank()>0||moreAdOk()||(SHOP.has()&&!!SHOP.price(SKU.WEAVES)));
+  return moreDue()&&!st.moreNo&&(weaveBank()>0||moreAdOk()||(SHOP.has()&&!!SHOP.price(SKU.WEAVES)));
 }
 /* The pack's own picture, drawn the way android/tools/make-icons.py draws its
    Play icon (store/iap/loom_weaves_5.png): three cloths still to weave, fanned
@@ -3450,7 +3450,7 @@ function paintMoreSheet(){
 function openMoreSheet(){
   moreSheetTimer=null;
   if(!moreSheetDue()) return false;
-  $('moreSheetNote').textContent=T('Two extra weaves a day at most. The shared result shows them.');
+  $('moreSheetNote').textContent=T('Two extra weaves per cloth at most. The shared result shows them.');
   paintMoreSheet();
   $('moreSheet').hidden=false;
   LOG.mark('offer','offer_shown',{placement:'more'});
@@ -3459,7 +3459,7 @@ function openMoreSheet(){
 function closeMoreSheet(dismissed){
   if($('moreSheet').hidden) return;
   $('moreSheet').hidden=true;
-  if(dismissed){ PROF.moreNo=dayNum; STORE.setJSON(PKEY,PROF); LOG.mark('offerno','offer_dismissed',{placement:'more'}); }
+  if(dismissed){ st.moreNo=1; save(st); LOG.mark('offerno','offer_dismissed',{placement:'more'}); }
 }
 /* What Play said about a purchase made from the sheet. */
 function moreSheetBought(sku,state,placement){
@@ -3520,15 +3520,17 @@ function paintThreads(){
    configuration value, and no code path grants a third in one day. A
    consumable may never be required to play, to restart or to continue: a
    player with no hints can solve every day. */
-const HINTS_FREE_PER_DAY=1, HINTS_PER_DAY_MAX=2;
-function hintsUsedToday(){ return PROF.hintDay===dayNum?(PROF.hintsToday||0):0; }
+const HINTS_FREE_PER_CLOTH=1, HINTS_PER_CLOTH_MAX=2;
+/* Per cloth (the President, 2 October 2026: a past cloth works like today's):
+   the hints used on a cloth are the threads pinned on it. */
+function hintsUsed(){ return (st&&st.locked||[]).length; }
 function hintBank(){ return PROF.hintBank||0; }
 /* What the next hint would come from: 'ad' or 'free' for the day's first,
    'pack' for the second, or null when none can be had (then the pack is sold). */
 function hintSource(){
-  const used=hintsUsedToday();
-  if(used>=HINTS_PER_DAY_MAX) return null;
-  if(used<HINTS_FREE_PER_DAY) return ADS.available('unpick')?'ad':'free';
+  const used=hintsUsed();
+  if(used>=HINTS_PER_CLOTH_MAX) return null;
+  if(used<HINTS_FREE_PER_CLOTH) return ADS.available('unpick')?'ad':'free';
   if(hintBank()>0) return 'pack';
   return null;
 }
@@ -3551,12 +3553,12 @@ function firstEmptySlot(){ const L=lockedSlots();
   return -1; }
 function takeHint(source){
   if(!P||st.done) return false;
-  const used=hintsUsedToday();
-  if(used>=HINTS_PER_DAY_MAX) return false;                         // the ceiling, whatever the source
-  if(source==='free'&&used>=HINTS_FREE_PER_DAY) return false;
+  const used=hintsUsed();
+  if(used>=HINTS_PER_CLOTH_MAX) return false;                         // the ceiling, whatever the source
+  if(source==='free'&&used>=HINTS_FREE_PER_CLOTH) return false;
   if(source==='pack'&&hintBank()<=0) return false;
   if(source==='ad'&&adEarned!=='unpick') return false;              // only for an advert watched to the end
-  if(source==='ad'&&used>=HINTS_FREE_PER_DAY) return false;          // the advert pays for the first, never the second
+  if(source==='ad'&&used>=HINTS_FREE_PER_CLOTH) return false;          // the advert pays for the first, never the second
   if(source!=='free'&&source!=='pack'&&source!=='ad') return false;
   const L=st.locked||[], full=fullOrder();
   const last=st.attempts.length&&FEEDBACK==='which'?st.attempts[st.attempts.length-1]:null;
@@ -3573,13 +3575,13 @@ function takeHint(source){
   st.order[slot]=null;                                                // the tile in that slot goes back; nothing else moves
   tidyOrder();
   st.locked=L.concat([{s:slot,i:idx}]);
-  PROF.hintDay=dayNum; PROF.hintsToday=used+1; STORE.setJSON(PKEY,PROF);
+  STORE.setJSON(PKEY,PROF);
   LOG.mark('hint','hint_taken',{day_number:viewDay,attempt_number:st.attempts.length+1,slot:slot,source:source});
   SFX.play('pin'); save(st); render();
   return true;
 }
 /* The pack is bought from the hint button and nowhere else (§12.5). */
-function hintCanBuy(){ return !st.done&&hintSource()===null&&hintsUsedToday()<HINTS_PER_DAY_MAX&&hintBank()<=0&&SHOP.has(); }
+function hintCanBuy(){ return !st.done&&hintSource()===null&&hintsUsed()<HINTS_PER_CLOTH_MAX&&hintBank()<=0&&SHOP.has(); }
 let adOfferedFor=null;
 /* What the pack still holds, said where the player is looking. The button
    carries the count while a hint can be taken from the pack, so this line
@@ -3598,7 +3600,7 @@ function paintHintBtn(){
   if(!src&&hintCanBuy()){ b.hidden=false; b.textContent=T('Unpick a thread · ten for {p}',{p:SHOP.price(SKU.HINTS)||'…'}); return; }
   b.hidden=!src;
   if(!src) return;
-  b.textContent= src==='free' ? T('Unpick a thread · one free today')
+  b.textContent= src==='free' ? T('Unpick a thread · one free')
                : src==='pack' ? T('Unpick a thread · {n} in your pack',{n:hintBank()})
                : T('Unpick a thread · watch an advert');
   if(src==='ad'&&adOfferedFor!==viewDay){ adOfferedFor=viewDay; LOG.mark('adoffer','rewarded_ad_offered',{placement:'unpick',day_number:viewDay}); }

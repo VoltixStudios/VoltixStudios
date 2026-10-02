@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at 685dee2) by
+<!-- Copied from the Loom repository (game/index.html at d7fc0b3) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
@@ -3512,21 +3512,24 @@ function paintThreads(){
 
 /* ---------- §11: the hint, the one consumable --------------------------------
    "Unpick a thread" reveals the correct slot of one operation: that operation
-   is pinned into its slot and cannot be moved. One is free every day, restored
-   at local midnight; a rewarded advertisement gives one more; a bought pack
-   gives one more. The ceiling is a constant, not a configuration value, and no
-   code path grants a third in one day. A consumable may never be required to
-   play, to restart or to continue: a player with no hints can solve every day. */
+   is pinned into its slot and cannot be moved. The day's first is free for a
+   rewarded advertisement (the President, 2 October 2026), and simply free when
+   no advertisement can be shown - none loaded, a first day, a purchaser of Loom
+   Full, the website - so it is never withheld. The second is paid: from a
+   bought pack, or the pack is offered. The ceiling is a constant, not a
+   configuration value, and no code path grants a third in one day. A
+   consumable may never be required to play, to restart or to continue: a
+   player with no hints can solve every day. */
 const HINTS_FREE_PER_DAY=1, HINTS_PER_DAY_MAX=2;
 function hintsUsedToday(){ return PROF.hintDay===dayNum?(PROF.hintsToday||0):0; }
 function hintBank(){ return PROF.hintBank||0; }
-/* What the next hint would come from: 'free', 'pack', 'ad', or null when none can be had. */
+/* What the next hint would come from: 'ad' or 'free' for the day's first,
+   'pack' for the second, or null when none can be had (then the pack is sold). */
 function hintSource(){
   const used=hintsUsedToday();
   if(used>=HINTS_PER_DAY_MAX) return null;
-  if(used<HINTS_FREE_PER_DAY) return 'free';
+  if(used<HINTS_FREE_PER_DAY) return ADS.available('unpick')?'ad':'free';
   if(hintBank()>0) return 'pack';
-  if(ADS.available('unpick')) return 'ad';
   return null;
 }
 function lockedSlots(){ return (st.locked||[]).map(l=>l.s); }
@@ -3553,6 +3556,7 @@ function takeHint(source){
   if(source==='free'&&used>=HINTS_FREE_PER_DAY) return false;
   if(source==='pack'&&hintBank()<=0) return false;
   if(source==='ad'&&adEarned!=='unpick') return false;              // only for an advert watched to the end
+  if(source==='ad'&&used>=HINTS_FREE_PER_DAY) return false;          // the advert pays for the first, never the second
   if(source!=='free'&&source!=='pack'&&source!=='ad') return false;
   const L=st.locked||[], full=fullOrder();
   const last=st.attempts.length&&FEEDBACK==='which'?st.attempts[st.attempts.length-1]:null;

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at 5308650) by
+<!-- Copied from the Loom repository (game/index.html at 36ca1ef) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
@@ -561,7 +561,7 @@ body.marks .sym{display:block}
       <li data-t="The starting cloth has to become the pattern. Both are at the top of the screen.">The starting cloth has to become the pattern. Both are at the top of the screen.</li>
       <li data-t="Every operation you need is already in the tray. What is missing is their order.">Every operation you need is already in the tray. What is missing is their order.</li>
       <li data-t="Tap them into the slots, then press Weave. They run on the cloth one at a time.">Tap them into the slots, then press Weave. They run on the cloth one at a time.</li>
-      <li data-t="Then the slots are ticked from the first one, for as long as the order is right. Change what comes after and weave again.">Then the slots are ticked from the first one, for as long as the order is right. Change what comes after and weave again.</li>
+      <li data-t="Then you are told how many are in place, and the slots are ticked from the first one for as long as the order is right. Change the rest and weave again.">Then you are told how many are in place, and the slots are ticked from the first one for as long as the order is right. Change the rest and weave again.</li>
     </ol>
     <div class="note" data-t="Tap the mark on an operation to watch what it does to a cloth. It never costs an attempt.">Tap the mark on an operation to watch what it does to a cloth. It never costs an attempt.</div>
   </div>
@@ -720,7 +720,7 @@ ca:{
  'The starting cloth has to become the pattern. Both are at the top of the screen.':'La tela de sortida ha d’arribar a ser el patró. Totes dues són a dalt de tot de la pantalla.',
  'Every operation you need is already in the tray. What is missing is their order.':'Totes les operacions que et calen ja són a la safata. El que falta és el seu ordre.',
  'Tap them into the slots, then press Weave. They run on the cloth one at a time.':'Toca-les per posar-les a les caselles i prem Teixeix. S’apliquen a la tela d’una en una.',
- 'Then the slots are ticked from the first one, for as long as the order is right. Change what comes after and weave again.':'Després les caselles es marquen des de la primera, mentre l’ordre sigui correcte. Canvia el que ve després i torna a teixir.',
+ 'Then you are told how many are in place, and the slots are ticked from the first one for as long as the order is right. Change the rest and weave again.':'Després et diu quantes són al seu lloc, i les caselles es marquen des de la primera mentre l’ordre sigui correcte. Canvia la resta i torna a teixir.',
  'Tap the mark on an operation to watch what it does to a cloth. It never costs an attempt.':'Toca la marca d’una operació per veure què fa a una tela. No costa mai cap intent.',
  'Settings':'Configuració','Sound':'So','Shuttles, ticks and the finished chord.':'Llançadores, marques i l’acord final.',
  'Reduced motion':'Menys moviment','No pulsing, no weave animation.':'Sense pulsacions ni animació del teixit.',
@@ -744,6 +744,7 @@ ca:{
  'three':'tres','four':'quatre','five':'cinc','six':'sis',
  'in what order?':'en quin ordre?','{n} tries':'{n} intents',
  'Every ticked slot, from the first, is right. ':'Cada casella marcada, des de la primera, és correcta. ',
+ '{n} of {t} in place. ':'{n} de {t} al seu lloc. ',
  '{n} of {t} in place, but which? ':'{n} de {t} al seu lloc, però quines? ',
  '{n} attempt left. Tap a tile to take it back out.':'Queda {n} intent. Toca una fitxa per treure-la.',
  '{n} attempts left. Tap a tile to take it back out.':'Queden {n} intents. Toca una fitxa per treure-la.',
@@ -817,7 +818,7 @@ es:{
  'The starting cloth has to become the pattern. Both are at the top of the screen.':'La tela de salida tiene que convertirse en el patrón. Las dos están arriba del todo.',
  'Every operation you need is already in the tray. What is missing is their order.':'Todas las operaciones que necesitas ya están en la bandeja. Lo que falta es su orden.',
  'Tap them into the slots, then press Weave. They run on the cloth one at a time.':'Tócalas para colocarlas en las casillas y pulsa Tejer. Se aplican a la tela una a una.',
- 'Then the slots are ticked from the first one, for as long as the order is right. Change what comes after and weave again.':'Después las casillas se marcan desde la primera, mientras el orden sea correcto. Cambia lo que viene después y vuelve a tejer.',
+ 'Then you are told how many are in place, and the slots are ticked from the first one for as long as the order is right. Change the rest and weave again.':'Después te dice cuántas están en su sitio, y las casillas se marcan desde la primera mientras el orden sea correcto. Cambia el resto y vuelve a tejer.',
  'Tap the mark on an operation to watch what it does to a cloth. It never costs an attempt.':'Toca la marca de una operación para ver qué le hace a una tela. Nunca cuesta un intento.',
  'Settings':'Ajustes','Sound':'Sonido','Shuttles, ticks and the finished chord.':'Lanzaderas, marcas y el acorde final.',
  'Reduced motion':'Menos movimiento','No pulsing, no weave animation.':'Sin pulsaciones ni animación del tejido.',
@@ -841,6 +842,7 @@ es:{
  'three':'tres','four':'cuatro','five':'cinco','six':'seis',
  'in what order?':'¿en qué orden?','{n} tries':'{n} intentos',
  'Every ticked slot, from the first, is right. ':'Cada casilla marcada, desde la primera, es correcta. ',
+ '{n} of {t} in place. ':'{n} de {t} en su sitio. ',
  '{n} of {t} in place, but which? ':'{n} de {t} en su sitio, ¿pero cuáles? ',
  '{n} attempt left. Tap a tile to take it back out.':'Queda {n} intento. Toca una ficha para sacarla.',
  '{n} attempts left. Tap a tile to take it back out.':'Quedan {n} intentos. Toca una ficha para sacarla.',
@@ -1932,9 +1934,10 @@ function paintHint(){
   if(st.done) $('hint').textContent='';
   else if(st.attempts.length){
     const left=tries()-st.attempts.length, n=st.attempts[st.attempts.length-1].pins.filter(Boolean).length;
+    const a=st.attempts[st.attempts.length-1];
     $('hint').textContent=(FEEDBACK==='count'
         ? T('{n} of {t} in place, but which? ',{n:n,t:NOPS})
-        : T('Every ticked slot, from the first, is right. '))+
+        : T('{n} of {t} in place. ',{n:rightCount(a),t:NOPS})+(runLength(a)?T('Every ticked slot, from the first, is right. '):''))+
       T(left===1?'{n} attempt left. Tap a tile to take it back out.':'{n} attempts left. Tap a tile to take it back out.',{n:left});
   }
   /* Before the first weave of a first day this line is blank, and blank is
@@ -2502,10 +2505,7 @@ function render(){
   st.attempts.forEach((a,i)=>{
     const row=document.createElement('div');row.className='histrow';
     const n=document.createElement('div');n.className='n';n.textContent=i+1;row.appendChild(n);
-    const hinted=a.locked||[];
-    if(FEEDBACK==='count'){ const k=a.pins.filter(Boolean).length, h=hinted.length;
-      a.pins.forEach((p,j)=>{const b=document.createElement('div');b.className='hb'+(j<h?' hinted':j<k?' count':'');row.appendChild(b);}); }
-    else a.pins.forEach((p,j)=>{const b=document.createElement('div');b.className='hb'+(hinted.indexOf(j)>=0?' hinted':p?' good':'');row.appendChild(b);});
+    rowCells(a).forEach(c=>{const b=document.createElement('div');b.className='hb'+(c==='hint'?' hinted':c==='none'?'':' '+c);row.appendChild(b);});
     h.appendChild(row);
   });
   if(st.done) showResult();
@@ -2547,17 +2547,37 @@ function shareStat(){
   if(b.text===T('Woven.')||b.text===T('Better next time.')) return null;
   return b;
 }
+/* How many of an attempt's operations were in their right places, anywhere,
+   and how long its ticked run from the first slot was. */
+function rightCount(a){ return (a.order||[]).filter((x,i)=>x!==null&&x===secretIdx[i]).length; }
+function runLength(a){ let k=0; while(k<a.pins.length&&a.pins[k]) k++; return k; }
+/* One attempt as squares, the same wherever it is drawn: the history, the
+   shared text and the shared card. A "which" day: the ticked run from the
+   first slot is green (a hinted slot in it yellow); then, out of place on
+   purpose, one square for every other operation in its right place - yellow
+   for a hinted one, blue for the rest - so the row says how many without
+   saying which (the President's word, 2 October 2026). A "how many" day: the
+   same count, all of it out of place. */
+function rowCells(a){
+  const len=a.pins.length, hinted=a.locked||[], out=[];
+  if(FEEDBACK==='count'){ const k=a.pins.filter(Boolean).length, h=hinted.length;
+    for(let j=0;j<len;j++) out.push(j<h?'hint':j<k?'count':'none');
+    return out; }
+  const run=runLength(a);
+  for(let j=0;j<run;j++) out.push(hinted.indexOf(j)>=0?'hint':'good');
+  const h=hinted.filter(s=>s>=run).length, more=Math.max(0,rightCount(a)-run-h);
+  for(let j=0;j<h;j++) out.push('hint');
+  for(let j=0;j<more;j++) out.push('count');
+  while(out.length<len) out.push('none');
+  return out;
+}
 /* The text that goes out. On screen it is shown without the link, which is
    for the person who receives it and only noise for the one who sends it. */
 function shareString(withLink){
   const head='Loom '+viewDay+'   '+(st.won?st.attempts.length:'X')+'/'+TRIES+(st.extra?'+'+st.extra:'')+'   '+T('streak')+' '+(PROF.streak||0);
   /* A hinted slot is a different square, so the record stays honest (§11). */
-  const grid=st.attempts.map(a=>{
-    const hinted=a.locked||[];
-    if(FEEDBACK==='count'){ const k=a.pins.filter(Boolean).length, h=hinted.length;
-      return '🟨'.repeat(h)+'🟦'.repeat(k-h)+'⬜'.repeat(a.pins.length-k); }
-    return a.pins.map((p,i)=>hinted.indexOf(i)>=0?'🟨':p?'🟩':'⬜').join('');
-  }).join('\n');
+  const SQ={hint:'🟨',good:'🟩',count:'🟦',none:'⬜'};
+  const grid=st.attempts.map(a=>rowCells(a).map(c=>SQ[c]).join('')).join('\n');
   const stat=shareStat();
   return head+'\n\n'+grid+(stat?'\n\n'+stat.text:'')+
          (SHARE_URL&&withLink!==false?'\n\n'+SHARE_URL:'');
@@ -2658,12 +2678,10 @@ function resultImage(){
 
   /* One row per attempt, square for square what the text grid says (11). */
   st.attempts.forEach((a,i)=>{
-    const hinted=a.locked||[], k=a.pins.filter(Boolean).length, len=a.pins.length;
+    const cells=rowCells(a), len=cells.length;
     const rx=(W-(len*cell+(len-1)*gap))/2, ry=gridTop+i*rowH;
     for(let j=0;j<len;j++){
-      x.fillStyle=FEEDBACK==='count'
-        ? (j<hinted.length?HEX.hint:j<k?HEX.count:HEX.none)
-        : (hinted.indexOf(j)>=0?HEX.hint:a.pins[j]?HEX.good:HEX.none);
+      x.fillStyle=HEX[cells[j]];
       rrect(x,(rx+j*(cell+gap))*S,ry*S,cell*S,cell*S,6*S);
     }
   });

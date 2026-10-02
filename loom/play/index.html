@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at d285a3f) by
+<!-- Copied from the Loom repository (game/index.html at 9e86fbe) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
@@ -1199,7 +1199,7 @@ function showLog(){
              ' &nbsp; <a href="#" id="logAn">turn it '+(A.live()?'off':'on')+'</a>';
   p.innerHTML='<b>Playtest log</b><br>'+LOG.report().replace(/\n/g,'<br>')+
     '<br><br>'+an+
-    '<br>store: '+(SHOP.has()?'bridge present, Loom Full '+(FULL()?'owned':'not owned')+', months open '+openMonths().length+(monthOnSale()!==null?', on sale '+monthSku(monthOnSale()):''):'no bridge')+
+    '<br>store: '+(SHOP.has()?'bridge present, Loom Full '+(FULL()?'owned':'not owned')+', months open '+openMonths().length+(monthOnSale()!==null?', next '+monthName(monthOnSale()):''):'no bridge')+
     '<br>advertising: '+(window.VoltixAds?'bridge present':'no bridge')+', placements '+
       ['unpick','more','cloth','interstitial'].map(p=>p+' '+(ADS.available(p)?'on':'off')).join(', ')+
     adTestLine()+
@@ -1216,7 +1216,7 @@ function showLog(){
        day. This hands today back with all of them fresh. */
     '<br><br>offers and adverts are once a day &nbsp; <a href="#" id="logFresh">replay today with every offer fresh</a>'+
     /* Loom Full turns every advertisement off, so testing both means un-buying it. */
-    ((PROF.owned||[]).length?'<br>bought: '+PROF.owned.join(', ')+' &nbsp; <a href="#" id="logUnbuy">forget what the preview store sold</a>':'')+
+    ((PROF.owned||[]).length||(PROF.months||[]).length?'<br>bought: '+(PROF.owned||[]).concat((PROF.months||[]).map(monthName)).join(', ')+' &nbsp; <a href="#" id="logUnbuy">forget what the preview store sold</a>':'')+
     /* The first day is the one thing a playtest cannot get back by waiting: it
        ends on the first solve and never returns. This gives it back on this
        device alone, so the lesson of 17.2 and the coach can both be watched
@@ -1231,7 +1231,7 @@ function showLog(){
   if(document.getElementById('logUnbuy')) document.getElementById('logUnbuy').onclick=e=>{
     e.preventDefault();
     try{ window.VoltixNative.remove('loom.preview.owned'); }catch(err){}
-    PROF.owned=[]; PROF.ownedAt={}; STORE.setJSON(PKEY,PROF); afterPurchase(); showLog(); };
+    PROF.owned=[]; PROF.months=[]; delete PROF.monthCredit; STORE.setJSON(PKEY,PROF); afterPurchase(); showLog(); };
   if(document.getElementById('logFresh')) document.getElementById('logFresh').onclick=e=>{
     e.preventDefault();
     if(!isFinite(PROF.firstDay)||dayNum-PROF.firstDay<INTERSTITIAL_FIRST_DAYS) PROF.firstDay=dayNum-INTERSTITIAL_FIRST_DAYS;
@@ -1726,7 +1726,7 @@ const QUILT=(function(){
    until the app has billing, nothing is for sale and no offer renders.
    Entitlements are also cached in the profile, so a store that is slow to
    answer never locks the archive for a second. */
-const SKU={FULL:'loom_full',HINTS:'loom_hints_10',WEAVES:'loom_weaves_5',
+const SKU={FULL:'loom_full',HINTS:'loom_hints_10',WEAVES:'loom_weaves_5',MONTH:'loom_month',
   THREADS:{indigo:'loom_thread_indigo',madder:'loom_thread_madder',wool:'loom_thread_wool',contrast:'loom_thread_contrast'}};
 const SHOP=(function(){
   /* The store may sit on its own object (the debug preview does) or on the main bridge. */
@@ -1741,13 +1741,7 @@ const SHOP=(function(){
     try{ const v=NB().owned(sku); return v===true||v==='true'; }catch(e){ return false; }
   }
   function price(sku){ if(!has()||!NB().price) return ''; try{ return String(NB().price(sku)||''); }catch(e){ return ''; } }
-  /* When an entitlement was bought, in ms: the month model needs to know which
-     month was bought first (its month before comes with it). Kept in the
-     profile once known, so it survives a slow store. */
-  function ownedAt(sku){
-    const c=(PROF.ownedAt||{})[sku]; if(c) return c;
-    try{ const n=NB(); const v=n&&n.ownedAt?Number(n.ownedAt(sku)):0; return isFinite(v)?v:0; }catch(e){ return 0; }
-  }
+
   let pending=null;
   function buy(sku,placement){
     if(!has()||owned(sku)) return false;
@@ -1758,8 +1752,8 @@ const SHOP=(function(){
   }
   function restore(){ if(!has()||!NB().restore) return false; LOG.mark('restore'); try{ NB().restore(); }catch(e){ return false; } return true; }
   function grant(sku,state){
-    if(state==='owned'){ PROF.owned=PROF.owned||[]; if(PROF.owned.indexOf(sku)<0) PROF.owned.push(sku);
-      const at=ownedAt(sku)||Date.now(); PROF.ownedAt=PROF.ownedAt||{}; if(!PROF.ownedAt[sku]) PROF.ownedAt[sku]=at; }
+    if(state==='owned'){ PROF.owned=PROF.owned||[]; if(PROF.owned.indexOf(sku)<0) PROF.owned.push(sku); }
+    if(state==='consumed'&&sku===SKU.MONTH) lastMonthOpened=openBoughtMonth();
     if(state==='consumed'&&sku===SKU.HINTS) PROF.hintBank=(PROF.hintBank||0)+10;
     if(state==='consumed'&&sku===SKU.WEAVES) PROF.weaveBank=(PROF.weaveBank||0)+5;
     STORE.setJSON(PKEY,PROF);
@@ -1774,48 +1768,61 @@ const SHOP=(function(){
          into the offer panel would be a sentence nobody can see. */
       const said=state!=='consumed'?T('Done. It is yours.')
         :sku===SKU.WEAVES?T('Done. Five more weaves in your pack.'):T('Done. Ten more threads to unpick.');
-      if(state==='consumed'&&!$('offerPanel').classList.contains('show')){ if(sku===SKU.WEAVES) moreSaid=said; else packSaid=said; }
-      else offerNote(isMonthSku(sku)?T('Done. {m} is yours.',{m:monthLabel(...monthOfIndex(monthIndexOfSku(sku)))}):said);
+      if(state==='consumed'&&!$('offerPanel').classList.contains('show')){ if(sku===SKU.WEAVES) moreSaid=said; else if(sku===SKU.HINTS) packSaid=said; }
+      else offerNote(sku===SKU.MONTH&&lastMonthOpened!==null?T('Done. {m} is yours.',{m:monthName(lastMonthOpened)}):said);
     }else if(state==='none'){ offerNote(T('Nothing to restore on this account.')); }
     else{ LOG.mark('buyfail','purchase_failed',{item_id:sku,state:String(state)}); offerNote(T('Nothing was bought. You are where you were.')); }
     moreSheetBought(sku,state,p?p.placement:'');
     afterPurchase();
   };
-  return {has,owned,price,buy,restore,ownedAt};
+  return {has,owned,price,buy,restore};
 })();
 const FULL=()=>SHOP.owned(SKU.FULL);
 /* ---------- §12.1 the months: the President's instruction, 2 October 2026 ------
    Loom Full (every cloth ever, €2.99) gave a buyer in 2030 four years for the
    price a buyer in 2026 paid for nine months. It is no longer sold; who owns
-   it keeps everything it promised. Past cloths are sold a month at a time, one
-   product per calendar month (loom_month_YYYY_MM, €0.99), so a euro always
-   buys the same: about thirty cloths, yours forever.
+   it keeps everything it promised. Past cloths are sold a month at a time with
+   ONE product, loom_month (€0.99), bought as often as the player likes; the
+   game decides which month each purchase opens, so a euro always buys the
+   same: about thirty cloths, yours forever.
    - Each purchase opens the newest month not yet open - the current month
      first, then back towards January 2026.
-   - The first month bought brings the month before it: worked out from which
-     month was bought first, so it survives a reinstall and a restore.
-   - Anyone who owns a month, or Loom Full, sees no advertising of any kind. */
-const MONTH_PREFIX='loom_month_';
-const isMonthSku=sku=>typeof sku==='string'&&sku.indexOf(MONTH_PREFIX)===0;
+   - The first purchase brings the month before it as well.
+   - Anyone who has bought a month, or owns Loom Full, sees no advertising.
+   A product bought again and again is a consumable, which Play forgets once
+   delivered, so the months opened are the game's own record (PROF.months). It
+   travels in the Android backup with the rest of the profile, like the hints
+   left in a pack; "Restore a purchase" cannot bring it back. */
 function monthIndex(y,m){ return (y-2026)*12+m; }                // 0 is January 2026
 function monthOfIndex(i){ return [2026+Math.floor(i/12), i%12]; }
 function monthIndexOfDay(d){ const t=dateOf(d); return monthIndex(t.getUTCFullYear(),t.getUTCMonth()); }
-function monthSku(i){ const [y,m]=monthOfIndex(i); return MONTH_PREFIX+y+'_'+String(m+1).padStart(2,'0'); }
-function monthIndexOfSku(sku){ const m=/^loom_month_(\d{4})_(\d{2})$/.exec(sku||''); return m?monthIndex(+m[1],+m[2]-1):-1; }
 function monthName(i){ return monthLabel(...monthOfIndex(i)); }
-function ownedMonths(){ return (PROF.owned||[]).filter(isMonthSku).map(monthIndexOfSku).filter(i=>i>=0); }
-function firstMonthBought(){ let best=-1, bt=Infinity;
-  ownedMonths().forEach(i=>{ const at=SHOP.ownedAt(monthSku(i))||Infinity; if(best<0||at<bt){ best=i; bt=at; } });
-  return best; }
-function openMonths(){ const o=ownedMonths(); if(!o.length) return o;
-  const f=firstMonthBought(); return f>0&&o.indexOf(f-1)<0?o.concat([f-1]):o; }
+function openMonths(){ return (PROF.months||[]).slice(); }
 function monthOpen(i){ return FULL()||openMonths().indexOf(i)>=0; }
 /* The month the next purchase opens: the newest not yet open, back to January 2026. */
 function monthOnSale(){ if(FULL()) return null; const open=openMonths();
   for(let i=monthIndexOfDay(dayNum);i>=0;i--) if(open.indexOf(i)<0) return i;
   return null; }
+/* A purchase delivered: the month on sale opens, and on a first purchase the
+   one before it. Bought with nothing left to open (every month already open),
+   it is kept as a credit and opens the next month the day it begins. Returns
+   the month opened, or null. */
+let lastMonthOpened=null;
+function openBoughtMonth(){
+  const sale=monthOnSale();
+  if(sale===null){ PROF.monthCredit=(PROF.monthCredit||0)+1; return null; }
+  const first=!(PROF.months||[]).length;
+  PROF.months=(PROF.months||[]).concat([sale]);
+  if(first&&sale>0&&PROF.months.indexOf(sale-1)<0) PROF.months.push(sale-1);
+  return sale;
+}
+function spendMonthCredit(){
+  let spent=false;
+  while((PROF.monthCredit||0)>0&&monthOnSale()!==null){ PROF.monthCredit--; openBoughtMonth(); spent=true; }
+  if(spent) STORE.setJSON(PKEY,PROF);
+}
 /* Bought anything that removes advertising: a month, or Loom Full. */
-const PAID=()=>FULL()||ownedMonths().length>0;
+const PAID=()=>FULL()||openMonths().length>0;
 
 /* Old day records are not worth keeping forever on a phone; the quilt keeps
    the one line per day that outlives them. */
@@ -1836,6 +1843,7 @@ function save(s){ STORE.setJSON(DKEY(viewDay),s); }
 function openDay(d){
   viewDay=d; archive=(d!==dayNum);
   P=build(d); setDials(P.dials);
+  spendMonthCredit();                 // a month bought when none was left opens the day the next begins
   secretIdx=P.secret.map(op=>P.ops.findIndex(o=>JSON.stringify(o)===JSON.stringify(op)));
   st=STORE.getJSON(DKEY(d),null)||{v:4,order:[],attempts:[],done:false,won:false,started:false};
   st.attempts=st.attempts||[]; st.order=st.order||[];
@@ -3351,19 +3359,19 @@ function maybeInterstitial(){
 let offerPlacement=null, offerDay=null;
 function offerNote(t){ $('offerNote').hidden=!t; $('offerNote').textContent=t||''; }
 function monthLines(i){
-  const first=!ownedMonths().length&&i>0;
+  const first=!openMonths().length&&i>0;
   return T('Every cloth of {m}, about thirty, yours forever.',{m:monthName(i)})+' '+
     (first?T('Your first month brings {m} with it.',{m:monthName(i-1)})+' ':'')+
     (PAID()?'':T('No advertising of any kind once you have bought one.'));
 }
 function showOffer(placement,day){
   const sale=monthOnSale();
-  if(!SHOP.has()||sale===null||!SHOP.price(monthSku(sale))) return false;
+  if(!SHOP.has()||sale===null||!SHOP.price(SKU.MONTH)) return false;
   offerPlacement=placement; offerDay=day===undefined?null:day;
   PANELS.forEach(id=>{ if(id!=='offerPanel') $(id).classList.remove('show'); });
   $('offerPanel').classList.add('show');
   $('offerLines').textContent=monthLines(sale);
-  $('offerPrice').textContent=SHOP.price(monthSku(sale));     // the line under it already says "once"
+  $('offerPrice').textContent=SHOP.price(SKU.MONTH);     // the line under it already says "once"
   $('offerBuy').textContent=T('Open {m}',{m:monthName(sale)});
   offerNote('');
   /* §12.4 "yesterday's cloth": one cloth, this once, for an advertisement. */
@@ -3385,7 +3393,7 @@ function closeOffer(dismissed){
   offerPlacement=null;
 }
 $('offerBuy').onclick=()=>{ SFX.play('tap'); const sale=monthOnSale();
-  if(sale===null||!SHOP.buy(monthSku(sale),offerPlacement||'')) offerNote(T('The store is not available right now.')); };
+  if(sale===null||!SHOP.buy(SKU.MONTH,offerPlacement||'')) offerNote(T('The store is not available right now.')); };
 $('offerRestore').onclick=()=>{ SFX.play('tap'); if(!SHOP.restore()) offerNote(T('The store is not available right now.')); };
 $('offerNo').onclick=()=>{ SFX.play('tap'); closeOffer(true); };
 $('offerAd').onclick=()=>{ SFX.play('tap'); const d=offerDay; if(d===null) return;
@@ -3397,7 +3405,7 @@ $('offerAd').onclick=()=>{ SFX.play('tap'); const d=offerDay; if(d===null) retur
 function afterPurchase(){
   if(FULL()||monthOnSale()===null) closeOffer(false);
   else if($('offerPanel').classList.contains('show')){ const sale=monthOnSale();   // the next month, ready if they want it
-    $('offerLines').textContent=monthLines(sale); $('offerPrice').textContent=SHOP.price(monthSku(sale));
+    $('offerLines').textContent=monthLines(sale); $('offerPrice').textContent=SHOP.price(SKU.MONTH);
     $('offerBuy').textContent=T('Open {m}',{m:monthName(sale)}); }
   if(!$('monthSheet').hidden&&(PAID()||monthOnSale()===null)) $('monthSheet').hidden=true;
   applyThread();
@@ -3413,7 +3421,7 @@ let monthSheetTimer=null;
 function monthSheetDue(){
   const sale=monthOnSale();
   return !archive&&st.done&&st.won&&SHOP.has()&&!PAID()&&!PROF.fullOffered&&stats().solved>=3&&
-         sale!==null&&!!SHOP.price(monthSku(sale));
+         sale!==null&&!!SHOP.price(SKU.MONTH);
 }
 /* A month of cloths, drawn: a calendar of small cloths in the player's threads,
    the month's own first weekday and length. */
@@ -3433,7 +3441,7 @@ function openMonthSheet(){
   PROF.fullOffered=dayNum; STORE.setJSON(PKEY,PROF);
   $('monthSheetArt').innerHTML=monthArt(sale);
   $('monthSheetLine').textContent=monthLines(sale);
-  $('monthSheetBuy').textContent=T('Open {m} · {p}',{m:monthName(sale),p:SHOP.price(monthSku(sale))});
+  $('monthSheetBuy').textContent=T('Open {m} · {p}',{m:monthName(sale),p:SHOP.price(SKU.MONTH)});
   $('monthSheetNote').textContent=T('Once. Not a subscription.');
   $('monthSheet').hidden=false;
   LOG.mark('offer','offer_shown',{placement:'end'});
@@ -3445,7 +3453,7 @@ function closeMonthSheet(dismissed){
   if(dismissed) LOG.mark('offerno','offer_dismissed',{placement:'end'});
 }
 $('monthSheetBuy').onclick=()=>{ SFX.play('tap'); const sale=monthOnSale();
-  if(sale===null||!SHOP.buy(monthSku(sale),'end')) $('monthSheetNote').textContent=T('The store is not available right now.'); };
+  if(sale===null||!SHOP.buy(SKU.MONTH,'end')) $('monthSheetNote').textContent=T('The store is not available right now.'); };
 $('monthSheetNo').onclick=()=>{ SFX.play('tap'); closeMonthSheet(true); };
 $('fullRow').onclick=()=>{ if(FULL()||monthOnSale()===null) return; SFX.play('tap'); showOffer('settings'); };
 $('restoreRow').onclick=()=>{ SFX.play('tap'); if(SHOP.restore()) $('setNote').textContent=T('Asking the store…'); };
@@ -3831,7 +3839,7 @@ function paintSettings(){
       : sale===null?T('Every month is open.')
       : n?T(n===1?'1 month open. Next: {m}.':'{n} months open. Next: {m}.',{n:n,m:monthName(sale)})
       : T('One month of cloths at a time, about thirty, yours forever.');
-    $('fullRowPrice').textContent=FULL()?T('yours'):sale===null?T('all open'):(SHOP.price(monthSku(sale))||''); }
+    $('fullRowPrice').textContent=FULL()?T('yours'):sale===null?T('all open'):(SHOP.price(SKU.MONTH)||''); }
   /* §11: a bought pack outlives the day it was bought on, so it is counted
      somewhere that does not depend on today's hints being left. */
   $('packRow').hidden=hintBank()<=0;

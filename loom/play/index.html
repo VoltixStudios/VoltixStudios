@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at 9d66ee0) by
+<!-- Copied from the Loom repository (game/index.html at d285a3f) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
@@ -508,7 +508,7 @@ body.marks .sym{display:block}
       <input class="timein" type="time" id="remTime" value="20:00"></div>
     <div class="row" id="statsRow"><div><span data-t="Send anonymous statistics">Send anonymous statistics</span><div class="why" data-t="Counts only, to compare your day with other players. No name, no account, no advertising id. Off sends nothing.">Counts only, to compare your day with other players. No name, no account, no advertising id. Off sends nothing.</div></div>
       <button class="sw" id="swStats" role="switch"></button></div>
-    <div class="row buy" id="fullRow" hidden><div><span data-t="Loom Full">Loom Full</span><div class="why" data-t="Every cloth ever published, forever. No advertising, ever.">Every cloth ever published, forever. No advertising, ever.</div></div>
+    <div class="row buy" id="fullRow" hidden><div><span id="fullRowName">Loom Full</span><div class="why" id="fullRowWhy"></div></div>
       <span class="price" id="fullRowPrice"></span></div>
     <div class="row" id="packRow" hidden><div><span data-t="Your pack">Your pack</span><div class="why" data-t="Threads to unpick, one per cloth at most.">Threads to unpick, one per cloth at most.</div></div>
       <span class="price" id="packCount"></span></div>
@@ -520,9 +520,8 @@ body.marks .sym{display:block}
   </div>
 
   <div class="panel" id="offerPanel">
-    <h3>Loom Full</h3>
-    <div class="lines"><div data-t="Every cloth ever published, forever.">Every cloth ever published, forever.</div>
-      <div data-t="No advertising, ever.">No advertising, ever.</div></div>
+    <h3 data-t="A month of cloths">A month of cloths</h3>
+    <div class="lines" id="offerLines"></div>
     <b class="big-price" id="offerPrice"></b>
     <div class="note" data-t="Once. Not a subscription.">Once. Not a subscription.</div>
     <button class="act" id="offerBuy" data-t="Buy">Buy</button>
@@ -654,11 +653,6 @@ body.marks .sym{display:block}
     <div class="note" id="remNote" hidden></div>
     <button class="link" id="moreBtn" hidden></button>
     <div class="note" id="moreNote" hidden></div>
-    <div class="offer" id="fullOffer" hidden>
-      <div class="ask" id="fullOfferLine"></div>
-      <div class="btns"><button id="fullOfferSee" data-t="Have a look">Have a look</button>
-        <button class="no" id="fullOfferNo" data-t="Not now">Not now</button></div>
-    </div>
     <button class="link" id="archPrompt" hidden></button>
     <button class="link" id="replayPrompt" data-t="See how it was woven">See how it was woven</button>
     <button class="link" id="statsPrompt" data-t="Your record">Your record</button>
@@ -677,6 +671,18 @@ body.marks .sym{display:block}
       <button class="link" id="moreSheetAd" hidden></button>
       <button class="link" id="moreSheetNo" data-t="Not now">Not now</button>
       <div class="note" id="moreSheetNote" data-t="Two extra weaves per cloth at most. The shared result shows them.">Two extra weaves per cloth at most. The shared result shows them.</div>
+    </div>
+  </div>
+
+  <!-- After the third solved cloth: a month of cloths, once. -->
+  <div class="sheet" id="monthSheet" hidden role="dialog" aria-modal="true" aria-labelledby="monthSheetTitle">
+    <div class="sheet__card">
+      <div class="sheet__art" id="monthSheetArt"></div>
+      <b id="monthSheetTitle" data-t="A month of cloths">A month of cloths</b>
+      <div class="lines" id="monthSheetLine"></div>
+      <button class="act" id="monthSheetBuy"></button>
+      <button class="link" id="monthSheetNo" data-t="Not now">Not now</button>
+      <div class="note" id="monthSheetNote"></div>
     </div>
   </div>
 
@@ -791,7 +797,14 @@ ca:{
  'Nothing to restore on this account.':'No hi ha res per restaurar en aquest compte.',
  'Nothing was bought. You are where you were.':'No s’ha comprat res. Ets on eres.',
  'The store is not available right now.':'La botiga no està disponible ara mateix.',
- 'Loom Full: every cloth ever, forever.':'Loom Full: totes les teles, per sempre.',
+ 'A month of cloths':'Un mes de teles','Past cloths':'Teles anteriors',
+ 'Every cloth of {m}, about thirty, yours forever.':'Totes les teles de {m}, unes trenta, teves per sempre.',
+ 'Your first month brings {m} with it.':'El teu primer mes porta {m} amb ell.',
+ 'No advertising of any kind once you have bought one.':'Cap mena de publicitat un cop n’hagis comprat un.',
+ 'Open {m}':'Obre {m}','Open {m} · {p}':'Obre {m} · {p}','Done. {m} is yours.':'Fet. {m} és teu.',
+ 'One month of cloths at a time, about thirty, yours forever.':'Un mes de teles cada vegada, unes trenta, teves per sempre.',
+ '1 month open. Next: {m}.':'1 mes obert. El següent: {m}.','{n} months open. Next: {m}.':'{n} mesos oberts. El següent: {m}.',
+ 'Every month is open.':'Tots els mesos són oberts.','all open':'tot obert',
  'Have a look':'Fes-hi un cop d’ull',
  'Asking the store…':'Preguntant a la botiga…',
  'One more weave · watch an advert':'Un teixit més · mira un anunci',
@@ -890,7 +903,14 @@ es:{
  'Nothing to restore on this account.':'No hay nada que restaurar en esta cuenta.',
  'Nothing was bought. You are where you were.':'No se ha comprado nada. Estás donde estabas.',
  'The store is not available right now.':'La tienda no está disponible ahora mismo.',
- 'Loom Full: every cloth ever, forever.':'Loom Full: todas las telas, para siempre.',
+ 'A month of cloths':'Un mes de telas','Past cloths':'Telas anteriores',
+ 'Every cloth of {m}, about thirty, yours forever.':'Todas las telas de {m}, unas treinta, tuyas para siempre.',
+ 'Your first month brings {m} with it.':'Tu primer mes trae {m} con él.',
+ 'No advertising of any kind once you have bought one.':'Ninguna publicidad una vez hayas comprado uno.',
+ 'Open {m}':'Abre {m}','Open {m} · {p}':'Abre {m} · {p}','Done. {m} is yours.':'Hecho. {m} es tuyo.',
+ 'One month of cloths at a time, about thirty, yours forever.':'Un mes de telas cada vez, unas treinta, tuyas para siempre.',
+ '1 month open. Next: {m}.':'1 mes abierto. El siguiente: {m}.','{n} months open. Next: {m}.':'{n} meses abiertos. El siguiente: {m}.',
+ 'Every month is open.':'Todos los meses están abiertos.','all open':'todo abierto',
  'Have a look':'Echa un vistazo',
  'Asking the store…':'Preguntando a la tienda…',
  'One more weave · watch an advert':'Un tejido más · ver un anuncio',
@@ -1179,7 +1199,7 @@ function showLog(){
              ' &nbsp; <a href="#" id="logAn">turn it '+(A.live()?'off':'on')+'</a>';
   p.innerHTML='<b>Playtest log</b><br>'+LOG.report().replace(/\n/g,'<br>')+
     '<br><br>'+an+
-    '<br>store: '+(SHOP.has()?'bridge present, Loom Full '+(FULL()?'owned':'not owned'):'no bridge')+
+    '<br>store: '+(SHOP.has()?'bridge present, Loom Full '+(FULL()?'owned':'not owned')+', months open '+openMonths().length+(monthOnSale()!==null?', on sale '+monthSku(monthOnSale()):''):'no bridge')+
     '<br>advertising: '+(window.VoltixAds?'bridge present':'no bridge')+', placements '+
       ['unpick','more','cloth','interstitial'].map(p=>p+' '+(ADS.available(p)?'on':'off')).join(', ')+
     adTestLine()+
@@ -1211,7 +1231,7 @@ function showLog(){
   if(document.getElementById('logUnbuy')) document.getElementById('logUnbuy').onclick=e=>{
     e.preventDefault();
     try{ window.VoltixNative.remove('loom.preview.owned'); }catch(err){}
-    PROF.owned=[]; STORE.setJSON(PKEY,PROF); afterPurchase(); showLog(); };
+    PROF.owned=[]; PROF.ownedAt={}; STORE.setJSON(PKEY,PROF); afterPurchase(); showLog(); };
   if(document.getElementById('logFresh')) document.getElementById('logFresh').onclick=e=>{
     e.preventDefault();
     if(!isFinite(PROF.firstDay)||dayNum-PROF.firstDay<INTERSTITIAL_FIRST_DAYS) PROF.firstDay=dayNum-INTERSTITIAL_FIRST_DAYS;
@@ -1721,6 +1741,13 @@ const SHOP=(function(){
     try{ const v=NB().owned(sku); return v===true||v==='true'; }catch(e){ return false; }
   }
   function price(sku){ if(!has()||!NB().price) return ''; try{ return String(NB().price(sku)||''); }catch(e){ return ''; } }
+  /* When an entitlement was bought, in ms: the month model needs to know which
+     month was bought first (its month before comes with it). Kept in the
+     profile once known, so it survives a slow store. */
+  function ownedAt(sku){
+    const c=(PROF.ownedAt||{})[sku]; if(c) return c;
+    try{ const n=NB(); const v=n&&n.ownedAt?Number(n.ownedAt(sku)):0; return isFinite(v)?v:0; }catch(e){ return 0; }
+  }
   let pending=null;
   function buy(sku,placement){
     if(!has()||owned(sku)) return false;
@@ -1731,7 +1758,8 @@ const SHOP=(function(){
   }
   function restore(){ if(!has()||!NB().restore) return false; LOG.mark('restore'); try{ NB().restore(); }catch(e){ return false; } return true; }
   function grant(sku,state){
-    if(state==='owned'){ PROF.owned=PROF.owned||[]; if(PROF.owned.indexOf(sku)<0) PROF.owned.push(sku); }
+    if(state==='owned'){ PROF.owned=PROF.owned||[]; if(PROF.owned.indexOf(sku)<0) PROF.owned.push(sku);
+      const at=ownedAt(sku)||Date.now(); PROF.ownedAt=PROF.ownedAt||{}; if(!PROF.ownedAt[sku]) PROF.ownedAt[sku]=at; }
     if(state==='consumed'&&sku===SKU.HINTS) PROF.hintBank=(PROF.hintBank||0)+10;
     if(state==='consumed'&&sku===SKU.WEAVES) PROF.weaveBank=(PROF.weaveBank||0)+5;
     STORE.setJSON(PKEY,PROF);
@@ -1747,15 +1775,47 @@ const SHOP=(function(){
       const said=state!=='consumed'?T('Done. It is yours.')
         :sku===SKU.WEAVES?T('Done. Five more weaves in your pack.'):T('Done. Ten more threads to unpick.');
       if(state==='consumed'&&!$('offerPanel').classList.contains('show')){ if(sku===SKU.WEAVES) moreSaid=said; else packSaid=said; }
-      else offerNote(said);
+      else offerNote(isMonthSku(sku)?T('Done. {m} is yours.',{m:monthLabel(...monthOfIndex(monthIndexOfSku(sku)))}):said);
     }else if(state==='none'){ offerNote(T('Nothing to restore on this account.')); }
     else{ LOG.mark('buyfail','purchase_failed',{item_id:sku,state:String(state)}); offerNote(T('Nothing was bought. You are where you were.')); }
     moreSheetBought(sku,state,p?p.placement:'');
     afterPurchase();
   };
-  return {has,owned,price,buy,restore};
+  return {has,owned,price,buy,restore,ownedAt};
 })();
 const FULL=()=>SHOP.owned(SKU.FULL);
+/* ---------- §12.1 the months: the President's instruction, 2 October 2026 ------
+   Loom Full (every cloth ever, €2.99) gave a buyer in 2030 four years for the
+   price a buyer in 2026 paid for nine months. It is no longer sold; who owns
+   it keeps everything it promised. Past cloths are sold a month at a time, one
+   product per calendar month (loom_month_YYYY_MM, €0.99), so a euro always
+   buys the same: about thirty cloths, yours forever.
+   - Each purchase opens the newest month not yet open - the current month
+     first, then back towards January 2026.
+   - The first month bought brings the month before it: worked out from which
+     month was bought first, so it survives a reinstall and a restore.
+   - Anyone who owns a month, or Loom Full, sees no advertising of any kind. */
+const MONTH_PREFIX='loom_month_';
+const isMonthSku=sku=>typeof sku==='string'&&sku.indexOf(MONTH_PREFIX)===0;
+function monthIndex(y,m){ return (y-2026)*12+m; }                // 0 is January 2026
+function monthOfIndex(i){ return [2026+Math.floor(i/12), i%12]; }
+function monthIndexOfDay(d){ const t=dateOf(d); return monthIndex(t.getUTCFullYear(),t.getUTCMonth()); }
+function monthSku(i){ const [y,m]=monthOfIndex(i); return MONTH_PREFIX+y+'_'+String(m+1).padStart(2,'0'); }
+function monthIndexOfSku(sku){ const m=/^loom_month_(\d{4})_(\d{2})$/.exec(sku||''); return m?monthIndex(+m[1],+m[2]-1):-1; }
+function monthName(i){ return monthLabel(...monthOfIndex(i)); }
+function ownedMonths(){ return (PROF.owned||[]).filter(isMonthSku).map(monthIndexOfSku).filter(i=>i>=0); }
+function firstMonthBought(){ let best=-1, bt=Infinity;
+  ownedMonths().forEach(i=>{ const at=SHOP.ownedAt(monthSku(i))||Infinity; if(best<0||at<bt){ best=i; bt=at; } });
+  return best; }
+function openMonths(){ const o=ownedMonths(); if(!o.length) return o;
+  const f=firstMonthBought(); return f>0&&o.indexOf(f-1)<0?o.concat([f-1]):o; }
+function monthOpen(i){ return FULL()||openMonths().indexOf(i)>=0; }
+/* The month the next purchase opens: the newest not yet open, back to January 2026. */
+function monthOnSale(){ if(FULL()) return null; const open=openMonths();
+  for(let i=monthIndexOfDay(dayNum);i>=0;i--) if(open.indexOf(i)<0) return i;
+  return null; }
+/* Bought anything that removes advertising: a month, or Loom Full. */
+const PAID=()=>FULL()||ownedMonths().length>0;
 
 /* Old day records are not worth keeping forever on a phone; the quilt keeps
    the one line per day that outlives them. */
@@ -1769,7 +1829,7 @@ let viewDay=dayNum, archive=false, P=null, secretIdx=null, st=null;
 /* A cloth can be played if it is in the free week, if Loom Full is owned, or
    if an advertisement unlocked that one cloth today (§12.4). */
 const adDays=()=>PROF.adDay===dayNum?(PROF.adDays||[]):[];
-const freeDay=d=>d<=dayNum&&(d>dayNum-FREE||FULL()||adDays().indexOf(d)>=0);
+const freeDay=d=>d<=dayNum&&(d>dayNum-FREE||monthOpen(monthIndexOfDay(d))||adDays().indexOf(d)>=0);
 const inFreeWeek=d=>d<=dayNum&&d>dayNum-FREE;
 
 function save(s){ STORE.setJSON(DKEY(viewDay),s); }
@@ -1791,8 +1851,9 @@ function openDay(d){
   $('msg').classList.remove('show');
   $('cheer').hidden=true; $('cheer').classList.remove('out'); $('cheerConf').innerHTML='';
   $('remOffer').hidden=true; $('remNote').hidden=true;   // the end screen is rebuilt for this day
-  $('fullOffer').hidden=true; $('moreBtn').hidden=true; $('moreNote').hidden=true;
+  $('moreBtn').hidden=true; $('moreNote').hidden=true;
   clearTimeout(moreSheetTimer); $('moreSheet').hidden=true;
+  clearTimeout(monthSheetTimer); $('monthSheet').hidden=true;
   clearInterval(replayTimer); replayTimer=null; replay=null; $('replay').classList.remove('show');
   closeOffer(false);
   stopCountdown();
@@ -3190,7 +3251,7 @@ function showResult(){
   $('shareText').textContent=shareString(false);
   /* Last: the screen is whole before anything is celebrated over it. */
   maybeCheer();
-  paintOffer(); paintFullOffer(); paintMore();
+  paintOffer(); paintMore();
   /* §8.5: the Archive is the answer to "I want more, now". Only the free
      cloths not yet finished are counted, so the line is never a lie. */
   let free=0;
@@ -3222,7 +3283,7 @@ const ADS={
      only when the app has a bridge and the remote switch says the placement is on. */
   available(p){
     try{
-      if(FULL()) return false;
+      if(PAID()) return false;                  // a month bought, or Loom Full: no advertising of any kind
       if(PROF.firstDay===dayNum) return false;
       const V=window.VoltixAds; return !!(V&&V.available&&V.available(p));
     }catch(e){ return false; }
@@ -3289,13 +3350,21 @@ function maybeInterstitial(){
    never on a timer. */
 let offerPlacement=null, offerDay=null;
 function offerNote(t){ $('offerNote').hidden=!t; $('offerNote').textContent=t||''; }
+function monthLines(i){
+  const first=!ownedMonths().length&&i>0;
+  return T('Every cloth of {m}, about thirty, yours forever.',{m:monthName(i)})+' '+
+    (first?T('Your first month brings {m} with it.',{m:monthName(i-1)})+' ':'')+
+    (PAID()?'':T('No advertising of any kind once you have bought one.'));
+}
 function showOffer(placement,day){
-  if(!SHOP.has()||FULL()) return false;
+  const sale=monthOnSale();
+  if(!SHOP.has()||sale===null||!SHOP.price(monthSku(sale))) return false;
   offerPlacement=placement; offerDay=day===undefined?null:day;
   PANELS.forEach(id=>{ if(id!=='offerPanel') $(id).classList.remove('show'); });
   $('offerPanel').classList.add('show');
-  const pr=SHOP.price(SKU.FULL);
-  $('offerPrice').textContent=pr;                       // the line under it already says "once"
+  $('offerLines').textContent=monthLines(sale);
+  $('offerPrice').textContent=SHOP.price(monthSku(sale));     // the line under it already says "once"
+  $('offerBuy').textContent=T('Open {m}',{m:monthName(sale)});
   offerNote('');
   /* §12.4 "yesterday's cloth": one cloth, this once, for an advertisement. */
   const adOk=offerDay!==null&&ADS.available('cloth')&&adDays().length<AD_CLOTHS_PER_DAY;
@@ -3315,7 +3384,8 @@ function closeOffer(dismissed){
   if(dismissed&&offerPlacement) LOG.mark('offerno','offer_dismissed',{placement:offerPlacement});
   offerPlacement=null;
 }
-$('offerBuy').onclick=()=>{ SFX.play('tap'); if(!SHOP.buy(SKU.FULL,offerPlacement||'')) offerNote(T('The store is not available right now.')); };
+$('offerBuy').onclick=()=>{ SFX.play('tap'); const sale=monthOnSale();
+  if(sale===null||!SHOP.buy(monthSku(sale),offerPlacement||'')) offerNote(T('The store is not available right now.')); };
 $('offerRestore').onclick=()=>{ SFX.play('tap'); if(!SHOP.restore()) offerNote(T('The store is not available right now.')); };
 $('offerNo').onclick=()=>{ SFX.play('tap'); closeOffer(true); };
 $('offerAd').onclick=()=>{ SFX.play('tap'); const d=offerDay; if(d===null) return;
@@ -3325,27 +3395,59 @@ $('offerAd').onclick=()=>{ SFX.play('tap'); const d=offerDay; if(d===null) retur
     closeOffer(false); A.ev('archive_opened',{from_day:viewDay,day_number:d,paid:0,ad:1}); openDay(d); }); };
 /* After Play answers: everything that shows ownership is repainted. */
 function afterPurchase(){
-  if(FULL()){ closeOffer(false); $('fullOffer').hidden=true; }
+  if(FULL()||monthOnSale()===null) closeOffer(false);
+  else if($('offerPanel').classList.contains('show')){ const sale=monthOnSale();   // the next month, ready if they want it
+    $('offerLines').textContent=monthLines(sale); $('offerPrice').textContent=SHOP.price(monthSku(sale));
+    $('offerBuy').textContent=T('Open {m}',{m:monthName(sale)}); }
+  if(!$('monthSheet').hidden&&(PAID()||monthOnSale()===null)) $('monthSheet').hidden=true;
   applyThread();
   render();
   if($('setPanel').classList.contains('show')) paintSettings();
   if($('archPanel').classList.contains('show')) paintArchive();
   if($('quiltPanel').classList.contains('show')){ paintQuilt(); paintThreads(); }
 }
-/* The end-screen placement: once, after the third solve, never again if dismissed. */
-function paintFullOffer(){
-  const box=$('fullOffer');
-  const due=!archive&&st.done&&SHOP.has()&&!FULL()&&!PROF.fullOffered&&stats().solved>=3;
-  if(!due){ if(!(PROF.fullOffered===dayNum&&box.hidden===false)) box.hidden=true; return; }
-  PROF.fullOffered=dayNum; STORE.setJSON(PKEY,PROF);
-  const pr=SHOP.price(SKU.FULL);
-  $('fullOfferLine').textContent=T('Loom Full: every cloth ever, forever.')+(pr?' '+pr+'.':'');
-  box.hidden=false;
-  LOG.mark('offer','offer_shown',{placement:'end'});
+/* The end-screen placement: after the third solved cloth, once, as a sheet over
+   the result (the President, 2 October 2026), never again if dismissed. */
+const MONTH_SHEET_DELAY_MS=1200;
+let monthSheetTimer=null;
+function monthSheetDue(){
+  const sale=monthOnSale();
+  return !archive&&st.done&&st.won&&SHOP.has()&&!PAID()&&!PROF.fullOffered&&stats().solved>=3&&
+         sale!==null&&!!SHOP.price(monthSku(sale));
 }
-$('fullOfferSee').onclick=()=>{ SFX.play('tap'); $('fullOffer').hidden=true; showOffer('end'); };
-$('fullOfferNo').onclick=()=>{ SFX.play('tap'); $('fullOffer').hidden=true; LOG.mark('offerno','offer_dismissed',{placement:'end'}); };
-$('fullRow').onclick=()=>{ if(FULL()) return; SFX.play('tap'); showOffer('settings'); };
+/* A month of cloths, drawn: a calendar of small cloths in the player's threads,
+   the month's own first weekday and length. */
+function monthArt(i){
+  const [y,m]=monthOfIndex(i), c=threadColours(), th=[c.t0,c.t1,c.t2];
+  const first=(new Date(Date.UTC(y,m,1)).getUTCDay()+6)%7, len=monthDays(y,m);
+  const cell=60, gap=10, W=7*cell+6*gap, rows=Math.ceil((first+len)/7), H=rows*cell+(rows-1)*gap;
+  let out='';
+  for(let k=0;k<len;k++){ const p=first+k, x=(p%7)*(cell+gap), yy=Math.floor(p/7)*(cell+gap);
+    out+='<rect x="'+x+'" y="'+yy+'" width="'+cell+'" height="'+cell+'" rx="16" fill="'+th[k%3]+'"/>'; }
+  return '<svg viewBox="-20 -20 '+(W+40)+' '+(H+40)+'" aria-hidden="true"><rect x="-20" y="-20" width="'+(W+40)+'" height="'+(H+40)+'" rx="48" fill="#F2E1CC"/>'+out+'</svg>';
+}
+function openMonthSheet(){
+  monthSheetTimer=null;
+  if(!monthSheetDue()) return false;
+  const sale=monthOnSale();
+  PROF.fullOffered=dayNum; STORE.setJSON(PKEY,PROF);
+  $('monthSheetArt').innerHTML=monthArt(sale);
+  $('monthSheetLine').textContent=monthLines(sale);
+  $('monthSheetBuy').textContent=T('Open {m} · {p}',{m:monthName(sale),p:SHOP.price(monthSku(sale))});
+  $('monthSheetNote').textContent=T('Once. Not a subscription.');
+  $('monthSheet').hidden=false;
+  LOG.mark('offer','offer_shown',{placement:'end'});
+  return true;
+}
+function closeMonthSheet(dismissed){
+  if($('monthSheet').hidden) return;
+  $('monthSheet').hidden=true;
+  if(dismissed) LOG.mark('offerno','offer_dismissed',{placement:'end'});
+}
+$('monthSheetBuy').onclick=()=>{ SFX.play('tap'); const sale=monthOnSale();
+  if(sale===null||!SHOP.buy(monthSku(sale),'end')) $('monthSheetNote').textContent=T('The store is not available right now.'); };
+$('monthSheetNo').onclick=()=>{ SFX.play('tap'); closeMonthSheet(true); };
+$('fullRow').onclick=()=>{ if(FULL()||monthOnSale()===null) return; SFX.play('tap'); showOffer('settings'); };
 $('restoreRow').onclick=()=>{ SFX.play('tap'); if(SHOP.restore()) $('setNote').textContent=T('Asking the store…'); };
 $('adPrivacyRow').onclick=()=>{ SFX.play('tap'); LOG.mark('adprivacy','ad_privacy_opened',{}); ADS.showPrivacy(); };
 
@@ -3667,6 +3769,7 @@ $('weave').onclick=()=>{
     save(st); render();
     if(!st.done) setTimeout(maybeInterstitial,INTERSTITIAL_DELAY_MS);
     else if(!st.won){ clearTimeout(moreSheetTimer); moreSheetTimer=setTimeout(openMoreSheet,MORE_SHEET_DELAY_MS); }
+    else { clearTimeout(monthSheetTimer); monthSheetTimer=setTimeout(openMonthSheet,MONTH_SHEET_DELAY_MS); }
     /* Last, and never in the way: the screen above is already complete. The
        analytics switch is the off switch for this too (§22.1). */
     if(!WEB&&SCORES.url&&st.done&&!archive&&!A.isOff()){ RANK.queue(viewDay,st.won?st.attempts.length:0,st.secs||0); scoresGo(); }
@@ -3722,7 +3825,13 @@ function paintSettings(){
   /* §12.4: European players can revisit their consent; the row exists only when the
      consent platform says it must. */
   $('adPrivacyRow').hidden=!ADS.privacyRequired();
-  $('fullRowPrice').textContent=FULL()?T('yours'):(SHOP.price(SKU.FULL)||'');
+  { const sale=monthOnSale(), n=FULL()?0:openMonths().length;
+    $('fullRowName').textContent=FULL()?'Loom Full':T('Past cloths');
+    $('fullRowWhy').textContent=FULL()?T('Every cloth ever published, forever. No advertising, ever.')
+      : sale===null?T('Every month is open.')
+      : n?T(n===1?'1 month open. Next: {m}.':'{n} months open. Next: {m}.',{n:n,m:monthName(sale)})
+      : T('One month of cloths at a time, about thirty, yours forever.');
+    $('fullRowPrice').textContent=FULL()?T('yours'):sale===null?T('all open'):(SHOP.price(monthSku(sale))||''); }
   /* §11: a bought pack outlives the day it was bought on, so it is counted
      somewhere that does not depend on today's hints being left. */
   $('packRow').hidden=hintBank()<=0;
@@ -3812,16 +3921,21 @@ $('goalAsk').onclick=()=>{ SFX.play('tap'); openPanel('helpPanel',true); };
    distrust to exactly the player who was interested. */
 /* How far back the panel shows: the free week alone until there is a store;
    a week of locked tiles behind it once Loom Full can be bought (they open the
-   offer, §12.2); and, once owned, a full year at once, with "Earlier" for the
-   year before that and so on back to the first day.
+   offer, §12.2); and, once owned, from 1 January of this year to today, with
+   "Earlier" adding the whole year before, and so on back to the first day.
    A year rather than the four weeks it used to open with: what the purchase
    says it gives is every cloth ever published, and four weeks with a button
    under them reads as a sample of that rather than the thing itself. A year is
    the unit a player thinks in, it is more cloths than anyone will work through,
    and it is three hundred and sixty-five list rows, which the panel scrolls. */
-const ARCHYEAR=365;
-let archShown=0;
-function archWindow(){ return !SHOP.has()?FREE:FULL()?Math.max(ARCHYEAR,archShown):FREE*2; }
+/* The calendar decides, never the date of purchase and never a rolling year:
+   every buyer owns every cloth from the first day (1 January 2026), whenever
+   they bought, and the panel opens on the same 1 January for all of them (the
+   President, 2 October 2026). A buyer in 2027 sees 2027 first and 2026 under
+   Earlier; a buyer in 2026 the same, a year later. */
+let archYearsBack=0;
+function archFirstDay(){ return Math.max(0,dayOf(dateOf(dayNum).getUTCFullYear()-archYearsBack,0,1)); }
+function archWindow(){ return !SHOP.has()?FREE:dayNum-archFirstDay()+1; }
 function paintArchive(){
   const L=$('archList'); L.innerHTML='';
   const win=archWindow();
@@ -3841,9 +3955,9 @@ function paintArchive(){
     else b.onclick=()=>{ SFX.play('tap'); showOffer('archive',d); };   // the primary placement
     L.appendChild(b);
   }
-  $('archMore').hidden=!(FULL()&&dayNum-win>=0);
+  $('archMore').hidden=!(SHOP.has()&&archFirstDay()>0);
 }
-$('archMore').onclick=()=>{ SFX.play('tap'); archShown=archWindow()+ARCHYEAR; paintArchive(); };
+$('archMore').onclick=()=>{ SFX.play('tap'); archYearsBack++; paintArchive(); };
 $('backToday').onclick=()=>{ SFX.play('tap'); openDay(dayNum); };
 
 /* ---------- §8.8: the Quilt ----------------------------------------------
@@ -3973,6 +4087,7 @@ $('quiltShare').onclick=()=>{ SFX.play('tap'); shareQuilt(); };
    something was closed, false to let back mean leave. */
 window.VoltixBack=function(){
   if(!$('moreSheet').hidden){ closeMoreSheet(true); return true; }
+  if(!$('monthSheet').hidden){ closeMonthSheet(true); return true; }
   for(const p of PANELS){ if($(p).classList.contains('show')){ $(p).classList.remove('show'); return true; } }
   if(archive){ openDay(dayNum); return true; }          // back to today, not out of the game
   return false;

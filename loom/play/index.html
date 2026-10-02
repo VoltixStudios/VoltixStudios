@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at 7bf3f3d) by
+<!-- Copied from the Loom repository (game/index.html at ed498de) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
@@ -1726,7 +1726,7 @@ const QUILT=(function(){
    until the app has billing, nothing is for sale and no offer renders.
    Entitlements are also cached in the profile, so a store that is slow to
    answer never locks the archive for a second. */
-const SKU={FULL:'loom_full',HINTS:'loom_hints_10',WEAVES:'loom_weaves_5',MONTH:'loom_month_1',
+const SKU={FULL:'loom_full',HINTS:'loom_hints_10',WEAVES:'loom_weaves_5',MONTH:'loom_month',
   THREADS:{indigo:'loom_thread_indigo',madder:'loom_thread_madder',wool:'loom_thread_wool',contrast:'loom_thread_contrast'}};
 const SHOP=(function(){
   /* The store may sit on its own object (the debug preview does) or on the main bridge. */
@@ -1782,7 +1782,7 @@ const FULL=()=>SHOP.owned(SKU.FULL);
    Loom Full (every cloth ever, €2.99) gave a buyer in 2030 four years for the
    price a buyer in 2026 paid for nine months. It is no longer sold; who owns
    it keeps everything it promised. Past cloths are sold a month at a time with
-   ONE product, loom_month_1 (€0.99), bought as often as the player likes; the
+   ONE product, loom_month (€0.99), bought as often as the player likes; the
    game decides which month each purchase opens, so a euro always buys the
    same: about thirty cloths, yours forever.
    - Each purchase opens the newest month not yet open - the current month

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at ed498de) by
+<!-- Copied from the Loom repository (game/index.html at acb6de4) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
@@ -514,6 +514,7 @@ body.marks .sym{display:block}
       <span class="price" id="packCount"></span></div>
     <div class="row" id="weaveRow" hidden><div><span data-t="Extra weaves">Extra weaves</span><div class="why" data-t="For a cloth you have lost: one more attempt, two per cloth at most.">For a cloth you have lost: one more attempt, two per cloth at most.</div></div>
       <span class="price" id="weaveCount"></span></div>
+    <div class="row buy" id="rateRow" hidden><div><span data-t="Rate Loom">Rate Loom</span><div class="why" data-t="Tell other players what you think, on Google Play.">Tell other players what you think, on Google Play.</div></div></div>
     <div class="row buy" id="restoreRow" hidden><div data-t="Restore a purchase">Restore a purchase</div></div>
     <div class="row buy" id="adPrivacyRow" hidden><div><span data-t="Ad privacy">Ad privacy</span><div class="why" data-t="Change what you told the advertising consent form.">Change what you told the advertising consent form.</div></div></div>
     <div class="note" id="setNote"></div>
@@ -798,6 +799,7 @@ ca:{
  'Nothing was bought. You are where you were.':'No s’ha comprat res. Ets on eres.',
  'The store is not available right now.':'La botiga no està disponible ara mateix.',
  'A month of cloths':'Un mes de teles','Past cloths':'Teles anteriors',
+ 'Rate Loom':'Valora Loom','Tell other players what you think, on Google Play.':'Explica als altres jugadors què te’n sembla, a Google Play.',
  'Every cloth of {m}, about thirty, yours forever.':'Totes les teles de {m}, unes trenta, teves per sempre.',
  'Your first month brings {m} with it.':'El teu primer mes porta {m} amb ell.',
  'No advertising of any kind once you have bought one.':'Cap mena de publicitat un cop n’hagis comprat un.',
@@ -904,6 +906,7 @@ es:{
  'Nothing was bought. You are where you were.':'No se ha comprado nada. Estás donde estabas.',
  'The store is not available right now.':'La tienda no está disponible ahora mismo.',
  'A month of cloths':'Un mes de telas','Past cloths':'Telas anteriores',
+ 'Rate Loom':'Valora Loom','Tell other players what you think, on Google Play.':'Cuenta a otros jugadores qué te parece, en Google Play.',
  'Every cloth of {m}, about thirty, yours forever.':'Todas las telas de {m}, unas treinta, tuyas para siempre.',
  'Your first month brings {m} with it.':'Tu primer mes trae {m} con él.',
  'No advertising of any kind once you have bought one.':'Ninguna publicidad una vez hayas comprado uno.',
@@ -3455,6 +3458,37 @@ function closeMonthSheet(dismissed){
 $('monthSheetBuy').onclick=()=>{ SFX.play('tap'); const sale=monthOnSale();
   if(sale===null||!SHOP.buy(SKU.MONTH,'end')) $('monthSheetNote').textContent=T('The store is not available right now.'); };
 $('monthSheetNo').onclick=()=>{ SFX.play('tap'); closeMonthSheet(true); };
+
+/* ---------- rating Loom: the President's instruction, 3 October 2026 -------------
+   A row in Settings opens Loom's page in the Play Store. And now and then,
+   after a solved cloth, Google's own rating sheet is asked for: after the
+   fifth solved cloth, then at most every 45 days, three times in all, never
+   over another sheet, never on a past cloth. Google's rules shape it: the
+   sheet may not be started from a button (a player over Google's quota would
+   press and see nothing), and the player is never asked first whether they
+   like the game, which would send only the happy ones on. */
+const REVIEW_AFTER_SOLVES=5, REVIEW_GAP_DAYS=45, REVIEW_MAX=3, REVIEW_DELAY_MS=1600;
+let reviewTimer=null;
+const canRate=()=>{ const N=window.VoltixNative; return !WEB&&!!(N&&N.openStorePage); };
+function reviewDue(){
+  const N=window.VoltixNative;
+  if(WEB||!N||!N.requestReview||archive||!st||!st.won) return false;
+  if(!$('monthSheet').hidden||!$('moreSheet').hidden) return false;
+  const asks=PROF.reviewAsks||[];
+  if(asks.length>=REVIEW_MAX) return false;
+  if(asks.length&&dayNum-asks[asks.length-1]<REVIEW_GAP_DAYS) return false;
+  return stats().solved>=REVIEW_AFTER_SOLVES;
+}
+function maybeAskReview(){
+  reviewTimer=null;
+  if(!reviewDue()) return false;
+  PROF.reviewAsks=(PROF.reviewAsks||[]).concat([dayNum]); STORE.setJSON(PKEY,PROF);
+  LOG.mark('review','review_requested',{solved:stats().solved,ask:PROF.reviewAsks.length});
+  try{ window.VoltixNative.requestReview(); }catch(e){}
+  return true;
+}
+$('rateRow').onclick=()=>{ SFX.play('tap'); LOG.mark('rate','rate_opened',{from:'settings'});
+  try{ window.VoltixNative.openStorePage(); }catch(e){} };
 $('fullRow').onclick=()=>{ if(FULL()||monthOnSale()===null) return; SFX.play('tap'); showOffer('settings'); };
 $('restoreRow').onclick=()=>{ SFX.play('tap'); if(SHOP.restore()) $('setNote').textContent=T('Asking the store…'); };
 $('adPrivacyRow').onclick=()=>{ SFX.play('tap'); LOG.mark('adprivacy','ad_privacy_opened',{}); ADS.showPrivacy(); };
@@ -3777,7 +3811,8 @@ $('weave').onclick=()=>{
     save(st); render();
     if(!st.done) setTimeout(maybeInterstitial,INTERSTITIAL_DELAY_MS);
     else if(!st.won){ clearTimeout(moreSheetTimer); moreSheetTimer=setTimeout(openMoreSheet,MORE_SHEET_DELAY_MS); }
-    else { clearTimeout(monthSheetTimer); monthSheetTimer=setTimeout(openMonthSheet,MONTH_SHEET_DELAY_MS); }
+    else { clearTimeout(monthSheetTimer); monthSheetTimer=setTimeout(openMonthSheet,MONTH_SHEET_DELAY_MS);
+           clearTimeout(reviewTimer); reviewTimer=setTimeout(maybeAskReview,REVIEW_DELAY_MS); }
     /* Last, and never in the way: the screen above is already complete. The
        analytics switch is the off switch for this too (§22.1). */
     if(!WEB&&SCORES.url&&st.done&&!archive&&!A.isOff()){ RANK.queue(viewDay,st.won?st.attempts.length:0,st.secs||0); scoresGo(); }
@@ -3833,6 +3868,7 @@ function paintSettings(){
   /* §12.4: European players can revisit their consent; the row exists only when the
      consent platform says it must. */
   $('adPrivacyRow').hidden=!ADS.privacyRequired();
+  $('rateRow').hidden=!canRate();
   { const sale=monthOnSale(), n=FULL()?0:openMonths().length;
     $('fullRowName').textContent=FULL()?'Loom Full':T('Past cloths');
     $('fullRowWhy').textContent=FULL()?T('Every cloth ever published, forever. No advertising, ever.')

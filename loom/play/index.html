@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at 8a7adf0) by
+<!-- Copied from the Loom repository (game/index.html at 9339830) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
@@ -1981,7 +1981,7 @@ function coachSay(){
   /* After a weave the count stays in front: it is the one thing the try said,
      and the coach speaking over it hid it (2 October 2026). "Now weave" waits
      until the order has actually been changed. */
-  const unchanged=!!last&&JSON.stringify(fullOrder())===JSON.stringify(last.order||[]);
+  const unchanged=orderUnchanged();
   const lead=!last?'':FEEDBACK==='count'
     ? T('{n} of {t} in place, but which? ',{n:last.pins.filter(Boolean).length,t:NOPS})
     : T('{n} of {t} in place. ',{n:rightCount(last),t:NOPS});
@@ -2030,9 +2030,20 @@ function paintMove(el,before,op,done,ms){
   try{ requestAnimationFrame(()=>requestAnimationFrame(go)); }catch(e){ go(); }
   setTimeout(()=>{ kids.forEach(c=>{ c.style.transition=''; c.style.transform=''; }); if(done) done(); },dur+60);
 }
+/* Whether the loom still holds exactly the order of the last try. */
+function orderUnchanged(){
+  const last=st.attempts[st.attempts.length-1];
+  return !!last&&JSON.stringify(fullOrder())===JSON.stringify(last.order||[]);
+}
+/* The cloth under "your cloth". A try's woven result stays on it only while
+   the loom still holds that try's order: the moment a tile is taken out or
+   moved, the cloth goes back to the one the day starts from, because the
+   result no longer belongs to anything on the loom (the President, 6 October
+   2026). A finished day keeps its last cloth. */
 function paintWork(){
   const last=st.attempts[st.attempts.length-1];
-  paint($('workCloth'), last?last.cloth:P.start);
+  const keep=!!last&&(st.done||orderUnchanged());
+  paint($('workCloth'), keep?last.cloth:P.start);
 }
 /* The hint line under the tray. The coach writes into it too, and only if it has to. */
 function paintHint(){

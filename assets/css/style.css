@@ -236,9 +236,6 @@ p:last-child { margin-bottom: 0; }
 .nav__links a:hover::after,
 .nav__links a.is-current::after { transform: scaleX(1); }
 .nav__links a.is-current { color: var(--text); }
-/* The one link that is not a place to read: it stays coloured, and it is the
-   last to go on a narrow screen (see the responsive rules). */
-.nav__links a.nav__play { color: var(--volt); }
 
 .nav .btn--sm { flex: none; }
 
@@ -337,9 +334,12 @@ p:last-child { margin-bottom: 0; }
 /* Loom's cloth, drawn rather than photographed: the game is a 4x4 grid of three
    thread colours, so the section can show a real day's plain cloth and pattern
    in the game's own palette without a screenshot. */
+/* The figures lose their default 40px side margins, and the cloths shrink with
+   the screen: either one pushes the column wider than a phone. */
 .cloths { display: flex; align-items: center; justify-content: center; gap: 22px; margin: 26px 0 8px; }
+.cloths figure { margin: 0; }
 .cloth { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; padding: 9px;
-  width: 132px; aspect-ratio: 1; border-radius: 22px; background: #f2e1cc;
+  width: min(132px, 30vw); aspect-ratio: 1; border-radius: 22px; background: #f2e1cc;
   box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
 .cloth i { display: block; border-radius: 7px; }
 .cloth .t0 { background: #5bc4c0; } .cloth .t1 { background: #ff8c8c; } .cloth .t2 { background: #ffd46b; }
@@ -581,53 +581,6 @@ p:last-child { margin-bottom: 0; }
 .crumb::before { content: "\2190"; }
 .crumb:hover { color: var(--text); }
 .more { border-top: 1px solid var(--line-soft); }
-
-/* games that run on this site */
-
-.playable {
-  list-style: none;
-  margin: clamp(28px, 4vw, 44px) 0 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr));
-  gap: 16px;
-}
-.playable__card {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 18px 22px;
-  padding: 22px 24px;
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
-  border-radius: var(--r);
-  background:
-    radial-gradient(120% 160% at 0% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 62%),
-    linear-gradient(180deg, var(--ink-2), var(--ink-1));
-}
-.playable__card--loom { --accent: #3b8bf0; }
-.playable__icon {
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
-}
-.playable__body h3 {
-  font-size: 1.2rem;
-  margin: 0 0 4px;
-}
-.playable__body h3 em {
-  margin-left: 8px;
-  font-family: var(--body);
-  font-size: .78rem;
-  font-style: normal;
-  letter-spacing: .04em;
-  color: var(--muted);
-}
-.playable__body p {
-  margin: 0;
-  color: var(--text-dim);
-  font-size: .95rem;
-  line-height: 1.55;
-}
 
 /* feature cards */
 
@@ -1116,8 +1069,8 @@ p:last-child { margin-bottom: 0; }
   .strata__grid span { font-size: .72rem; padding-inline: 10px; }
 }
 
-/* The nav is three links - Games, Play, Studio - and sheds Studio rather than
-   collapsing into a menu: a hamburger would cost more than it saves. */
+/* The nav is two links - Games, Studio - and stays that way at every width
+   rather than collapsing into a menu: a hamburger would cost more than it saves. */
 @media (max-width: 860px) {
   .nav__links { gap: 18px; }
 }
@@ -1136,15 +1089,12 @@ p:last-child { margin-bottom: 0; }
 /* The two handles are long enough to push a pill wider than a small phone, so
    the row becomes a column before that happens. */
 @media (max-width: 560px) {
-  .playable__card { grid-template-columns: auto 1fr; padding: 20px; }
-  .playable__card .btn { grid-column: 1 / -1; justify-content: center; }
   .social { flex-direction: column; align-items: stretch; }
   .social__link { justify-content: center; }
   .social--compact { flex-direction: row; justify-content: center; }
 }
 
 @media (max-width: 460px) {
-  .nav__links a:nth-child(3) { display: none; }   /* Studio, leaving Games and Play */
   .foot__top,
   .foot__bar { justify-content: center; text-align: center; }
   .foot__links { width: 100%; justify-content: center; }

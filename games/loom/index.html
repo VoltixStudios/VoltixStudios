@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Loom — Daily pattern puzzle</title>
-<meta name="description" content="Every day, one pattern. Three attempts (five on Sundays), the same cloth for everyone in the world, and a result to share that spoils nothing. Play today's cloth in your browser, or get Loom for Android.">
+<meta name="description" content="Every day, one pattern. Three attempts (five on Sundays), the same cloth for everyone in the world, and a result to share that spoils nothing. Out now on Google Play, and today's cloth plays in your browser too.">
 <meta name="theme-color" content="#05060a">
 <link rel="canonical" href="https://voltixstudios.pages.dev/games/loom/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Voltix Studios">
 <meta property="og:title" content="Loom — Daily pattern puzzle">
-<meta property="og:description" content="Every day, one pattern. Three attempts (five on Sundays), the same cloth for everyone in the world, and a result to share that spoils nothing. Play today's cloth in your browser, or get Loom for Android.">
+<meta property="og:description" content="Every day, one pattern. Three attempts (five on Sundays), the same cloth for everyone in the world, and a result to share that spoils nothing. Out now on Google Play, and today's cloth plays in your browser too.">
 <meta property="og:url" content="https://voltixstudios.pages.dev/games/loom/">
 <meta property="og:image" content="https://voltixstudios.pages.dev/assets/img/og-card.png">
 <meta property="og:image:width" content="1200">
@@ -31,7 +31,7 @@
 <!-- ?v= is a cache buster. There is no build step to fingerprint the file, and a
      browser holding an old stylesheet against new markup renders the page wrong
      rather than merely stale — bump the number whenever style.css changes. -->
-<link rel="stylesheet" href="../../assets/css/style.css?v=8">
+<link rel="stylesheet" href="../../assets/css/style.css?v=9">
 
 <script type="application/ld+json">
 {
@@ -39,7 +39,7 @@
   "@type": "VideoGame",
   "name": "Loom",
   "url": "https://voltixstudios.pages.dev/games/loom/",
-  "description": "Every day, one pattern. Three attempts (five on Sundays), the same cloth for everyone in the world, and a result to share that spoils nothing. Play today's cloth in your browser, or get Loom for Android.",
+  "description": "Every day, one pattern. Three attempts (five on Sundays), the same cloth for everyone in the world, and a result to share that spoils nothing. Out now on Google Play, and today's cloth plays in your browser too.",
   "genre": "Daily puzzle",
   "applicationCategory": "Game",
   "operatingSystem": "Android, Web browser",
@@ -48,7 +48,8 @@
     "@type": "Organization",
     "name": "Voltix Studios",
     "url": "https://voltixstudios.pages.dev/"
-  }
+  },
+  "installUrl": "https://play.google.com/store/apps/details?id=com.voltixstudios.loom"
 }
 </script>
 </head>
@@ -96,7 +97,6 @@
     </a>
     <nav class="nav__links" aria-label="Primary">
       <a href="../../index.html#games">Games</a>
-      <a class="nav__play" href="../../index.html#play">Play</a>
       <a href="../../index.html#studio">Studio</a>
     </nav>
     <a class="btn btn--sm" href="mailto:voltix.studios.gaming@gmail.com">Contact</a>
@@ -118,7 +118,7 @@
         </figure>
 
         <div class="game__intro reveal">
-          <p class="status"><span class="status__dot"></span> Coming to Google Play</p>
+          <p class="status"><span class="status__dot"></span> Out now on Google Play</p>
           <h2 class="game__name">Loom</h2>
           <p class="game__tag">Every day, one pattern.</p>
           <p class="game__pitch">
@@ -160,11 +160,17 @@
             </figure>
           </div>
 
-          <!-- Today's cloth, playable here. loom/play/ is the game itself, copied
-               from the Loom repository by tools/sync-loom.sh in its website mode:
-               the daily cloth only. -->
+          <!-- The store first, then today's cloth, playable here. loom/play/ is the
+               game itself, copied from the Loom repository by tools/sync-loom.sh in
+               its website mode: the daily cloth only. -->
           <div class="cta-play">
-            <a class="btn btn--primary" href="../../loom/play/">
+            <a class="btn btn--primary"
+               href="https://play.google.com/store/apps/details?id=com.voltixstudios.loom"
+               rel="noopener" target="_blank">
+              <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg>
+              Get it on Google Play
+            </a>
+            <a class="btn" href="../../loom/play/">
               <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-start"></use></svg>
               Play today's cloth
             </a>

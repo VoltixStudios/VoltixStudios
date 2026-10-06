@@ -27,7 +27,7 @@ Live at <https://voltixstudios.pages.dev/>, served by Cloudflare Pages.
 ## Layout
 
 ```
-index.html                 the home page: hero, Play now, the four game cards, studio, contact
+index.html                 the home page: hero, the four game cards, studio, contact
 games/<game>/index.html    one page per game — everything the home page once said about it
 404.html                   self-contained; no assets, works at any depth
 robots.txt  sitemap.xml
@@ -132,8 +132,11 @@ screenshots. Those are not made here: `Loom/store/screenshots/` holds the finish
 Add or reorder a file there and re-run it; the site names them by number, so keep
 the numbering.
 
-**Loom's pages describe a game that has not shipped yet**, like Dungeon Gourmand's,
-and say so in a note at the top. They were written from the Loom repository's own
+**Loom is on Google Play** (`com.voltixstudios.loom`) since October 2026, and its
+cards and page link to the listing. Its legal pages were written before that, like
+Dungeon Gourmand's, and the privacy policy still opens with a note saying Loom is
+not yet on Google Play: that note goes once the policy has been checked against the
+released build, in that commit. They were written from the Loom repository's own
 record (`GDD_LOOM.md` §12, §15, §18 and the Android shell) on 17 September 2026:
 local storage only, Google Analytics by Measurement Protocol with a made-up client
 id, one local reminder alarm, one JSON of remote configuration from this site,

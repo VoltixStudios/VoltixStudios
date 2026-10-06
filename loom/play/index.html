@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at acb6de4) by
+<!-- Copied from the Loom repository (game/index.html at 8a7adf0) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
@@ -1585,9 +1585,26 @@ function striped(g,n){
   return rows||cols;
 }
 const WOVEN_FROM=262;                   // 20 September 2026, the first of them
+/* Some days start plain again - the President, 6 October 2026: every start
+   being woven left nothing easy to come back to, and the plain cloth is the
+   one a player reads at a glance. From PLAIN_FROM, two days in every week
+   (Monday to Sunday) start from it: one on Tuesday or Wednesday, one on
+   Friday, Saturday or Sunday. So never two days running and never more than
+   five days between them, which chance alone could not promise. Which of
+   those days is a function of the week's number (its own small hash, nothing
+   from any day's random stream), so it is the same for everyone and never
+   changes. Days before PLAIN_FROM have all been dealt, and are untouched. */
+const PLAIN_FROM=279;                   // 7 October 2026
+function plainStart(day){
+  if(day<PLAIN_FROM) return false;
+  const wd=(dateOf(day).getUTCDay()+6)%7;           // Monday 0 ... Sunday 6
+  const h=mulberry32((day-wd)*48271+12345);         // the week's own draw
+  const early=1+Math.floor(h()*2), late=4+Math.floor(h()*3);
+  return wd===early||wd===late;
+}
 function startCloth(rnd,dl,day){
   const plain=base(dl.N);
-  if(day<WOVEN_FROM) return plain;
+  if(day<WOVEN_FROM||plainStart(day)) return plain;
   /* Three to five operations, not two: the plain cloth is symmetrical enough
      that two of them land on the same few hundred cloths over and over, and a
      starting cloth a player has already seen this month is the thing this is

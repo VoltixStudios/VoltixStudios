@@ -146,8 +146,9 @@ three owners.
 
 ## Loom in the browser
 
-`loom/play/` is the Loom game itself, today's cloth only, linked from the Loom
-section as *Play today's cloth*. **Do not edit it here.** It is generated from
+`loom/play/` is the Loom game itself, today's cloth only. No page on the site
+links to it since Loom reached Google Play in October 2026; it is reached by
+shared results and the sitemap. **Do not edit it here.** It is generated from
 the Loom repository's `game/index.html` by
 
 ```bash

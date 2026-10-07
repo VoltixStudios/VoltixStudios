@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at 9339830) by
+<!-- Copied from the Loom repository (game/index.html at 3ed30e3) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
@@ -237,6 +237,8 @@ button.act[disabled]{background:var(--none);color:#C9B7A6;box-shadow:none;cursor
 .hb{width:18px;height:18px;border-radius:6px;background:var(--none)}
 .hb.good{background:var(--good)}
 .hb.count{background:#8FBDE3}
+/* A "how many" day's count has its own colour, so it never reads as an ordinary day's blue. */
+.hb.many{background:#B9A3E3}
 /* What the squares mean, under the rows, and only the colours the rows use. */
 .histkey{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:8px;
   font-size:11px;font-weight:700;color:var(--muted);line-height:1.4}
@@ -800,6 +802,8 @@ ca:{
  'The store is not available right now.':'La botiga no està disponible ara mateix.',
  'A month of cloths':'Un mes de teles','Past cloths':'Teles anteriors',
  'Rate Loom':'Valora Loom','Tell other players what you think, on Google Play.':'Explica als altres jugadors què te’n sembla, a Google Play.',
+ 'how many, not which':'quantes, no quines','solved':'resolta',
+ 'in place today: on Wednesdays and Thursdays the loom says how many, never which':'al seu lloc avui: els dimecres i els dijous el teler diu quantes, mai quines',
  'Every cloth of {m}, about thirty, yours forever.':'Totes les teles de {m}, unes trenta, teves per sempre.',
  'Your first month brings {m} with it.':'El teu primer mes porta {m} amb ell.',
  'No advertising of any kind once you have bought one.':'Cap mena de publicitat un cop n’hagis comprat un.',
@@ -907,6 +911,8 @@ es:{
  'The store is not available right now.':'La tienda no está disponible ahora mismo.',
  'A month of cloths':'Un mes de telas','Past cloths':'Telas anteriores',
  'Rate Loom':'Valora Loom','Tell other players what you think, on Google Play.':'Cuenta a otros jugadores qué te parece, en Google Play.',
+ 'how many, not which':'cuántas, no cuáles','solved':'resuelta',
+ 'in place today: on Wednesdays and Thursdays the loom says how many, never which':'en su sitio hoy: los miércoles y los jueves el telar dice cuántas, nunca cuáles',
  'Every cloth of {m}, about thirty, yours forever.':'Todas las telas de {m}, unas treinta, tuyas para siempre.',
  'Your first month brings {m} with it.':'Tu primer mes trae {m} con él.',
  'No advertising of any kind once you have bought one.':'Ninguna publicidad una vez hayas comprado uno.',
@@ -2195,8 +2201,12 @@ function paintGoalAsk(){
 }
 function paintOrderHead(){
   const n=tries();
+  /* A "how many" day says so above the slots, every time: without it the
+     blue squares and the missing ticks read as the game hiding something
+     (the President, 7 October 2026). */
   $('orderHead').innerHTML=T('The order')+
-    (firstLesson()?'<span class="tip">'+T('{n} tries',{n:WORD[n]?T(WORD[n]):String(n)})+'</span>':'');
+    (firstLesson()?'<span class="tip">'+T('{n} tries',{n:WORD[n]?T(WORD[n]):String(n)})+'</span>':'')+
+    (FEEDBACK==='count'&&!st.done?'<span class="tip">'+T('how many, not which')+'</span>':'');
 }
 /* Nothing on a tile says that it can be held, so the heading above the tray
    says it, once, until the player has done it. It costs no height: the heading
@@ -2640,7 +2650,7 @@ function render(){
    helper are shared with the monthly quilt picture below. */
 const HEX={get t(){ const c=threadColours(); return [c.t0,c.t1,c.t2]; },
   paper:'#FFF7EE',card:'#FFFFFF',frame:'#F2E1CC',ink:'#5A4A42',muted:'#A99383',
-  good:'#7ED08A',count:'#8FBDE3',hint:'#F2CF6B',none:'#EDE0D2'};
+  good:'#7ED08A',count:'#8FBDE3',many:'#B9A3E3',hint:'#F2CF6B',none:'#EDE0D2'};
 /* Older WebViews cannot draw a rounded rectangle in one call; the same corner by hand. */
 function rrect(x,px,py,w,h,r){
   x.beginPath();
@@ -2678,7 +2688,10 @@ function runLength(a){ let k=0; while(k<a.pins.length&&a.pins[k]) k++; return k;
 function rowCells(a){
   const len=a.pins.length, hinted=a.locked||[], out=[];
   if(FEEDBACK==='count'){ const k=a.pins.filter(Boolean).length, h=hinted.length;
-    for(let j=0;j<len;j++) out.push(j<h?'hint':j<k?'count':'none');
+    /* Solved, every slot is known: the row is green like any day's (a blue
+       winning row read as the game refusing to admit it). */
+    if(k===len){ for(let j=0;j<len;j++) out.push(hinted.indexOf(j)>=0?'hint':'good'); return out; }
+    for(let j=0;j<len;j++) out.push(j<h?'hint':j<k?'many':'none');
     return out; }
   const run=runLength(a);
   for(let j=0;j<run;j++) out.push(hinted.indexOf(j)>=0?'hint':'good');
@@ -2691,22 +2704,24 @@ function rowCells(a){
 /* The key under the history: nothing on screen said what a blue square was
    (the President, 2 October 2026). Only the colours the rows actually use are
    named, so a day with no hint never mentions hints. */
-const HIST_KEY=[['good','good','right, from the first slot'],['count','count','also in place, not saying which'],['hint','hinted','pinned by a hint']];
+const HIST_KEY=[['good','good','right, from the first slot'],['count','count','also in place, not saying which'],
+  ['many','many','in place today: on Wednesdays and Thursdays the loom says how many, never which'],['hint','hinted','pinned by a hint']];
 function paintHistKey(){
   const k=$('histKey'), used={};
   st.attempts.forEach(a=>rowCells(a).forEach(c=>{ used[c]=1; }));
   const items=HIST_KEY.filter(([c])=>used[c]);
   k.hidden=!items.length;
   /* Blue says "also" only beside green; on its own it is simply "in place". */
-  k.innerHTML=items.map(([c,cls,t])=>'<span><i class="hb '+cls+'"></i>'+
-    T(c==='count'&&!used.good?'in place, not saying which':t)+'</span>').join('');
+  const label=(c,t)=>c==='good'&&FEEDBACK==='count'?T('solved')
+    : c==='count'&&!used.good?T('in place, not saying which'):T(t);
+  k.innerHTML=items.map(([c,cls,t])=>'<span><i class="hb '+cls+'"></i>'+label(c,t)+'</span>').join('');
 }
 /* The text that goes out. On screen it is shown without the link, which is
    for the person who receives it and only noise for the one who sends it. */
 function shareString(withLink){
   const head='Loom '+viewDay+'   '+(st.won?st.attempts.length:'X')+'/'+TRIES+(st.extra?'+'+st.extra:'')+'   '+T('streak')+' '+(PROF.streak||0);
   /* A hinted slot is a different square, so the record stays honest (§11). */
-  const SQ={hint:'🟨',good:'🟩',count:'🟦',none:'⬜'};
+  const SQ={hint:'🟨',good:'🟩',count:'🟦',many:'🟪',none:'⬜'};
   const grid=st.attempts.map(a=>rowCells(a).map(c=>SQ[c]).join('')).join('\n');
   const stat=shareStat();
   return head+'\n\n'+grid+(stat?'\n\n'+stat.text:'')+
@@ -3486,6 +3501,7 @@ function closeMonthSheet(dismissed){
 $('monthSheetBuy').onclick=()=>{ SFX.play('tap'); const sale=monthOnSale();
   if(sale===null||!SHOP.buy(SKU.MONTH,'end')) $('monthSheetNote').textContent=T('The store is not available right now.'); };
 $('monthSheetNo').onclick=()=>{ SFX.play('tap'); closeMonthSheet(true); };
+
 
 /* ---------- rating Loom: the President's instruction, 3 October 2026 -------------
    A row in Settings opens Loom's page in the Play Store. And now and then,

@@ -51,7 +51,19 @@ assets/img/                generated, committed
 tools/build_assets.py
 tools/build_qr.py          the Play Store QR in the Paper Squadron section
 tools/sync-loom.sh         copies Loom's game into loom/play/
+lab/                       the private prototype lab: encrypted and generated — see below
 ```
+
+> **The `lab/` folder is generated and encrypted; never edit it by hand.** It is
+> the President's private page for playing the studio's proofs of concept in a
+> browser. This repository is public and GitHub Pages mirrors it, so an unlisted
+> page alone would hide nothing; instead every prototype, and the list of them, is
+> encrypted with AES-GCM under a key derived from a password, and only the
+> ciphertext is committed. The page asks for the password and decrypts in the
+> browser. It is not linked from anywhere, carries `noindex`, and is not in the
+> sitemap. It is rebuilt by `node ~/voltix_studios/pocs/web/build-lab.mjs --check`,
+> which reads the password from `~/.config/voltix/lab.json` on the studio machine
+> and never from this repository.
 
 There is no build step. Edit, commit, push; Cloudflare Pages serves it as-is.
 The header, the footer and the "other games" cards are repeated by hand in every

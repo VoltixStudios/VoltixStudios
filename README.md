@@ -49,7 +49,7 @@ assets/js/doc.js           language switch on the document pages — also option
 assets/js/analytics.js     click and scroll-depth events — also optional
 assets/img/                generated, committed
 tools/build_assets.py
-tools/build_qr.py          the Play Store QRs on the Paper Squadron and CoreWard pages
+tools/build_qr.py          the Play Store QRs on the game pages
 tools/sync-loom.sh         copies Loom's game into loom/play/
 lab/                       the private prototype lab: encrypted and generated — see below
 ```
@@ -220,8 +220,8 @@ The one hand-measured thing in it is `STRATA_BOUNDS`, the five panel edges in
 CoreWard's `images/backgrounds.png`. Those panels are not evenly spaced, so if that
 sheet is regenerated the numbers need re-checking.
 
-`assets/img/ps-play-qr.svg` and `assets/img/cw-play-qr.svg` — the Play Store QRs on
-the Paper Squadron and CoreWard pages — are the exception. They are drawn from URLs
+`assets/img/ps-play-qr.svg`, `cw-play-qr.svg` and `loom-play-qr.svg` — the Play Store
+QRs on the Paper Squadron, CoreWard and Loom pages — are the exception. They are drawn from URLs
 rather than from any source art, so they have their own generator.
 
 ```bash

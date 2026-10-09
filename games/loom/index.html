@@ -167,6 +167,14 @@
               <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg>
               Get it on Google Play
             </a>
+            <!-- The QR encodes the same URL as the button beside it, so it is decoration
+                 to a screen reader — and useless on a phone, which is the device you would
+                 scan it with. Hidden below 760px in the stylesheet. -->
+            <figure class="qr" aria-hidden="true">
+              <img src="../../assets/img/loom-play-qr.svg" alt="" width="136" height="136"
+                   loading="lazy" decoding="async">
+              <figcaption>Scan to install</figcaption>
+            </figure>
           </div>
         </div>
       </div>

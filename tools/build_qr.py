@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate the Play Store QR codes shown on the Paper Squadron and CoreWard pages.
+"""Regenerate the Play Store QR codes shown on the Paper Squadron, CoreWard and Loom pages.
 
 Each QR is a committed SVG rather than something the page builds at runtime — the
 site loads no third-party JavaScript and the URLs they encode never change:
@@ -29,6 +29,7 @@ OUT = REPO / "assets" / "img"
 PLAY_URLS = {
     "ps-play-qr.svg": "https://play.google.com/store/apps/details?id=com.voltixstudios.papersquadron",
     "cw-play-qr.svg": "https://play.google.com/store/apps/details?id=com.voltixstudios.coreward",
+    "loom-play-qr.svg": "https://play.google.com/store/apps/details?id=com.voltixstudios.loom",
 }
 
 # The spec's minimum, and what scanners are tuned for. Without it a QR sitting

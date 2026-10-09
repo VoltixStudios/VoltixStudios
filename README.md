@@ -49,7 +49,7 @@ assets/js/doc.js           language switch on the document pages — also option
 assets/js/analytics.js     click and scroll-depth events — also optional
 assets/img/                generated, committed
 tools/build_assets.py
-tools/build_qr.py          the Play Store QR in the Paper Squadron section
+tools/build_qr.py          the Play Store QRs on the Paper Squadron and CoreWard pages
 tools/sync-loom.sh         copies Loom's game into loom/play/
 lab/                       the private prototype lab: encrypted and generated — see below
 ```
@@ -220,19 +220,19 @@ The one hand-measured thing in it is `STRATA_BOUNDS`, the five panel edges in
 CoreWard's `images/backgrounds.png`. Those panels are not evenly spaced, so if that
 sheet is regenerated the numbers need re-checking.
 
-`assets/img/ps-play-qr.svg` — the Play Store QR in the Paper Squadron section — is
-the exception. It is drawn from a URL rather than from any source art, so it has
-its own generator.
+`assets/img/ps-play-qr.svg` and `assets/img/cw-play-qr.svg` — the Play Store QRs on
+the Paper Squadron and CoreWard pages — are the exception. They are drawn from URLs
+rather than from any source art, so they have their own generator.
 
 ```bash
 python3 tools/build_qr.py              # needs OpenCV
 ```
 
-It encodes `PLAY_URL` — the constant at the top of the script is the only
-human-readable record of what the image says — then reads the result back with
-OpenCV's detector and refuses to write a file it cannot decode. A QR pointing at
+It encodes each entry in `PLAY_URLS` — the table at the top of the script is the
+only human-readable record of what the images say — then reads each result back
+with OpenCV's detector and refuses to write a file it cannot decode. A QR pointing at
 the wrong address passes every review a person can give it, so the check belongs
-in the tool. If the Play URL ever changes, edit the constant and re-run.
+in the tool. If a Play URL ever changes, or another game launches, edit the table and re-run.
 
 ## Preview locally
 

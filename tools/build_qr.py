@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Regenerate the Play Store QR code shown in the Paper Squadron section.
+"""Regenerate the Play Store QR codes shown on the Paper Squadron and CoreWard pages.
 
-The QR is a committed SVG rather than something the page builds at runtime — the
-site loads no third-party JavaScript and the URL it encodes never changes:
+Each QR is a committed SVG rather than something the page builds at runtime — the
+site loads no third-party JavaScript and the URLs they encode never change:
 
     python3 tools/build_qr.py
 
@@ -24,9 +24,12 @@ except ImportError:  # pragma: no cover
 REPO = Path(__file__).resolve().parent.parent
 OUT = REPO / "assets" / "img"
 
-# What the committed SVG encodes. This constant is the record of it — the image
-# itself is unreadable by eye, so nothing else in the repo can play that role.
-PLAY_URL = "https://play.google.com/store/apps/details?id=com.voltixstudios.papersquadron"
+# What each committed SVG encodes. This table is the record of it — the images
+# themselves are unreadable by eye, so nothing else in the repo can play that role.
+PLAY_URLS = {
+    "ps-play-qr.svg": "https://play.google.com/store/apps/details?id=com.voltixstudios.papersquadron",
+    "cw-play-qr.svg": "https://play.google.com/store/apps/details?id=com.voltixstudios.coreward",
+}
 
 # The spec's minimum, and what scanners are tuned for. Without it a QR sitting
 # on a coloured card is unreliable.
@@ -86,14 +89,15 @@ def verify(modules, url):
 
 
 def main():
-    modules = encode(PLAY_URL)
-    verify(modules, PLAY_URL)
+    for name, url in PLAY_URLS.items():
+        modules = encode(url)
+        verify(modules, url)
 
-    dest = OUT / "ps-play-qr.svg"
-    dest.write_text(to_svg(modules, PLAY_URL), encoding="utf-8")
-    print(f"ps-play-qr.svg  {len(modules)}x{len(modules)} modules, "
-          f"{dest.stat().st_size / 1024:.1f} kB")
-    print(f"  -> {PLAY_URL}")
+        dest = OUT / name
+        dest.write_text(to_svg(modules, url), encoding="utf-8")
+        print(f"{name}  {len(modules)}x{len(modules)} modules, "
+              f"{dest.stat().st_size / 1024:.1f} kB")
+        print(f"  -> {url}")
 
 
 if __name__ == "__main__":

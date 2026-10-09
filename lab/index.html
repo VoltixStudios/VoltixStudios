@@ -116,6 +116,8 @@
     background: color-mix(in srgb, var(--accent) 9%, transparent); color: color-mix(in srgb, var(--accent) 82%, white);
     font-family: var(--display); font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
   .status__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .status--off { border-color: var(--line); background: rgba(255, 255, 255, .03); color: var(--muted); }
+  .status--off .status__dot { background: var(--muted); }
   .card--new .status__dot { animation: pulse 2.6s infinite; }
   @keyframes pulse {
     0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
@@ -209,11 +211,11 @@
   function show(m, key) {
     var built = new Date(m.built), html = '';
     m.games.forEach(function (g) {
-      var fresh = (built - new Date(g.added)) / 864e5 < 7, href = 'play.html?g=' + encodeURIComponent(g.id);
+      var fresh = !g.status && (built - new Date(g.added)) / 864e5 < 7, href = 'play.html?g=' + encodeURIComponent(g.id);
       html += '<li class="card' + (fresh ? ' card--new' : '') + '" style="--accent:' + esc(g.colour) + ';--accent-2:' + esc(g.colour2 || g.colour) + '">' +
         '<a class="card__art" href="' + href + '" tabindex="-1" aria-hidden="true"><img alt="" data-art="' + esc(g.art || '') + '"></a>' +
         '<div class="card__body">' +
-          '<p class="status"><span class="status__dot"></span>' + (fresh ? 'New · ' + day(g.added) : 'In testing · since ' + day(g.added)) + '</p>' +
+          '<p class="status' + (g.status ? ' status--off' : '') + '"><span class="status__dot"></span>' + (g.status ? esc(g.status) : fresh ? 'New · ' + day(g.added) : 'In testing · since ' + day(g.added)) + '</p>' +
           '<h3 class="card__name"><a href="' + href + '">' + esc(g.title) + '</a></h3>' +
           '<p class="card__tag">' + esc(g.tag || '') + '</p>' +
           '<p class="card__pitch">' + esc(g.pitch) + '</p>' +

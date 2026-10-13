@@ -41,13 +41,41 @@ CREATE TABLE IF NOT EXISTS loom_fresh (
   lost  INTEGER NOT NULL DEFAULT 0
 );
 
--- Opens, by the day a phone first opened Loom: "of the phones that started on
--- day FIRST, N opened it on day DAY". Written by opens.js. Players of a day are
--- every row for that DAY, new players the row where FIRST = DAY, and a cohort's
--- return is its row at FIRST + 1, + 7 over its row at FIRST.
-CREATE TABLE IF NOT EXISTS loom_cohort (
+-- Opens: "of the phones that started on day FIRST, N opened day DAY, having
+-- last opened Loom GAP days before" (GAP 0: a first day; -1: not said). Written
+-- by opens.js. Players of a day are every row for DAY; new players GAP = 0; a
+-- cohort's return is its rows by DAY; unique players over a run of days are the
+-- rows whose GAP reaches back past the run's first day (see stats.sh).
+CREATE TABLE IF NOT EXISTS loom_open (
   first INTEGER NOT NULL,
   day   INTEGER NOT NULL,
+  gap   INTEGER NOT NULL,
   n     INTEGER NOT NULL DEFAULT 0,
-  PRIMARY KEY (first, day)
+  PRIMARY KEY (first, day, gap)
+);
+
+-- loom_cohort was the first shape of the table above, live for one morning
+-- (13 October 2026) and holding one test phone. Nothing reads or writes it.
+DROP TABLE IF EXISTS loom_cohort;
+
+-- The three looms (from Loom versionCode 26): the same counts as loom_day, one
+-- row per day and loom ('e' Easy, 'n' Normal, 'h' Hard), with eight attempt
+-- columns (five tries and two extra weaves on Easy) and, beside them, the
+-- results that were a phone's first day. Written by scores.js for a result
+-- that names its loom; a build older than the looms still writes loom_day.
+CREATE TABLE IF NOT EXISTS loom_result (
+  day   INTEGER NOT NULL,
+  tier  TEXT    NOT NULL,
+  total INTEGER NOT NULL DEFAULT 0,
+  c1 INTEGER NOT NULL DEFAULT 0, c2 INTEGER NOT NULL DEFAULT 0,
+  c3 INTEGER NOT NULL DEFAULT 0, c4 INTEGER NOT NULL DEFAULT 0,
+  c5 INTEGER NOT NULL DEFAULT 0, c6 INTEGER NOT NULL DEFAULT 0,
+  c7 INTEGER NOT NULL DEFAULT 0, c8 INTEGER NOT NULL DEFAULT 0,
+  lost  INTEGER NOT NULL DEFAULT 0,
+  t1 INTEGER NOT NULL DEFAULT 0, t2 INTEGER NOT NULL DEFAULT 0,
+  t3 INTEGER NOT NULL DEFAULT 0, t4 INTEGER NOT NULL DEFAULT 0,
+  t5 INTEGER NOT NULL DEFAULT 0, t6 INTEGER NOT NULL DEFAULT 0,
+  fresh INTEGER NOT NULL DEFAULT 0,
+  flost INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (day, tier)
 );

@@ -79,14 +79,18 @@ post "{\"d\":$DAY,\"a\":2,\"k\":\"hhhhhhhhhhhhhhhh\",\"f\":$((DAY-3))}" >/dev/nu
 fresh=$(npx --yes wrangler d1 execute loom --local --json --command "SELECT total, lost FROM loom_fresh WHERE day=$DAY" 2>/dev/null | tr -d ' \n')
 is "a new player's day is counted with the new"       "$(echo "$fresh" | grep -o '"total":2,"lost":1')" '"total":2,"lost":1'
 
-# Opens, by the day the phone started.
+# Opens, by the day the phone started and the gap since it last opened.
 opn () { curl -s -X POST "localhost:$PORT/loom/opens" -H 'Content-Type: application/json' -d "$1"; }
 is "an open is counted"                               "$(opn "{\"d\":$DAY,\"f\":$DAY,\"k\":\"aaaaaaaaaaaaaaaa\"}")" '{"ok":true,"counted":true}'
 is "the same phone opening twice counts once"         "$(opn "{\"d\":$DAY,\"f\":$DAY,\"k\":\"aaaaaaaaaaaaaaaa\"}")" '{"ok":true,"counted":false}'
-opn "{\"d\":$DAY,\"f\":$((DAY-1)),\"k\":\"bbbbbbbbbbbbbbbb\"}" >/dev/null
-opn "{\"d\":$DAY,\"f\":$((DAY-1)),\"k\":\"cccccccccccccccc\"}" >/dev/null
-coh=$(npx --yes wrangler d1 execute loom --local --json --command "SELECT first, n FROM loom_cohort WHERE day=$DAY ORDER BY first" 2>/dev/null | tr -d ' \n')
-is "and is filed under the day the phone started"     "$(echo "$coh" | grep -o '"first":[0-9]*,"n":[0-9]*' | sed 's/"first"://; s/,"n"://' | tr '\n' ' ')" "$((DAY-1))2 ${DAY}1 "
+opn "{\"d\":$DAY,\"f\":$((DAY-1)),\"p\":$((DAY-1)),\"k\":\"bbbbbbbbbbbbbbbb\"}" >/dev/null
+opn "{\"d\":$DAY,\"f\":$((DAY-9)),\"p\":$((DAY-1)),\"k\":\"cccccccccccccccc\"}" >/dev/null
+opn "{\"d\":$DAY,\"f\":$((DAY-9)),\"p\":$((DAY-8)),\"k\":\"jjjjjjjjjjjjjjjj\"}" >/dev/null
+opn "{\"d\":$DAY,\"f\":$((DAY-9)),\"k\":\"kkkkkkkkkkkkkkkk\"}" >/dev/null
+opn "{\"d\":$DAY,\"f\":$((DAY-9)),\"p\":$((DAY+3)),\"k\":\"llllllllllllllll\"}" >/dev/null
+rows=$(npx --yes wrangler d1 execute loom --local --json --command "SELECT first, gap, n FROM loom_open WHERE day=$DAY ORDER BY first, gap" 2>/dev/null \
+       | python3 -c "import json,sys; print(' '.join('%d:%d:%d' % (r['first'], r['gap'], r['n']) for r in json.load(sys.stdin)[0]['results']))")
+is "filed by start day and the gap since the last open" "$rows" "$((DAY-9)):-1:2 $((DAY-9)):1:1 $((DAY-9)):8:1 $((DAY-1)):1:1 $DAY:0:1"
 is "a first day after the day opened is refused"      "$(opn "{\"d\":$DAY,\"f\":$((DAY+1)),\"k\":\"dddddddddddddddd\"}")" '{"error":"first"}'
 is "an open for another day is refused"               "$(opn "{\"d\":99999,\"f\":0,\"k\":\"dddddddddddddddd\"}")" '{"error":"day"}'
 is "an open with nothing to deduplicate is refused"   "$(opn "{\"d\":$DAY,\"f\":$DAY}")" '{"error":"key"}'
@@ -94,6 +98,20 @@ is "an open with nothing to deduplicate is refused"   "$(opn "{\"d\":$DAY,\"f\":
 # it finishes: the open's dedup row must not stand in for the result's.
 opn "{\"d\":$DAY,\"f\":$DAY,\"k\":\"iiiiiiiiiiiiiiii\"}" >/dev/null
 is "an open and a result from one phone are separate" "$(post "{\"d\":$DAY,\"a\":1,\"k\":\"iiiiiiiiiiiiiiii\"}" | grep -o '"n":[0-9]*')" '"n":8'
+
+# The three looms: each its own count, one phone may weave all three.
+hard=$(post "{\"d\":$DAY,\"a\":2,\"s\":40,\"k\":\"aaaaaaaaaaaaaaaa\",\"l\":\"h\",\"f\":$DAY}")
+is "a loom's result is counted with that loom only"   "$(echo "$hard" | grep -o '"l":"h","n":1')" '"l":"h","n":1'
+is "and is the first to solve that loom"              "$(echo "$hard" | grep -o '"rank":1')" '"rank":1'
+is "a phone that wove Normal can still weave Hard"    "$(post "{\"d\":$DAY,\"a\":0,\"k\":\"aaaaaaaaaaaaaaaa\",\"l\":\"e\"}" | grep -o '"l":"e","n":1,"solved":\[0,0,0,0,0,0,0,0\],"lost":1')" '"l":"e","n":1,"solved":[0,0,0,0,0,0,0,0],"lost":1'
+is "and the same loom twice counts once"              "$(post "{\"d\":$DAY,\"a\":2,\"s\":40,\"k\":\"aaaaaaaaaaaaaaaa\",\"l\":\"h\"}" | grep -o '"n":1')" '"n":1'
+is "seven attempts on a loom are counted"             "$(post "{\"d\":$DAY,\"a\":7,\"k\":\"mmmmmmmmmmmmmmmm\",\"l\":\"e\"}" | grep -o '"solved":\[0,0,0,0,0,0,1,0\]')" '"solved":[0,0,0,0,0,0,1,0]'
+is "the old table is untouched by the looms"          "$(curl -s "localhost:$PORT/loom/scores?d=$DAY" | grep -o '"n":[0-9]*')" '"n":8'
+is "a loom reads back by its letter"                  "$(curl -s "localhost:$PORT/loom/scores?d=$DAY&l=h" | grep -o '"l":"h","n":1')" '"l":"h","n":1'
+is "a loom that does not exist is refused"            "$(post "{\"d\":$DAY,\"a\":1,\"k\":\"nnnnnnnnnnnnnnnn\",\"l\":\"x\"}")" '{"error":"loom"}'
+fr=$(npx --yes wrangler d1 execute loom --local --json --command "SELECT fresh, flost FROM loom_result WHERE day=$DAY AND tier='h'" 2>/dev/null | tr -d ' \n')
+is "a first day is marked on the loom too"            "$(echo "$fr" | grep -o '"fresh":1,"flost":0')" '"fresh":1,"flost":0'
+is "a build older than the looms with seven attempts still counts" "$(post "{\"d\":$DAY,\"a\":7,\"k\":\"oooooooooooooooo\"}" | grep -o '"solved":\[[0-9,]*\]')" '"solved":[2,3,1,0,0,1]'
 
 echo
 if [ $fail -eq 0 ]; then echo "$pass checks passed."; else echo "$pass passed, $fail FAILED."; fi

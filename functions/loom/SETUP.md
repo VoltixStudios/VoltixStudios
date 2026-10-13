@@ -109,8 +109,8 @@ says whether it was the phone's first day. Before Loom versionCode 25 is
 uploaded, in this order:
 
 ```bash
-npx wrangler d1 execute loom --remote --file functions/loom/schema.sql   # adds loom_fresh and loom_cohort, touches nothing else
-bash functions/loom/test.sh                                              # 20 checks, locally
+npx wrangler d1 execute loom --remote --file functions/loom/schema.sql   # adds the new tables, touches no data
+bash functions/loom/test.sh                                              # 30 checks, locally
 # then deploy the site as in step 4
 curl -s -X POST https://voltixstudios.pages.dev/loom/opens \
   -H 'Content-Type: application/json' -d '{"d":0,"f":0,"k":"checkcheck"}'  # {"error":"day"} means it is live
@@ -119,8 +119,32 @@ curl -s -X POST https://voltixstudios.pages.dev/loom/opens \
 To read the numbers at any time (read-only):
 
 ```bash
-bash functions/loom/stats.sh        # day by day, and return by cohort, last 28 days
+bash functions/loom/stats.sh          # last 28 days: unique players, day by day, week by week,
+                                      # return on every day after starting, by week, and the looms
+bash functions/loom/stats.sh 60 45    # 60 days, each start day followed for 45
 ```
+
+## 9. Unique players and the three looms (versionCode 26)
+
+Two changes, both in this repository, and the schema goes first:
+
+- An open now also says the last day before it that the phone opened Loom.
+  `loom_open` keeps the gap, which is what lets `stats.sh` count a player once
+  over a week or a month rather than once a day (a sum of daily players counts
+  a daily player seven times a week). `loom_cohort`, the first shape of it,
+  held one test phone for a morning and is dropped.
+- A result names its loom (`"l": "e" | "n" | "h"`) and is counted in
+  `loom_result`, one row per day and loom; `GET /loom/scores?d=…&l=…` reads one.
+  A result without a loom comes from a build older than the looms and still
+  goes to `loom_day`.
+
+```bash
+npx wrangler d1 execute loom --remote --file functions/loom/schema.sql   # creates loom_open and loom_result, drops loom_cohort
+# then deploy (commit and push)
+```
+
+Until the schema has run, the new functions answer 500 to whatever touches a
+missing table, and the phone keeps what it could not send and tries again.
 
 ## What this costs
 
@@ -143,11 +167,14 @@ a week. Because the day is inside the hash and the number has 96 bits in it,
 two days' hashes from one phone cannot be tied together by anybody holding the
 table.
 
-Since 13 October, two more tables of counts. `loom_fresh`: the same totals, for
-results from a phone's first day only. `loom_cohort`: "of the phones that first
-opened Loom on day F, N opened it on day D", one number per pair of days. An
-open is deduplicated the same way, with its own hash (`"o" + day + ":" +
-number`), so an open cannot be tied to that phone's result or to another day.
+Since 13 October, more tables of counts. `loom_fresh`: the same totals, for
+results from a phone's first day only. `loom_open`: "of the phones that first
+opened Loom on day F, N opened it on day D, having last opened it G days
+before", one number per start day, day and gap. `loom_result`: the day's totals
+again, one row per loom, with first-day results beside them. An open is
+deduplicated the same way, with its own hash (`"o" + day + ":" + number`), and
+a result on a loom with the loom inside its hash, so an open cannot be tied to
+that phone's result, one loom's result to another's, or one day to another.
 
 ## If you want a rate limit as well
 

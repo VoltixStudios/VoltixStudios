@@ -24,11 +24,22 @@
  * bits in it, two days' hashes from one phone cannot be tied to each other by
  * anybody holding this table. Those rows are deleted after a week.
  *
+ * THE THREE LOOMS (from versionCode 26). A result that names its loom - "e",
+ * "n" or "h", Easy, Normal or Hard - is counted in loom_result, one row per
+ * day and loom, so a player is compared with the people who wove the same
+ * cloth. A result that names none comes from a build older than the looms and
+ * is counted in loom_day as it always was.
+ *
  * Needs a D1 binding called LOOM. The schema is in schema.sql beside this file.
  */
 
 const DAY0 = Date.UTC(2026, 0, 1);              // Loom counts days from here
-const MAXTRIES = 6;
+/* Five tries on Easy and two extra weaves make seven; eight leaves room. The
+   old one-loom table has six attempt columns, and keeps a seventh in its sixth:
+   only a build older than the looms writes there, and its longest day was a
+   Sunday of five tries and two extra. */
+const MAXTRIES = 8;
+const LOOMS = ["e", "n", "h"];
 /* Six time bands, in seconds. A band rather than a time because a distribution
    of exact times is a fingerprint and a histogram of bands is not. */
 const BANDS = [30, 60, 120, 240, 480];
@@ -75,18 +86,27 @@ async function seenId(day, key) {
 
 const shape = (row, rank) => ({
   d: row.day,
+  ...(row.tier ? { l: row.tier } : {}),
   n: row.total,
-  solved: [row.c1, row.c2, row.c3, row.c4, row.c5, row.c6],
+  solved: row.tier ? [row.c1, row.c2, row.c3, row.c4, row.c5, row.c6, row.c7, row.c8]
+                   : [row.c1, row.c2, row.c3, row.c4, row.c5, row.c6],
   lost: row.lost,
   t: [row.t1, row.t2, row.t3, row.t4, row.t5, row.t6],
   bands: BANDS,
   ...(rank === undefined ? {} : { rank }),
 });
 
-async function readDay(db, day) {
-  const row = await db.prepare("SELECT * FROM loom_day WHERE day = ?").bind(day).first();
-  return row || { day, total: 0, lost: 0, c1: 0, c2: 0, c3: 0, c4: 0, c5: 0, c6: 0,
-                  t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0 };
+async function readDay(db, day, loom) {
+  const row = loom
+    ? await db.prepare("SELECT * FROM loom_result WHERE day = ? AND tier = ?").bind(day, loom).first()
+    : await db.prepare("SELECT * FROM loom_day WHERE day = ?").bind(day).first();
+  return row || { day, ...(loom ? { tier: loom, c7: 0, c8: 0 } : {}), total: 0, lost: 0,
+                  c1: 0, c2: 0, c3: 0, c4: 0, c5: 0, c6: 0, t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0 };
+}
+/* The loom a request names, or null for none; undefined for one that is not a loom. */
+function loomOf(v) {
+  if (v === undefined || v === null || v === "") return null;
+  return LOOMS.indexOf(v) >= 0 ? v : undefined;
 }
 
 export async function onRequest({ request, env }) {
@@ -103,8 +123,10 @@ export async function onRequest({ request, env }) {
 
   if (request.method === "GET") {
     const day = parseInt(url.searchParams.get("d"), 10);
+    const loom = loomOf(url.searchParams.get("l"));
     if (!Number.isFinite(day) || day < 0 || day > now) return json({ error: "day" }, 400);
-    return json(shape(await readDay(env.LOOM, day)));
+    if (loom === undefined) return json({ error: "loom" }, 400);
+    return json(shape(await readDay(env.LOOM, day, loom)));
   }
 
   if (request.method !== "POST") return new Response(null, { status: 405 });
@@ -120,15 +142,20 @@ export async function onRequest({ request, env }) {
      thing: was this result a first day? A new player's day is counted a second
      time in loom_fresh, so a first day can be told from a returning one. */
   const firstDay = parseInt(body.f, 10);
+  const loom = loomOf(body.l);
 
   /* Yesterday, today and tomorrow only: a phone an hour either side of UTC is
      honest, a result for day 4000 is not. */
   if (!Number.isFinite(day) || day < now - 1 || day > now + 1) return json({ error: "day" }, 400);
   if (!Number.isFinite(attempts) || attempts < 0 || attempts > MAXTRIES) return json({ error: "attempts" }, 400);
   if (!key || key.length < 8) return json({ error: "key" }, 400);
+  if (loom === undefined) return json({ error: "loom" }, 400);
 
   const db = env.LOOM;
-  const id = await seenId(day, key);
+  /* One result per phone per loom: the loom is inside the hash, so Easy and
+     Hard from one phone on one day are two results, and a retry of either is
+     still one. A result with no loom hashes exactly as it always did. */
+  const id = await seenId(loom ? day + loom : day, key);
 
   /* INSERT OR IGNORE is the whole of the double-count guard: the first result
      for a phone on a day inserts a row and counts; a retry inserts nothing and
@@ -136,8 +163,22 @@ export async function onRequest({ request, env }) {
   const seen = await db.prepare("INSERT OR IGNORE INTO loom_seen (day, id) VALUES (?, ?)").bind(day, id).run();
   const first = !!(seen.meta && seen.meta.changes);
 
-  if (first) {
+  if (first && loom) {
     const col = attempts === 0 ? "lost" : "c" + attempts;
+    const good = attempts > 0 && Number.isFinite(seconds) && seconds >= 3 && seconds <= 7200;
+    const tcol = good ? "t" + band(seconds) : null;
+    const fresh = firstDay === day ? 1 : 0, flost = fresh && attempts === 0 ? 1 : 0;
+    const sets = ["total = total + 1", col + " = " + col + " + 1",
+                  "fresh = fresh + " + fresh, "flost = flost + " + flost];
+    if (tcol) sets.push(tcol + " = " + tcol + " + 1");
+    await db.prepare(
+      "INSERT INTO loom_result (day, tier, total, fresh, flost, " + col + (tcol ? ", " + tcol : "") + ") " +
+      "VALUES (?, ?, 1, ?, ?, 1" + (tcol ? ", 1" : "") + ") " +
+      "ON CONFLICT(day, tier) DO UPDATE SET " + sets.join(", ")
+    ).bind(day, loom, fresh, flost).run();
+    await db.prepare("DELETE FROM loom_seen WHERE day < ?").bind(day - 7).run();
+  } else if (first) {
+    const col = attempts === 0 ? "lost" : "c" + Math.min(attempts, 6);
     /* A time band is only counted for a day that was solved and carries a
        plausible time; a missing or absurd one costs the day nothing else. */
     const good = attempts > 0 && Number.isFinite(seconds) && seconds >= 3 && seconds <= 7200;
@@ -160,9 +201,9 @@ export async function onRequest({ request, env }) {
     await db.prepare("DELETE FROM loom_seen WHERE day < ?").bind(day - 7).run();
   }
 
-  const row = await readDay(db, day);
+  const row = await readDay(db, day, loom);
   /* "You are the seventh to solve today's cloth": everybody who has solved it,
      this phone included, at the moment this result arrived. */
-  const solvedSoFar = row.c1 + row.c2 + row.c3 + row.c4 + row.c5 + row.c6;
+  const solvedSoFar = row.c1 + row.c2 + row.c3 + row.c4 + row.c5 + row.c6 + (row.c7 || 0) + (row.c8 || 0);
   return json(shape(row, attempts > 0 ? solvedSoFar : undefined));
 }

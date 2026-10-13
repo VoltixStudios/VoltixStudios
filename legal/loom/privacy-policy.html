@@ -114,13 +114,13 @@
       </p>
 
       <dl class="doc-meta" data-lang="en">
-        <div><dt>Effective date</dt><dd>13 October 2026</dd></div>
+        <div><dt>Effective date</dt><dd>16 October 2026</dd></div>
         <div><dt>App</dt><dd>Loom <code>com.voltixstudios.loom</code></dd></div>
         <div><dt>Developer</dt><dd>Voltix Studios
           <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
       </dl>
       <dl class="doc-meta" data-lang="es" lang="es">
-        <div><dt>Fecha de entrada en vigor</dt><dd>13 de octubre de 2026</dd></div>
+        <div><dt>Fecha de entrada en vigor</dt><dd>16 de octubre de 2026</dd></div>
         <div><dt>Aplicación</dt><dd>Loom <code>com.voltixstudios.loom</code></dd></div>
         <div><dt>Desarrollador</dt><dd>Voltix Studios
           <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
@@ -227,7 +227,8 @@
           <li>the day number of the puzzle;</li>
           <li>how many attempts it took, or that it was not solved;</li>
           <li>how many seconds it took;</li>
-          <li>the day number on which you first opened Loom.</li>
+          <li>the day number on which you first opened Loom;</li>
+          <li>which of the day&rsquo;s three looms it was: Easy, Normal or Hard.</li>
         </ul>
         <p>
           The server keeps only running totals per day &mdash; how many people solved that cloth in
@@ -250,11 +251,13 @@
         </p>
         <p>
           <strong>Counting players.</strong> Once a day, when you open that day&rsquo;s cloth, the app
-          also tells the same server that the day was opened, with two day numbers: today&rsquo;s,
-          and the day on which you first opened Loom. The server adds one to a single count &mdash;
-          &ldquo;of the phones that started on day F, this many opened day D&rdquo; &mdash; and keeps
-          nothing else. That is how we know how many people play each day, how many are new, and how
-          many come back the next day or the next week, without any record that belongs to anybody.
+          also tells the same server that the day was opened, with three day numbers: today&rsquo;s,
+          the day on which you first opened Loom, and the last day before today on which you opened
+          it. The server adds one to a single count &mdash; &ldquo;of the phones that started on day F,
+          this many opened day D, having last opened Loom G days before&rdquo; &mdash; and keeps
+          nothing else. That is how we know how many people play each day and each week, how many are
+          new, and how many come back the next day or the next week, without any record that belongs
+          to anybody.
           The same rule against counting a phone twice applies, with its own one-way hash that cannot
           be linked to your results or to any other day. The <span class="ui">Send anonymous
           statistics</span> switch in Settings turns this off together with everything else in this section.
@@ -300,11 +303,12 @@
         <h2 id="purchases">In-app purchases (Google Play Billing)</h2>
         <p>
           The game offers a few optional purchases: <strong>months of cloths</strong> (every
-          cloth of one calendar month, yours forever, and no advertising once you have bought
-          one), a pack of ten hints, a pack of five extra attempts for a lost cloth, and four
+          cloth of one calendar month, yours forever, and, once you have bought one, all three of
+          each day&rsquo;s looms and no advertising), a pack of ten hints, a pack of five extra attempts for a lost cloth, and four
           thread palettes for the quilt. Loom Full, every cloth ever published, is no longer
           sold; anyone who bought it keeps all of it. Everything else is free and stays free: the
-          daily puzzle, the last seven cloths, the first hint on every cloth (for an
+          daily puzzle on the loom you choose (a second loom that day for an advertisement), the
+          last seven cloths, the first hint on every cloth (for an
           advertisement, or free where none can be shown), the statistics, the reminder and the
           quilt. All payments are
           processed by Google Play Billing — the app never sees, receives or stores your payment
@@ -459,7 +463,8 @@
           <li>el número del día del puzle;</li>
           <li>cuántos intentos costó, o que no se resolvió;</li>
           <li>cuántos segundos costó;</li>
-          <li>el número del día en que abriste Loom por primera vez.</li>
+          <li>el número del día en que abriste Loom por primera vez;</li>
+          <li>cuál de los tres telares del día era: Fácil, Normal o Difícil.</li>
         </ul>
         <p>
           El servidor solo guarda totales por día &mdash; cuántas personas resolvieron esa tela en
@@ -482,12 +487,13 @@
         </p>
         <p>
           <strong>Contar jugadores.</strong> Una vez al día, cuando abres la tela de ese día, la
-          aplicación avisa también al mismo servidor de que se abrió, con dos números de día: el de
-          hoy y el día en que abriste Loom por primera vez. El servidor suma uno a un único recuento
-          &mdash; &laquo;de los teléfonos que empezaron el día F, tantos abrieron el día D&raquo;
-          &mdash; y no guarda nada más. Así sabemos cuántas personas juegan cada día, cuántas son
-          nuevas y cuántas vuelven al día siguiente o a la semana siguiente, sin ningún registro que
-          pertenezca a nadie. Se aplica la misma regla para no contar dos veces un teléfono, con su
+          aplicación avisa también al mismo servidor de que se abrió, con tres números de día: el de
+          hoy, el día en que abriste Loom por primera vez y el último día antes de hoy en que lo
+          abriste. El servidor suma uno a un único recuento &mdash; &laquo;de los teléfonos que
+          empezaron el día F, tantos abrieron el día D, y lo habían abierto por última vez G días
+          antes&raquo; &mdash; y no guarda nada más. Así sabemos cuántas personas juegan cada día y
+          cada semana, cuántas son nuevas y cuántas vuelven al día siguiente o a la semana
+          siguiente, sin ningún registro que pertenezca a nadie. Se aplica la misma regla para no contar dos veces un teléfono, con su
           propio hash irreversible que no puede vincularse con tus resultados ni con ningún otro día.
           El interruptor <span class="ui">Enviar estadísticas anónimas</span> de Ajustes lo desactiva junto con todo
           lo demás de esta sección.
@@ -535,11 +541,12 @@
         <h2 id="purchases-es">Compras integradas (Google Play Billing)</h2>
         <p>
           El juego ofrece unas pocas compras opcionales: <strong>meses de telas</strong> (todas
-          las telas de un mes del calendario, tuyas para siempre, y ninguna publicidad una vez
-          hayas comprado uno), un paquete de diez pistas, un paquete de cinco intentos extra para
+          las telas de un mes del calendario, tuyas para siempre, y, una vez hayas comprado uno,
+          los tres telares de cada día y ninguna publicidad), un paquete de diez pistas, un paquete de cinco intentos extra para
           una tela perdida y cuatro paletas de hilo para la colcha. Loom Full, todas las telas
           publicadas, ya no se vende; quien lo compró lo conserva entero. Todo lo demás es gratis
-          y seguirá siéndolo: el puzle diario, las últimas siete telas, la primera pista de cada
+          y seguirá siéndolo: el puzle diario en el telar que elijas (un segundo telar ese día por
+          un anuncio), las últimas siete telas, la primera pista de cada
           tela (por un anuncio, o gratis donde no se puede mostrar ninguno), las estadísticas, el
           recordatorio y la colcha.
           Todos los pagos los procesa Google Play Billing: la aplicación nunca ve, recibe ni

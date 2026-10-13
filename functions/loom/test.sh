@@ -12,7 +12,7 @@ WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
 mkdir -p "$WORK/functions/loom"
-cp "$HERE/scores.js" "$HERE/schema.sql" "$WORK/functions/loom/"
+cp "$HERE/scores.js" "$HERE/opens.js" "$HERE/schema.sql" "$WORK/functions/loom/"
 echo "ok" > "$WORK/index.html"
 cat > "$WORK/wrangler.jsonc" <<'JSON'
 {
@@ -71,6 +71,29 @@ is "a day that is not this one is refused"            "$(post "{\"d\":99999,\"a\
 is "seven attempts out of six is refused"             "$(post "{\"d\":$DAY,\"a\":9,\"k\":\"dddddddddddddddd\"}")" '{"error":"attempts"}'
 is "a result with nothing to deduplicate is refused"  "$(post "{\"d\":$DAY,\"a\":2}")" '{"error":"key"}'
 is "a time nobody could have taken is not banded"     "$(post "{\"d\":$DAY,\"a\":2,\"s\":99999,\"k\":\"eeeeeeeeeeeeeeee\"}" | grep -o '"t":\[1,0,1,0,0,0\]')" '"t":[1,0,1,0,0,0]'
+
+# A first day's result is counted twice: once with everybody, once with the new.
+post "{\"d\":$DAY,\"a\":0,\"k\":\"ffffffffffffffff\",\"f\":$DAY}" >/dev/null
+post "{\"d\":$DAY,\"a\":2,\"k\":\"gggggggggggggggg\",\"f\":$DAY}" >/dev/null
+post "{\"d\":$DAY,\"a\":2,\"k\":\"hhhhhhhhhhhhhhhh\",\"f\":$((DAY-3))}" >/dev/null
+fresh=$(npx --yes wrangler d1 execute loom --local --json --command "SELECT total, lost FROM loom_fresh WHERE day=$DAY" 2>/dev/null | tr -d ' \n')
+is "a new player's day is counted with the new"       "$(echo "$fresh" | grep -o '"total":2,"lost":1')" '"total":2,"lost":1'
+
+# Opens, by the day the phone started.
+opn () { curl -s -X POST "localhost:$PORT/loom/opens" -H 'Content-Type: application/json' -d "$1"; }
+is "an open is counted"                               "$(opn "{\"d\":$DAY,\"f\":$DAY,\"k\":\"aaaaaaaaaaaaaaaa\"}")" '{"ok":true,"counted":true}'
+is "the same phone opening twice counts once"         "$(opn "{\"d\":$DAY,\"f\":$DAY,\"k\":\"aaaaaaaaaaaaaaaa\"}")" '{"ok":true,"counted":false}'
+opn "{\"d\":$DAY,\"f\":$((DAY-1)),\"k\":\"bbbbbbbbbbbbbbbb\"}" >/dev/null
+opn "{\"d\":$DAY,\"f\":$((DAY-1)),\"k\":\"cccccccccccccccc\"}" >/dev/null
+coh=$(npx --yes wrangler d1 execute loom --local --json --command "SELECT first, n FROM loom_cohort WHERE day=$DAY ORDER BY first" 2>/dev/null | tr -d ' \n')
+is "and is filed under the day the phone started"     "$(echo "$coh" | grep -o '"first":[0-9]*,"n":[0-9]*' | sed 's/"first"://; s/,"n"://' | tr '\n' ' ')" "$((DAY-1))2 ${DAY}1 "
+is "a first day after the day opened is refused"      "$(opn "{\"d\":$DAY,\"f\":$((DAY+1)),\"k\":\"dddddddddddddddd\"}")" '{"error":"first"}'
+is "an open for another day is refused"               "$(opn "{\"d\":99999,\"f\":0,\"k\":\"dddddddddddddddd\"}")" '{"error":"day"}'
+is "an open with nothing to deduplicate is refused"   "$(opn "{\"d\":$DAY,\"f\":$DAY}")" '{"error":"key"}'
+# Seven results so far. A phone that has opened today must still be counted when
+# it finishes: the open's dedup row must not stand in for the result's.
+opn "{\"d\":$DAY,\"f\":$DAY,\"k\":\"iiiiiiiiiiiiiiii\"}" >/dev/null
+is "an open and a result from one phone are separate" "$(post "{\"d\":$DAY,\"a\":1,\"k\":\"iiiiiiiiiiiiiiii\"}" | grep -o '"n":[0-9]*')" '"n":8'
 
 echo
 if [ $fail -eq 0 ]; then echo "$pass checks passed."; else echo "$pass passed, $fail FAILED."; fi

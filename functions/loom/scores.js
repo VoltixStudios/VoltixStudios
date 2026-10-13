@@ -12,7 +12,9 @@
  * people solved it in one attempt, in two, … in six, how many did not solve it,
  * and how many finished inside each of six time bands. Counts, not people.
  * There is no account, no name, no advertising id, no IP address, no cloth, no
- * order of operations, and no row that belongs to anybody.
+ * order of operations, and no row that belongs to anybody. A result from a
+ * phone's first day is also added to a second row of the same kind, so the
+ * day of a new player can be told from the day of a returning one.
  *
  * The one thing that is per-device is a check against counting the same phone
  * twice — a network retry would otherwise count a day twice and skew the very
@@ -114,6 +116,10 @@ export async function onRequest({ request, env }) {
   const attempts = parseInt(body.a, 10);          // 0 means the day was not solved
   const seconds = parseInt(body.s, 10);
   const key = typeof body.k === "string" ? body.k.slice(0, 64) : "";
+  /* The day this phone first opened Loom, when it says. Only used to ask one
+     thing: was this result a first day? A new player's day is counted a second
+     time in loom_fresh, so a first day can be told from a returning one. */
+  const firstDay = parseInt(body.f, 10);
 
   /* Yesterday, today and tomorrow only: a phone an hour either side of UTC is
      honest, a result for day 4000 is not. */
@@ -142,6 +148,13 @@ export async function onRequest({ request, env }) {
       "INSERT INTO loom_day (day, total, " + col + (tcol ? ", " + tcol : "") + ") VALUES (?, 1, 1" + (tcol ? ", 1" : "") + ") " +
       "ON CONFLICT(day) DO UPDATE SET " + sets.join(", ")
     ).bind(day).run();
+    if (firstDay === day) {
+      const lost = attempts === 0 ? 1 : 0;
+      await db.prepare(
+        "INSERT INTO loom_fresh (day, total, lost) VALUES (?, 1, ?) " +
+        "ON CONFLICT(day) DO UPDATE SET total = total + 1, lost = lost + ?"
+      ).bind(day, lost, lost).run();
+    }
     /* A week is long enough for a phone that has been in a drawer, and short
        enough that this table never becomes a history of anything. */
     await db.prepare("DELETE FROM loom_seen WHERE day < ?").bind(day - 7).run();

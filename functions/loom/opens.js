@@ -1,0 +1,87 @@
+/* Voltix Studios — Loom's open counter.
+ *
+ * A Cloudflare Pages Function beside scores.js, answering at /loom/opens.
+ *
+ * What it is for: /loom/scores only ever hears from a phone that finished the
+ * day, so it cannot say how many people opened the game, how many gave up
+ * before the end, or whether anybody came back. This answers those three, and
+ * nothing else.
+ *
+ * WHAT IS STORED, in full. One row per pair of days: "of the phones that first
+ * opened Loom on day F, this many opened it on day D". Counts, not people. From
+ * that one table come the players of a day (every row for D), the new players
+ * of a day (the row where F = D), and the return of every cohort: D1 is the row
+ * F+1 over the row F, D7 the row F+7 over the row F.
+ *
+ * The phone sends three things: the day it is opening, the day it first opened
+ * Loom, and the same made-up number scores.js receives, so a retry is not
+ * counted twice. The number is hashed with the day and with a letter that
+ * scores.js does not use, so an open and a result from one phone cannot be tied
+ * to each other, and two days from one phone cannot either. Those rows are
+ * deleted after a week, as there.
+ *
+ * Needs the same D1 binding, LOOM. The tables are in schema.sql.
+ */
+
+const DAY0 = Date.UTC(2026, 0, 1);              // Loom counts days from here
+
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
+};
+
+const json = (body, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store", ...CORS },
+  });
+
+/* A null body, never {}: 204 is a null-body status, and a body here throws in
+   the Workers runtime and fails the preflight (see scores.js). */
+const preflight = () => new Response(null, { status: 204, headers: CORS });
+
+const today = () => Math.floor((Date.now() - DAY0) / 86400000);
+
+async function seenId(day, key) {
+  const bytes = new TextEncoder().encode("o" + day + ":" + key);
+  const hash = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(hash)].slice(0, 16).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+export async function onRequest({ request, env }) {
+  if (request.method === "OPTIONS") return preflight();
+  if (!env.LOOM || typeof env.LOOM.prepare !== "function") {
+    return json({ error: "no store: bind a D1 database as LOOM" }, 503);
+  }
+  if (request.method !== "POST") return new Response(null, { status: 405 });
+
+  let body;
+  try { body = await request.json(); } catch (e) { return json({ error: "body" }, 400); }
+
+  const now = today();
+  const day = parseInt(body.d, 10);
+  const first = parseInt(body.f, 10);
+  const key = typeof body.k === "string" ? body.k.slice(0, 64) : "";
+
+  if (!Number.isFinite(day) || day < now - 1 || day > now + 1) return json({ error: "day" }, 400);
+  /* A first day after the day being opened is a clock that moved back; one
+     before Loom existed is a fault. Neither is a cohort. */
+  if (!Number.isFinite(first) || first < 0 || first > day) return json({ error: "first" }, 400);
+  if (!key || key.length < 8) return json({ error: "key" }, 400);
+
+  const db = env.LOOM;
+  const seen = await db.prepare("INSERT OR IGNORE INTO loom_seen (day, id) VALUES (?, ?)")
+    .bind(day, await seenId(day, key)).run();
+  const counted = !!(seen.meta && seen.meta.changes);
+
+  if (counted) {
+    await db.prepare(
+      "INSERT INTO loom_cohort (first, day, n) VALUES (?, ?, 1) " +
+      "ON CONFLICT(first, day) DO UPDATE SET n = n + 1"
+    ).bind(first, day).run();
+    await db.prepare("DELETE FROM loom_seen WHERE day < ?").bind(day - 7).run();
+  }
+  return json({ ok: true, counted });
+}

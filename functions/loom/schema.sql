@@ -3,6 +3,9 @@
 --
 --   npx wrangler d1 execute loom --remote --file functions/loom/schema.sql
 --
+-- Run it again after a change: every statement is IF NOT EXISTS, so tables
+-- that are there are left alone and new ones are added.
+--
 -- Counts only. There is no row here that belongs to a person; see scores.js.
 CREATE TABLE IF NOT EXISTS loom_day (
   day   INTEGER PRIMARY KEY,
@@ -28,4 +31,23 @@ CREATE TABLE IF NOT EXISTS loom_seen (
   day INTEGER NOT NULL,
   id  TEXT NOT NULL,
   PRIMARY KEY (day, id)
+);
+
+-- The results of a phone's first day, counted a second time: loom_day less
+-- this is the returning players. Written by scores.js when the phone says so.
+CREATE TABLE IF NOT EXISTS loom_fresh (
+  day   INTEGER PRIMARY KEY,
+  total INTEGER NOT NULL DEFAULT 0,
+  lost  INTEGER NOT NULL DEFAULT 0
+);
+
+-- Opens, by the day a phone first opened Loom: "of the phones that started on
+-- day FIRST, N opened it on day DAY". Written by opens.js. Players of a day are
+-- every row for that DAY, new players the row where FIRST = DAY, and a cohort's
+-- return is its row at FIRST + 1, + 7 over its row at FIRST.
+CREATE TABLE IF NOT EXISTS loom_cohort (
+  first INTEGER NOT NULL,
+  day   INTEGER NOT NULL,
+  n     INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (first, day)
 );

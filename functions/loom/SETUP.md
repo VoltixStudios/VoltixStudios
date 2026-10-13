@@ -100,6 +100,28 @@ Two things must be true **before** a build that sends anything reaches Play:
   the user's identity" is no, and it is no because there is nothing to link it
   with.
 
+## 8. Opens and return (13 October 2026)
+
+`/loom/scores` only hears from a phone that finished the day, so on its own it
+cannot say how many people played, how many gave up, or who came back.
+`opens.js` answers at `/loom/opens` and fills one more table, and a result now
+says whether it was the phone's first day. Before Loom versionCode 25 is
+uploaded, in this order:
+
+```bash
+npx wrangler d1 execute loom --remote --file functions/loom/schema.sql   # adds loom_fresh and loom_cohort, touches nothing else
+bash functions/loom/test.sh                                              # 20 checks, locally
+# then deploy the site as in step 4
+curl -s -X POST https://voltixstudios.pages.dev/loom/opens \
+  -H 'Content-Type: application/json' -d '{"d":0,"f":0,"k":"checkcheck"}'  # {"error":"day"} means it is live
+```
+
+To read the numbers at any time (read-only):
+
+```bash
+bash functions/loom/stats.sh        # day by day, and return by cohort, last 28 days
+```
+
 ## What this costs
 
 Nothing at any volume this studio will see for a long time. D1's free plan is
@@ -120,6 +142,12 @@ phone makes up a random number once and keeps it; what is stored is
 a week. Because the day is inside the hash and the number has 96 bits in it,
 two days' hashes from one phone cannot be tied together by anybody holding the
 table.
+
+Since 13 October, two more tables of counts. `loom_fresh`: the same totals, for
+results from a phone's first day only. `loom_cohort`: "of the phones that first
+opened Loom on day F, N opened it on day D", one number per pair of days. An
+open is deduplicated the same way, with its own hash (`"o" + day + ":" +
+number`), so an open cannot be tied to that phone's result or to another day.
 
 ## If you want a rate limit as well
 

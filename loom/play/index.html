@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at 3ed30e3) by
+<!-- Copied from the Loom repository (game/index.html at 73123e7) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
-<meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
+<meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone.">
 <link rel="canonical" href="https://voltixstudios.pages.dev/loom/play/">
 <link rel="icon" href="icon-512.png">
 <link rel="apple-touch-icon" href="icon-512.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Voltix Studios">
 <meta property="og:title" content="Loom — today's cloth">
-<meta property="og:description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone, three attempts.">
+<meta property="og:description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone.">
 <meta property="og:url" content="https://voltixstudios.pages.dev/loom/play/">
 <meta property="og:image" content="https://voltixstudios.pages.dev/loom/play/icon-512.png">
 <meta property="og:image:width" content="512">
@@ -341,7 +341,20 @@ body.still .tile,body.still .slot,body.still button.act,body.still .sw,body.stil
    the gesture bar have taken theirs, and the media query cannot see that: it
    measures the whole viewport, bars included. fit() measures what is left and
    puts the class on, so the rule fires on the room rather than on the ruler. */
+/* The three looms sit in the cloth heading, so they cost no height of their
+   own. On a short screen the heading's words go and the looms stay. */
+#clothHead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.looms{display:inline-flex;gap:2px;padding:2px;border-radius:999px;background:var(--frame)}
+.looms[hidden]{display:none}
+.looms button{border:0;margin:0;background:transparent;font:inherit;font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;font-weight:800;color:var(--muted);padding:5px 9px;border-radius:999px;
+  min-height:26px;cursor:pointer;white-space:nowrap}
+.looms button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(90,74,66,.14)}
+.looms button.shut{opacity:.5}
+.looms button i{font-style:normal;margin-left:3px}
 body.short #clothHead{display:none}
+body.short #clothHead.has-looms{display:flex;justify-content:flex-end;margin:4px 0 2px}
+body.short #clothHead .lbl{display:none}
 body.short .big{width:min(210px,calc(var(--u) * 20))}
 body.short .slot,body.short .tile{max-height:calc(var(--u) * 8.5)}
 body.short h2{margin:8px 0 4px}
@@ -580,7 +593,8 @@ body.marks .sym{display:block}
     <div><div class="mini" id="targetCloth"></div><div class="tag" data-t="pattern">pattern</div></div>
   </div>
 
-  <h2 id="clothHead" data-t="Your cloth">Your cloth</h2>
+  <h2 id="clothHead"><span class="lbl" data-t="Your cloth">Your cloth</span>
+    <span class="looms" id="looms" role="group" hidden></span></h2>
   <!-- §8.1b: the cloth, and the room above it where a finished day is crowned. -->
   <div class="stage" id="stage">
     <div class="big" id="workCloth"></div>
@@ -641,6 +655,7 @@ body.marks .sym{display:block}
     <div class="cmp" id="cmp" hidden></div>
     <div class="glob" id="glob" hidden></div>
     <div class="mile" id="mile" hidden></div>
+    <button class="link" id="loomNext" hidden></button>
     <div class="next" id="next"></div>
     <div class="fact" id="fact"></div>
     <div class="share" id="shareText"></div>
@@ -674,6 +689,17 @@ body.marks .sym{display:block}
       <button class="link" id="moreSheetAd" hidden></button>
       <button class="link" id="moreSheetNo" data-t="Not now">Not now</button>
       <div class="note" id="moreSheetNote" data-t="Two extra weaves per cloth at most. The shared result shows them.">Two extra weaves per cloth at most. The shared result shows them.</div>
+    </div>
+  </div>
+
+  <!-- A loom that is not open today: an advertisement for it, or any purchase for all three. -->
+  <div class="sheet" id="loomSheet" hidden role="dialog" aria-modal="true" aria-labelledby="loomSheetTitle">
+    <div class="sheet__card">
+      <b id="loomSheetTitle"></b>
+      <div class="lines" id="loomSheetLine"></div>
+      <button class="act" id="loomSheetAd" hidden></button>
+      <button class="link" id="loomSheetBuy" hidden></button>
+      <button class="link" id="loomSheetNo" data-t="Not now">Not now</button>
     </div>
   </div>
 
@@ -729,6 +755,24 @@ const LANG=(function(){ try{ const l=String(navigator.language||'').toLowerCase(
   if(l.indexOf('ca')===0) return 'ca'; if(l.indexOf('es')===0) return 'es'; }catch(e){} return 'en'; })();
 const STRINGS={
 ca:{
+ 'Which loom':'Quin teler',
+ 'Easy':'Fàcil',
+ 'Normal':'Normal',
+ 'Hard':'Difícil',
+ 'The Easy loom':'El teler Fàcil',
+ 'The Normal loom':'El teler Normal',
+ 'The Hard loom':'El teler Difícil',
+ 'One loom a day is free, and today yours is {l}.':'Un teler al dia és gratuït, i avui el teu és el {l}.',
+ 'One loom a day is free, and on this day yours was {l}.':'Un teler al dia és gratuït, i aquell dia el teu va ser el {l}.',
+ 'Watch an advert to weave this one too, today.':'Mira un anunci per teixir també aquest, avui.',
+ 'Or open a month of cloths: every loom, every day, and no advertising.':'O obre un mes de teles: tots els telers, cada dia, i sense publicitat.',
+ 'Choose again tomorrow, before your first weave.':'Demà pots tornar a triar, abans de teixir per primer cop.',
+ 'Watch an advert':'Mira un anunci',
+ 'Every loom, every day.':'Tots els telers, cada dia.',
+ 'Three in a row. Try {l} tomorrow?':'Tres seguides. Demà proves el {l}?',
+ 'Two lost in a row. Try {l} tomorrow?':'Dues perdudes seguides. Demà proves el {l}?',
+ 'Tomorrow: {l}.':'Demà: {l}.',
+ 'Looms: ':'Telers: ',
  'How to play':'Com es juga','The rules, in five lines.':'Les regles, en cinc línies.',
  'All {n} operations are on the table. Only the order is missing.':'Totes les {n} operacions ja hi són. Només hi falta l’ordre.',
  'One cloth a day, the same one for every player in the world.':'Una tela al dia, la mateixa per a tots els jugadors del món.',
@@ -838,6 +882,24 @@ ca:{
  'January':'gener','February':'febrer','March':'març','April':'abril','May':'maig','June':'juny','July':'juliol','August':'agost','September':'setembre','October':'octubre','November':'novembre','December':'desembre'
 },
 es:{
+ 'Which loom':'Qué telar',
+ 'Easy':'Fácil',
+ 'Normal':'Normal',
+ 'Hard':'Difícil',
+ 'The Easy loom':'El telar Fácil',
+ 'The Normal loom':'El telar Normal',
+ 'The Hard loom':'El telar Difícil',
+ 'One loom a day is free, and today yours is {l}.':'Un telar al día es gratis, y hoy el tuyo es el {l}.',
+ 'One loom a day is free, and on this day yours was {l}.':'Un telar al día es gratis, y ese día el tuyo fue el {l}.',
+ 'Watch an advert to weave this one too, today.':'Mira un anuncio para tejer también este, hoy.',
+ 'Or open a month of cloths: every loom, every day, and no advertising.':'O abre un mes de telas: todos los telares, cada día, y sin publicidad.',
+ 'Choose again tomorrow, before your first weave.':'Mañana puedes volver a elegir, antes de tejer por primera vez.',
+ 'Watch an advert':'Mira un anuncio',
+ 'Every loom, every day.':'Todos los telares, cada día.',
+ 'Three in a row. Try {l} tomorrow?':'Tres seguidas. ¿Mañana pruebas el {l}?',
+ 'Two lost in a row. Try {l} tomorrow?':'Dos perdidas seguidas. ¿Mañana pruebas el {l}?',
+ 'Tomorrow: {l}.':'Mañana: {l}.',
+ 'Looms: ':'Telares: ',
  'How to play':'Cómo se juega','The rules, in five lines.':'Las reglas, en cinco líneas.',
  'All {n} operations are on the table. Only the order is missing.':'Las {n} operaciones ya están sobre la mesa. Solo falta el orden.',
  'One cloth a day, the same one for every player in the world.':'Una tela al día, la misma para todos los jugadores del mundo.',
@@ -988,7 +1050,13 @@ const ANALYTICS_API_SECRET     = 'mi3ebbt7SWeDSvjX4fNcMA';   /* GA4 Measurement 
      - a session number, which is a timestamp;
      - the event name, and the plain numbers listed at each call site
        below: day numbers, attempt counts, seconds played;
-     - the time the event happened;
+     - the time the event happened, and how long the game was on the
+       screen since the event before it;
+     - three user properties: the app's version name and versionCode,
+       and the day this phone first opened Loom (versionCode 27);
+     - when the game's own script fails, a `js_error` event with the
+       kind of error and the line and column it happened on - never
+       the error's text;
      - whatever Google's own servers see of any incoming request,
        which is the IP address and the browser user agent. We send
        non_personalized_ads so GA4 is told not to use it for adverts.
@@ -1022,6 +1090,51 @@ const A = (function(){
     return 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);
   }
   function cid(){ let v=get(CKEY); if(!v){ v=rand(); set(CKEY,v); } return v; }
+
+  /* Engagement: the time the game was on the screen since the last event.
+     GA4 sums engagement_time_msec into its engagement time and needs it above
+     zero to count a user as active; until versionCode 27 every event said 1.
+     The clock runs while the page is visible and stops when it is hidden. An
+     event takes what has run up since the one before it, capped at the session
+     gap, so a phone left on a table does not report an afternoon. */
+  let fgMs=0, fgAt=0;
+  const shown=()=>{ try{ return document.visibilityState!=='hidden'; }catch(e){ return true; } };
+  function fgStop(){ if(fgAt){ fgMs+=Math.max(0,Date.now()-fgAt); fgAt=0; } }
+  function fgGo(){ if(!fgAt) fgAt=Date.now(); }
+  function engaged(){ fgStop(); const ms=Math.min(fgMs,GAP); fgMs=0; if(shown()) fgGo(); return ms; }
+  if(shown()) fgGo();
+
+  /* Who is sending, as GA4 user properties: the build, so every report can be
+     split by version, and the day this phone first opened Loom, so a cohort
+     can be read in an exploration (Measurement Protocol cannot send first_open,
+     so GA4's own "new users" is not to be trusted here). The build comes from
+     the Android shell; a page without it sends no version. */
+  let BUILD;
+  function build(){
+    if(BUILD===undefined){ BUILD=null;
+      try{ const N=window.VoltixNative; if(N&&N.version){
+        const v=String(N.version()).split('|'); if(v[0]) BUILD={name:v[0],code:parseInt(v[1],10)||0}; } }catch(e){} }
+    return BUILD;
+  }
+  /* And who the player is in the game's own terms, so any report can be split
+     by it: payer or not, days played, the streak and the best one, whether the
+     reminder is on, the loom they play, and the advertising consent answer.
+     Each is read where it lives; one that cannot be read yet (the first lines of
+     the script, before the profile exists) is left out rather than guessed. */
+  function props(){
+    const u={}, b=build();
+    const put=(k,f)=>{ try{ const v=f(); if(v!==undefined&&v!==null&&v!==''&&(typeof v!=='number'||isFinite(v))) u[k]={value:v}; }catch(e){} };
+    if(b){ u.app_version={value:b.name}; u.version_code={value:b.code}; }
+    put('first_day',()=>isFinite(PROF.firstDay)?PROF.firstDay:null);
+    put('payer',()=>PAID()?1:0);
+    put('days_played',()=>stats().played);
+    put('streak',()=>PROF.streak||0);
+    put('best_streak',()=>PROF.best||0);
+    put('reminder_on',()=>SET.get('remind')?1:0);
+    put('preferred_loom',()=>looms(dayNum)?preferredLoom():null);
+    put('ads_consent',()=>{ const c=consentNow(); return c?c.status:null; });
+    return u;
+  }
   function session(){
     const now=Date.now(); let s=null; const raw=get(SKEY);
     if(raw){ const p=raw.split('.'); if(p.length===2&&now-(+p[1])<GAP) s=p[0]; }
@@ -1053,19 +1166,58 @@ const A = (function(){
       const p={}; const src=params||{};
       for(const k in src) if(src[k]!==undefined&&src[k]!==null) p[k]=src[k];
       p.session_id=session();
-      p.engagement_time_msec=1;         /* GA4 needs this to count the session as active */
-      const q=readQ(); q.push({n:name,p:p,t:Date.now()}); writeQ(q);
+      p.engagement_time_msec=Math.max(1,engaged());   /* never 0: GA4 needs it to count the session as active */
+      const q=readQ(); q.push({n:name,p:p,t:Date.now(),u:props()}); writeQ(q);
       drain(false);
     }catch(e){}
   }
+  /* The page is going: the time on screen since the last event goes out with
+     an `app_hidden` of its own, unless an event on the way out already took
+     it. Under a second is not worth an event. */
+  function hidden(params){
+    try{ fgStop(); if(fgMs>=1000) ev('app_hidden',params); }catch(e){}
+  }
+
+  /* The game's own failures. A WebView swallows a script error: no crash, no
+     report, only a game that stopped answering. These go to GA4 as `js_error`
+     with the kind of error, where it happened and nothing else - no message,
+     because a message is free text. At most five a session, and one per place,
+     so a failing loop cannot flood the queue. */
+  const ERRMAX=5; let errSeen={}, errN=0, errSid='';
+  function fault(kind,line,col,where){
+    try{
+      if(WEB||!live()) return;
+      const s=session(); if(s!==errSid){ errSid=s; errSeen={}; errN=0; }
+      const k=where+':'+line+':'+col; if(errSeen[k]||errN>=ERRMAX) return;
+      errSeen[k]=1; errN++;
+      let d=null; try{ d=viewDay; }catch(e){}
+      ev('js_error',{error_kind:String(kind||'Error').replace(/[^A-Za-z]/g,'').slice(0,40)||'Error',
+                     line:+line||0,column:+col||0,where:where,day_number:d});
+    }catch(e){}
+  }
+  try{
+    addEventListener('error',e=>{
+      if(!e) return;
+      /* Only this page's script: an error from a script Google's advertising
+         put into the page is not ours to count, and says so with its file. */
+      let here=''; try{ here=location.href; }catch(x){}
+      const ours=!e.filename||e.filename===here||/index\.html|^about:|^data:/.test(e.filename);
+      fault(e.error&&e.error.name,e.lineno,e.colno,ours?'page':'other');
+    });
+    addEventListener('unhandledrejection',e=>{
+      const r=e&&e.reason; fault(r&&r.name||'Rejection',0,0,'promise');
+    });
+  }catch(e){}
   function url(){
     return EP+'?measurement_id='+encodeURIComponent(ANALYTICS_MEASUREMENT_ID)+
               '&api_secret='+encodeURIComponent(ANALYTICS_API_SECRET);
   }
   function body(item){
-    return JSON.stringify({client_id:cid(),non_personalized_ads:true,
+    const b={client_id:cid(),non_personalized_ads:true,
       timestamp_micros:String(item.t*1000),
-      events:[{name:item.n,params:item.p}]});
+      events:[{name:item.n,params:item.p}]};
+    if(item.u&&Object.keys(item.u).length) b.user_properties=item.u;  /* as they were when it happened */
+    return JSON.stringify(b);
   }
   /* Oldest first, one at a time. A failure puts the event back at the
      head of the queue and stops; the next event, the next time the
@@ -1100,9 +1252,9 @@ const A = (function(){
     setTimeout(()=>drain(false),0);   /* anything left over from a previous, offline session */
     addEventListener('online',()=>drain(false));
     addEventListener('pagehide',()=>drain(true));
-    addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') drain(true); });
+    addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden'){ fgStop(); drain(true); } else fgGo(); });
   }catch(e){}
-  return { ev:ev, drain:drain, live:live, session:session,
+  return { ev:ev, drain:drain, live:live, session:session, hidden:hidden, fault:fault, build:build,
            configured:()=>!!(ANALYTICS_MEASUREMENT_ID&&ANALYTICS_API_SECRET),
            queued:()=>readQ().length,
            off:v=>set(OFFKEY,v?'off':'on'), isOff:()=>get(OFFKEY)==='off' };
@@ -1182,7 +1334,7 @@ function adTestLine(){
 function rankLine(){
   if(!SCORES.url) return 'no endpoint in this build, nothing is sent';
   if(A.isOff()) return 'held: the privacy switch is off, so nothing leaves the phone';
-  const q=RANK.pending(), waiting=Object.keys(q).length, h=RANK.hist(viewDay);
+  const q=RANK.pending(), waiting=Object.keys(q).length, h=RANK.hist(viewDay,looms(viewDay)?LOOM:null);
   const said = h&&h.solved
     ? 'day '+viewDay+': '+((h.rank?'rank '+h.rank+' of ':'')+(+h.n||0))+' in'
     : 'day '+viewDay+': no answer yet';
@@ -1443,8 +1595,32 @@ const COLS=3;
    this table is a release. Version 1, 16 September 2026: one dial per day,
    so the statistics can attribute a change in solve rate to one cause. */
 const FAMILIES=['row','col','swap','swapc','mirror','flip','turn','shift','fold'];
-const DIALS_VERSION=2;   // 2: three tries on a 4x4 cloth, five on the 5x5 (2 October 2026)
-function dials(day){
+const DIALS_VERSION=3;   // 2: three tries on a 4x4 cloth, five on the 5x5 (2 October 2026). 3: the three looms
+/* ---------- the three looms: the President, 13 October 2026 ------------------
+   From LOOMS_FROM every day has three cloths - every day, the past ones in the
+   Archive included (the President, 13 October 2026: "old loom should have
+   tiers") - Easy, Normal and Hard, each the
+   same for every player who weaves it, so a shared grid still means one thing.
+   Normal is the day as it always was - the same cloth, drawn from the same
+   numbers, so a build older than the looms and this one weave the same Normal -
+   with a fourth try (six on the 5x5 Sunday): three left four players in five
+   losing. Easy is a short plain cloth for a first week, Hard a 5x5 with a decoy
+   every day. A player weaves one loom a day free and picks it before the first
+   weave; a second is an advertisement, and all three come with any purchase
+   (§12.1). The game suggests a move up after three solved days running and a
+   move down after two lost, and never moves anybody on its own. */
+const LOOMS_FROM=288;                    // 16 October 2026: from this day, every day has three looms
+const LOOMS=['e','n','h'];
+const LOOM_NAME={e:'Easy',n:'Normal',h:'Hard'};
+const LOOM_TITLE={e:'The Easy loom',n:'The Normal loom',h:'The Hard loom'};
+const LOOM_NEW_DAYS=3;                   // a new phone opens on Easy for its first three days
+/* The website is today's Normal cloth and nothing else. The looms arrive with
+   the date, not with the day asked about: from LOOMS_FROM a cloth from January
+   has its three looms like today's, and before it none has. A day already
+   woven keeps its line, which names no loom and so was Normal. */
+const looms=d=>!WEB&&dayNum>=LOOMS_FROM&&d>=0;
+const EASY_VOCAB=['row','col','swap','swapc','mirror','flip'];
+function dials(day,loom){
   const wd=dateOf(day).getUTCDay();          // 0 Sunday … 6 Saturday
   const d={v:DIALS_VERSION,N:4,NOPS:4,D:0,FEEDBACK:'which',TRIES:3,VOCAB:FAMILIES,name:'plain'};
   if(wd===3||wd===4){ d.FEEDBACK='count'; d.name='count'; }                 // Wed, Thu: how many, not which
@@ -1452,12 +1628,23 @@ function dials(day){
   else if(wd===6){ d.NOPS=5; d.name='five'; }                               // Sat: five slots
   else if(wd===0){ d.N=5; d.NOPS=5; d.D=1; d.TRIES=5; d.name='sunday'; }    // Sun: both, on a bigger cloth
   /* The President's rule, 2 October 2026: three tries on a 4x4 cloth, five on the 5x5. */
+  if(!looms(day)){ d.v=2; return d; }
+  if(loom==='e') return {v:DIALS_VERSION,N:4,NOPS:3,D:0,FEEDBACK:'which',TRIES:5,VOCAB:EASY_VOCAB,name:'easy',loom:'e'};
+  if(loom==='h'){
+    /* A 5x5 with a decoy every day, and the weekday's own turn on top of it. */
+    const h={v:DIALS_VERSION,N:5,NOPS:5,D:1,FEEDBACK:'which',TRIES:3,VOCAB:FAMILIES,name:'hard',loom:'h'};
+    if(wd===3||wd===4) h.FEEDBACK='count';
+    else if(wd===5||wd===6) h.D=2;
+    else if(wd===0){ h.D=2; h.TRIES=4; }
+    return h;
+  }
+  d.loom='n'; d.TRIES=d.N===5?6:4;
   return d;
 }
 /* The day on the loom. Set from the date when a day opens, never anywhere else. */
 let N=4, NOPS=4, TRIES=3, FEEDBACK='which', DEC=0;
 function setDials(d){ N=d.N; NOPS=d.NOPS; TRIES=d.TRIES; FEEDBACK=d.FEEDBACK; DEC=d.D; }
-const MAXTRIES=6;
+const MAXTRIES=6;                       // the record's rows; Easy's seventh and eighth fold into the sixth
 const WORD={3:'three',4:'four',5:'five',6:'six'};
 
 /* ---------- the vocabulary (§4) --------------------------------------------
@@ -1610,7 +1797,8 @@ function plainStart(day){
 }
 function startCloth(rnd,dl,day){
   const plain=base(dl.N);
-  if(day<WOVEN_FROM||plainStart(day)) return plain;
+  /* Easy always starts plain: it is the loom for reading at a glance. */
+  if(day<WOVEN_FROM||plainStart(day)||dl.loom==='e') return plain;
   /* Three to five operations, not two: the plain cloth is symmetrical enough
      that two of them land on the same few hundred cloths over and over, and a
      starting cloth a player has already seen this month is the thing this is
@@ -1628,17 +1816,23 @@ function startCloth(rnd,dl,day){
   }
   return plain;
 }
-function build(day){
-  const dl=dials(day);
+function build(day,loom){
+  const dl=dials(day,loom);
+  /* Normal draws exactly the numbers the day always drew; Easy and Hard draw
+     their own, so the three cloths of a day are three cloths. */
+  const own=dl.loom==='e'?1000003:dl.loom==='h'?2000006:0;
+  /* Easy is a 4x4 like most Normals, and once in 800 days (19 January) it drew
+     the same pattern; a day's three looms are three cloths, so it draws again. */
+  const avoid=dl.loom==='e'?build(day,'n').target.join(''):null;
   for(let salt=0;salt<2000;salt++){
-    const rnd=mulberry32(day*7919+salt*104729);
+    const rnd=mulberry32(day*7919+salt*104729+own);
     const used=new Set();
     const ops=makeOps(rnd,dl.NOPS,dl.VOCAB,dl.N,used); if(!ops) continue;
     /* After the tray, never before it: a day older than WOVEN_FROM must draw
        exactly the numbers it drew when it was played. */
     const start=startCloth(rnd,dl,day), all=perms(ops);
     const target=run(all[Math.floor(rnd()*all.length)],start);
-    if(same(target,start)) continue;
+    if(same(target,start)||(avoid&&target.join('')===avoid)) continue;
     const decoys=makeOps(rnd,dl.D,dl.VOCAB,dl.N,used); if(!decoys) continue;
     const tray=ops.concat(decoys);
     // Exactly one order of the loom's tiles, drawn from the whole tray, reaches
@@ -1652,7 +1846,7 @@ function build(day){
     for(let i=tray.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); const t=tray[i]; tray[i]=tray[j]; tray[j]=t; }
     return {ops:tray,start,target,secret:wins[0],dials:dl};
   }
-  const rnd=mulberry32(day), ops=makeOps(rnd,dl.NOPS,dl.VOCAB,dl.N,new Set())||[], start=startCloth(rnd,dl,day);
+  const rnd=mulberry32(day+own), ops=makeOps(rnd,dl.NOPS,dl.VOCAB,dl.N,new Set())||[], start=startCloth(rnd,dl,day);
   return {ops,start,target:run(ops,start),secret:ops,dials:dl};
 }
 /* ---------- the save, versioned (§18) --------------------------------------
@@ -1707,6 +1901,10 @@ if(PROF.firstDay===undefined||PROF.firstDay===null){ PROF.firstDay=dayNum; STORE
   }
   else PROF.streak=1;
   PROF.best=Math.max(PROF.best||0,PROF.streak);
+  /* The day before this one on which Loom was opened, kept for the open counter
+     (§22.1): it is what lets the server count a player once over a week rather
+     than once a day. Only a day before today; never one in the future. */
+  PROF.prevDay=(last!==null&&last!==undefined&&last<dayNum)?last:null;
   PROF.lastDay=dayNum;
   STORE.setJSON(PKEY,PROF);
 })();
@@ -1722,7 +1920,7 @@ const QUILT=(function(){
   if(!q){
     q={};
     STORE.keys().forEach(k=>{
-      if(k.indexOf('loom.day.')!==0) return;
+      if(k.indexOf('loom.day.')!==0||k.slice(9).indexOf('.')>=0) return;   // Easy and Hard records are never the day's line
       const d=parseInt(k.slice(9),10), rec=STORE.getJSON(k,null);
       if(!isFinite(d)||!rec||!rec.attempts||!rec.attempts.length) return;
       const last=rec.attempts[rec.attempts.length-1];
@@ -1858,20 +2056,44 @@ const PAID=()=>FULL()||openMonths().length>0;
   if(isFinite(d)&&d<dayNum-30) STORE.del(k);
 }); })();
 
-let viewDay=dayNum, archive=false, P=null, secretIdx=null, st=null;
+let viewDay=dayNum, archive=false, P=null, secretIdx=null, st=null, LOOM='n';
+/* A day's record per loom. Normal keeps the key every day always had. */
+const dayKey=(d,l)=>(!l||l==='n')?DKEY(d):DKEY(d)+'.'+l;
+const dayRec=(d,l)=>STORE.getJSON(dayKey(d,l),null);
+/* The loom a day was first woven on: its line in the quilt says. A line from
+   before the looms carries none, and was Normal, the only loom there was. */
+function primaryLoom(d){ const r=QUILT.get(d); return r?(r.l||'n'):null; }
+/* The loom a player who has not woven yet today is shown: the one they last
+   chose, or Easy for a new phone's first days and Normal after that. */
+function preferredLoom(){
+  if(LOOMS.indexOf(PROF.loom)>=0) return PROF.loom;
+  return isFinite(PROF.firstDay)&&dayNum-PROF.firstDay<LOOM_NEW_DAYS?'e':'n';
+}
+function loomFor(d){ return looms(d)?(primaryLoom(d)||preferredLoom()):'n'; }
+/* The second loom an advertisement opened today, if one did. */
+function adLoom(){ return PROF.loomAd&&PROF.loomAd.d===dayNum?PROF.loomAd.l:null; }
+/* One loom a day free: whichever is woven first. Any purchase opens all three. */
+function loomOpen(d,l){
+  if(!looms(d)) return l==='n';
+  if(PAID()) return true;
+  const p=primaryLoom(d);
+  return p===null||p===l||(d===dayNum&&adLoom()===l);
+}
 /* A cloth can be played if it is in the free week, if Loom Full is owned, or
    if an advertisement unlocked that one cloth today (§12.4). */
 const adDays=()=>PROF.adDay===dayNum?(PROF.adDays||[]):[];
 const freeDay=d=>d<=dayNum&&(d>dayNum-FREE||monthOpen(monthIndexOfDay(d))||adDays().indexOf(d)>=0);
 const inFreeWeek=d=>d<=dayNum&&d>dayNum-FREE;
 
-function save(s){ STORE.setJSON(DKEY(viewDay),s); }
-function openDay(d){
+function save(s){ STORE.setJSON(dayKey(viewDay,LOOM),s); }
+function openDay(d,l){
+  if(weaving) return;                 // the cloth is still moving: no day or loom changes under it
   viewDay=d; archive=(d!==dayNum);
-  P=build(d); setDials(P.dials);
+  LOOM=looms(d)?(LOOMS.indexOf(l)>=0?l:loomFor(d)):'n';
+  P=build(d,LOOM); setDials(P.dials);
   spendMonthCredit();                 // a month bought when none was left opens the day the next begins
   secretIdx=P.secret.map(op=>P.ops.findIndex(o=>JSON.stringify(o)===JSON.stringify(op)));
-  st=STORE.getJSON(DKEY(d),null)||{v:4,order:[],attempts:[],done:false,won:false,started:false};
+  st=dayRec(d,LOOM)||{v:4,order:[],attempts:[],done:false,won:false,started:false};
   st.attempts=st.attempts||[]; st.order=st.order||[];
   /* v4 keeps st.order by slot, holes and all, so taking a tile out moves no
      other tile. A v3 record held the free slots' tiles packed together; it is
@@ -1880,11 +2102,13 @@ function openDay(d){
     for(let i=0;i<NOPS;i++) st.order.push(L.some(x=>x.s===i)?null:(k<packed.length?packed[k++]:null));
     st.v=4; }
   CLOCK.start(d,st.secs);          // §22.1, and it carries what earlier sittings spent
+  if(!archive){ RANK.opened(d); scoresGo(); }   // today was opened: counted once, by the server
   $('backbar').classList.toggle('show',archive);
   if(archive) $('backLabel').textContent=T('Cloth No. {n}  ·  {d}',{n:d,d:dayLabel(d)});
   $('msg').classList.remove('show');
   $('cheer').hidden=true; $('cheer').classList.remove('out'); $('cheerConf').innerHTML='';
   $('remOffer').hidden=true; $('remNote').hidden=true;   // the end screen is rebuilt for this day
+  $('loomNext').hidden=true; closeLoomSheet(false);
   $('moreBtn').hidden=true; $('moreNote').hidden=true;
   clearTimeout(moreSheetTimer); $('moreSheet').hidden=true;
   clearTimeout(monthSheetTimer); $('monthSheet').hidden=true;
@@ -2537,6 +2761,7 @@ function demoFade(el,g,then){
 
 function render(){
   $('meta').innerHTML=T('No. {n}',{n:viewDay})+'<br>'+T('streak {s}',{s:PROF.streak||0});
+  paintLooms();
   paint($('startCloth'),P.start); paint($('targetCloth'),P.target);
   paintGoalAsk(); paintOrderHead();
   paintWork();
@@ -2594,7 +2819,7 @@ function render(){
       st.order[firstEmptySlot()]=idx;
       SFX.op(op.t);
       if(!st.started){ st.started=true;
-        LOG.mark('place','puzzle_started',{day_number:viewDay,attempt_number:st.attempts.length+1}); }
+        LOG.mark('place','puzzle_started',{day_number:viewDay,attempt_number:st.attempts.length+1,loom:LOOM}); }
       else LOG.mark('place');
       save(st);render(); };
     /* A held tile previews; a tap places. The 350 ms is the line between them. */
@@ -2719,7 +2944,7 @@ function paintHistKey(){
 /* The text that goes out. On screen it is shown without the link, which is
    for the person who receives it and only noise for the one who sends it. */
 function shareString(withLink){
-  const head='Loom '+viewDay+'   '+(st.won?st.attempts.length:'X')+'/'+TRIES+(st.extra?'+'+st.extra:'')+'   '+T('streak')+' '+(PROF.streak||0);
+  const head='Loom '+viewDay+(looms(viewDay)?' · '+T(LOOM_NAME[LOOM]):'')+'   '+(st.won?st.attempts.length:'X')+'/'+TRIES+(st.extra?'+'+st.extra:'')+'   '+T('streak')+' '+(PROF.streak||0);
   /* A hinted slot is a different square, so the record stays honest (§11). */
   const SQ={hint:'🟨',good:'🟩',count:'🟦',many:'🟪',none:'⬜'};
   const grid=st.attempts.map(a=>rowCells(a).map(c=>SQ[c]).join('')).join('\n');
@@ -2800,7 +3025,7 @@ function resultImage(){
   x.textBaseline='middle';
   x.textAlign='left';  x.fillStyle=HEX.ink;   font('800',26); x.fillText('Loom',pad*S,44*S);
   x.textAlign='right'; x.fillStyle=HEX.muted; font('700',14);
-  x.fillText(T('No. {n}',{n:viewDay}),(W-pad)*S,44*S);
+  x.fillText(T('No. {n}',{n:viewDay})+(looms(viewDay)?'  \u00b7  '+T(LOOM_NAME[LOOM]):''),(W-pad)*S,44*S);
 
   /* What the game is, in one row: the cloth the day started from, and what it
      became. A person who has never seen Loom learns the whole premise from the
@@ -2865,7 +3090,7 @@ function resultImage(){
    browser, an older WebView, a canvas that refused. The text goes with the
    picture either way, so the link travels even when the image is what is seen. */
 function shareResult(){
-  LOG.mark('share','share_pressed',{day_number:viewDay,won:st.won?1:0,attempt_count:st.attempts.length});
+  LOG.mark('share','share_pressed',{day_number:viewDay,won:st.won?1:0,attempt_count:st.attempts.length,loom:LOOM});
   const NB=window.VoltixNative, png=resultImage();
   if(NB&&NB.shareImage&&png){
     try{ NB.shareImage(png.split(',')[1]||'',shareString()); $('copyBtn').textContent=T('Shared'); return; }catch(e){}
@@ -2899,10 +3124,12 @@ function stopCountdown(){ if(countdown!==null){ clearInterval(countdown); countd
 
 /* ---------- §8.2: the record -------------------------------------------- */
 function stats(){
-  const s={played:0,solved:0,dist:[0,0,0,0,0,0],streak:PROF.streak||0,best:PROF.best||0,sum:0,hard:{}};
+  const s={played:0,solved:0,dist:[0,0,0,0,0,0],streak:PROF.streak||0,best:PROF.best||0,sum:0,hard:{},looms:{}};
   QUILT.days().forEach(d=>{ const r=QUILT.get(d); if(!r||!r.d) return;
-    s.played++; if(r.w){ s.solved++; s.sum+=r.n; if(r.n>=1&&r.n<=MAXTRIES) s.dist[r.n-1]++; }
-    const k=dials(d).name; if(k!=='plain'){ s.hard[k]=s.hard[k]||{p:0,w:0}; s.hard[k].p++; if(r.w) s.hard[k].w++; } });
+    s.played++; if(r.w){ s.solved++; s.sum+=r.n; if(r.n>=1&&(r.l||r.n<=MAXTRIES)) s.dist[Math.min(r.n,MAXTRIES)-1]++; }   // a loom's seventh and eighth go in the sixth
+    /* The weekday record is Normal's; each loom keeps its own tally beside it. */
+    if(r.l){ s.looms[r.l]=s.looms[r.l]||{p:0,w:0}; s.looms[r.l].p++; if(r.w) s.looms[r.l].w++; }
+    const k=dials(d).name; if(k!=='plain'&&(r.l||'n')==='n'){ s.hard[k]=s.hard[k]||{p:0,w:0}; s.hard[k].p++; if(r.w) s.hard[k].w++; } });
   s.pct=s.played?Math.round(100*s.solved/s.played):0;
   s.avg=s.solved?(s.sum/s.solved):0;
   return s;
@@ -2933,8 +3160,10 @@ function paintStats(){
   }
   /* §19: the weekday record, one line per hard dial the player has met. */
   const parts=Object.keys(DIALTEXT).filter(k=>s.hard[k]).map(k=>T(DIALTEXT[k])+' '+s.hard[k].w+' / '+s.hard[k].p);
+  const lp=LOOMS.filter(l=>s.looms[l]).map(l=>T(LOOM_NAME[l])+' '+s.looms[l].w+' / '+s.looms[l].p);
   $('statsNote').textContent=(s.solved?T('Solved in {n} attempts on average. ',{n:s.avg.toFixed(1)}):'')+
-    (parts.length?T('Hard days: ')+parts.join(' · ')+'.':'');
+    (parts.length?T('Hard days: ')+parts.join(' · ')+'.':'')+
+    (lp.length?' '+T('Looms: ')+lp.join(' · ')+'.':'');
 }
 
 /* ---------- §8.6: milestones, once each, and nothing when a streak ends ---- */
@@ -2957,9 +3186,10 @@ const MILETEXT={3:'Three days in a row.',7:'A whole week.',30:'Thirty days. That
      - a finished day is kept and sent when the network comes back, and the
        line is there the next time that day is opened;
      - the end screen is drawn and complete before any of this is attempted. */
-const SCORES={url:'https://voltixstudios.pages.dev/loom/scores',min:20};
+const SCORES={url:'https://voltixstudios.pages.dev/loom/scores',
+              opens:'https://voltixstudios.pages.dev/loom/opens',min:20};
 const RANK=(function(){
-  const QK='loom.rq', HK='loom.rh', KK='loom.rk';
+  const QK='loom.rq', HK='loom.rh', KK='loom.rk', OK='loom.ro';
   const get=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
   const set=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
   const read=(k,d)=>{ try{ const r=get(k); return r?JSON.parse(r):d; }catch(e){ return d; } };
@@ -2970,46 +3200,94 @@ const RANK=(function(){
   /* A time outside the bands is not a time, it is a phone that was left on a
      table, and the server throws it away anyway. Sending zero says so plainly
      rather than making the endpoint guess. */
-  function queue(day,a,s){ const q=read(QK,{}); const n=+s;
-    q[day]={a:a,s:(isFinite(n)&&n>=3&&n<=7200)?n:0}; set(QK,JSON.stringify(q)); }
+  /* Held by day, or by day and loom from the three looms on ("290h"). */
+  const slot=(day,l)=>l?String(day)+l:String(day);
+  function queue(day,a,s,l){ const q=read(QK,{}); const n=+s;
+    const e={a:a,s:(isFinite(n)&&n>=3&&n<=7200)?n:0}; if(l) e.l=l;
+    q[slot(day,l)]=e; set(QK,JSON.stringify(q)); }
   function pending(){ return read(QK,{}); }
-  function hist(day){ const h=read(HK,{}); return h[day]||null; }
-  function keep(day,data){ const h=read(HK,{}); h[day]=data;
+  /* The day this phone first opened Loom, never later than the day in hand.
+     Sent with an open and with a result, so the server can count new players
+     and who came back, by the day they started, without anything that names a
+     phone (§22.1). */
+  function first(day){ const f=PROF&&PROF.firstDay; return isFinite(f)&&f>=0&&f<=day?f:day; }
+  /* The last day before this one on which Loom was opened, or null for none. */
+  function prev(day){ const p=PROF&&PROF.prevDay; return isFinite(p)&&p!==null&&p<day?p:null; }
+  /* Today was opened. Held like a result until it has been sent, with the day
+     before it that Loom was last opened, and only yesterday and today are ever
+     kept: the server refuses anything older. A list of days is what the first
+     build of this kept; it is read as days whose last open is not known. */
+  function held(){ const q=read(OK,{}), o={};
+    if(Array.isArray(q)) q.forEach(d=>{ if(isFinite(d)) o[d]=null; });
+    else Object.keys(q).forEach(d=>{ if(isFinite(+d)) o[d]=q[d]; });
+    Object.keys(o).forEach(d=>{ if(+d<dayNum-1) delete o[d]; });
+    return o; }
+  function opened(day){ if(WEB||!SCORES.opens||A.isOff()) return;
+    const q=held();
+    if(!(day in q)) q[day]=prev(day);
+    set(OK,JSON.stringify(q)); }
+  function openings(){ return Object.keys(held()).map(Number); }
+  function sendOpens(){
+    if(WEB||!SCORES.opens||!online()||A.isOff()) return;
+    const q=held();
+    set(OK,JSON.stringify(q));
+    Object.keys(q).forEach(k=>{
+      const d=+k, body={d:d,f:first(d),k:key()};
+      if(q[k]!==null&&isFinite(q[k])) body.p=q[k];
+      const gone=()=>{ const left=held(); delete left[k]; set(OK,JSON.stringify(left)); };
+      try{
+        fetch(SCORES.opens,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(body)})
+          /* Counted, already counted, or refused for good: in each case it is
+             not sent again. Only a failure to reach the server keeps it. */
+          .then(r=>{ if(r&&(r.ok||r.status===400)) gone(); })
+          .catch(()=>{});
+      }catch(e){}
+    });
+  }
+  function hist(day,l){ const h=read(HK,{}); return h[slot(day,l)]||null; }
+  function keep(day,l,data){ const h=read(HK,{}); h[slot(day,l)]=data;
     /* Only the day on the screen can use one of these, so two is generous. */
-    Object.keys(h).forEach(k=>{ if(+k<day-2) delete h[k]; });
+    Object.keys(h).forEach(k=>{ if(parseInt(k,10)<day-2) delete h[k]; });
     set(HK,JSON.stringify(h)); }
   const online=()=>{ try{ return navigator.onLine!==false; }catch(e){ return true; } };
   function send(then){
     /* The one privacy switch governs everything that leaves the phone. A player
        who has turned analytics off has turned this off too: nothing is sent,
        and the comparison line simply never appears. */
+    sendOpens();
     if(WEB||!SCORES.url||!online()||A.isOff()) return;
     const q=read(QK,{});
-    Object.keys(q).map(Number).filter(isFinite).sort((a,b)=>b-a).slice(0,2).forEach(d=>{
+    /* The newest first, and no more than a day's three looms and one more. */
+    Object.keys(q).filter(k=>isFinite(parseInt(k,10))).sort((a,b)=>parseInt(b,10)-parseInt(a,10)).slice(0,4).forEach(k=>{
+      const d=parseInt(k,10), l=q[k].l||null;
       let ctl=null, stop=null;
       try{ ctl=new AbortController(); stop=setTimeout(()=>{ try{ ctl.abort(); }catch(e){} },5000); }catch(e){}
       const done=()=>{ if(stop) clearTimeout(stop); };
       try{
         fetch(SCORES.url,{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({d:d,a:q[d].a,s:q[d].s,k:key()}),signal:ctl?ctl.signal:undefined})
-          .then(r=>(r&&r.ok)?r.json():null)
+          body:JSON.stringify(Object.assign({d:d,a:q[k].a,s:q[k].s,k:key(),f:first(d)},l?{l:l}:{})),signal:ctl?ctl.signal:undefined})
+          /* A result the server refused will be refused again: it is let go. */
+          .then(r=>{ if(r&&r.status===400){ const left=read(QK,{}); delete left[k]; set(QK,JSON.stringify(left)); }
+                     return (r&&r.ok)?r.json():null; })
           .then(j=>{ done();
             if(!j||!j.solved) return;
-            keep(d,j);
-            const left=read(QK,{}); delete left[d]; set(QK,JSON.stringify(left));
-            if(then) then(d,j); })
+            keep(d,l,j);
+            const left=read(QK,{}); delete left[k]; set(QK,JSON.stringify(left));
+            if(then) then(d,j,l); })
           .catch(done);
       }catch(e){ done(); }
     });
   }
-  return {queue:queue,pending:pending,hist:hist,send:send,key:key};
+  return {queue:queue,pending:pending,hist:hist,send:send,key:key,
+          opened:opened,openings:openings,first:first,prev:prev};
 })();
 /* What the day's numbers say about this result, once they have arrived. Never a
    percentage over a handful of people: a share of nineteen players is noise
    wearing a number's clothes, and the first week of a game is all handfuls. */
 function globalLine(){
   if(archive||!st||!st.done) return '';
-  const h=RANK.hist(viewDay); if(!h||!h.solved) return '';
+  const h=RANK.hist(viewDay,looms(viewDay)?LOOM:null); if(!h||!h.solved) return '';
   if(st.won&&h.rank===1) return T('First to solve it today.');
   /* Being early is worth saying however few people are in yet, so it comes
      before the sample test that everything measured in shares has to pass. */
@@ -3066,7 +3344,7 @@ function bestStat(){
   /* Whether this was the first solve is read from the day's own numbers, never
      from the words: the words are translated and a regexp over them would be a
      bug waiting for the first language that phrases it differently. */
-  const h=archive?null:RANK.hist(viewDay);
+  const h=archive?null:RANK.hist(viewDay,looms(viewDay)?LOOM:null);
   const first=!!(st&&st.won&&h&&h.rank===1);
   const g=globalLine();
   if(g) return {text:g,first:first};
@@ -3181,8 +3459,8 @@ $('cheer').onclick=()=>{ SFX.play('tap'); hideCheer(); };
 /* Sending is attempted at three moments and no others: a day just finished, the
    game just opened, the network just came back. Nobody is waiting at any of
    them. */
-function scoresGo(){ RANK.send(d=>{
-  if(d!==viewDay||!$('msg').classList.contains('show')) return;
+function scoresGo(){ RANK.send((d,j,l)=>{
+  if(d!==viewDay||(l||'n')!==LOOM||!$('msg').classList.contains('show')) return;
   paintGlobal();
   /* The answer can land a moment after the wreath went up on a local fact. */
   if(!$('cheer').hidden){ const b=bestStat(); if(b) showCheer(b); }
@@ -3204,7 +3482,10 @@ try{ window.addEventListener('online',scoresGo); }catch(e){}
 function compareLine(){
   if(!st.won||archive) return '';
   const n=st.attempts.length;
-  const other=QUILT.days().filter(d=>d!==viewDay).map(d=>QUILT.get(d)).filter(r=>r&&r.d);
+  /* A cloth is compared with cloths of its own loom: two tries on Hard is not
+     a worse day than one on Easy. A line from before the looms was Normal. */
+  const mine=r=>(r.l||'n')===(looms(viewDay)?LOOM:'n');
+  const other=QUILT.days().filter(d=>d!==viewDay).map(d=>QUILT.get(d)).filter(r=>r&&r.d&&mine(r));
   const solved=other.filter(r=>r.w);
   if(solved.length>=5&&solved.every(r=>r.n>n))
     return T('Your best cloth yet: {n} of {t}.',{n:n,t:TRIES});
@@ -3228,7 +3509,7 @@ function compareLine(){
     const p=Math.round(100*worse/other.length);
     if(p>=50) return T('Better than {p}% of your own cloths.',{p:p});
   }
-  const recent=QUILT.days().filter(d=>d<viewDay).slice(-6).map(d=>QUILT.get(d)).filter(r=>r&&r.d);
+  const recent=QUILT.days().filter(d=>d<viewDay).slice(-6).map(d=>QUILT.get(d)).filter(r=>r&&r.d&&mine(r));
   let better=0;
   for(let i=recent.length-1;i>=0;i--){ if(!recent[i].w||recent[i].n>n) better++; else break; }
   if(better>=3) return T('Your best in {k} days.',{k:better+1});
@@ -3293,6 +3574,7 @@ function showResult(){
   paintGlobal();
   const m=milestoneLine();
   $('mile').hidden=!m; $('mile').textContent=m;
+  paintLoomNext();
   if(archive){
     stopCountdown();
     $('next').textContent=T('Back to today when you like.'); $('next').onclick=null;
@@ -3309,7 +3591,7 @@ function showResult(){
   /* §8.5: the Archive is the answer to "I want more, now". Only the free
      cloths not yet finished are counted, so the line is never a lie. */
   let free=0;
-  for(let d=dayNum-1;d>dayNum-FREE&&d>=0;d--){ const r=STORE.getJSON(DKEY(d),null); if(!(r&&r.done)) free++; }
+  for(let d=dayNum-1;d>dayNum-FREE&&d>=0;d--){ const r=dayRec(d,loomFor(d)); if(!(r&&r.done)) free++; }
   /* Offered on every finished day, won or lost, and on an archive day too. */
   $('replayPrompt').hidden=!!replay;
   $('archPrompt').hidden=archive||!free||!!WEB;
@@ -3375,8 +3657,9 @@ window.VoltixAdDone=function(p,rewarded){
    constants, so no remote value can make it more frequent; the remote switch
    can only turn it off. */
 /* After which failed try, by the day's tries: on a three-try day the second
-   (one is left), on the five-try Sunday the third or the fourth. */
-const INTERSTITIAL_AFTER={3:[2],5:[3,4]}, INTERSTITIAL_FIRST_DAYS=2, INTERSTITIAL_GAP_DAYS=2, INTERSTITIAL_DELAY_MS=900;
+   (one is left), on four the third, on five the third or the fourth, on six
+   the fourth or the fifth. */
+const INTERSTITIAL_AFTER={3:[2],4:[3],5:[3,4],6:[4,5]}, INTERSTITIAL_FIRST_DAYS=2, INTERSTITIAL_GAP_DAYS=2, INTERSTITIAL_DELAY_MS=900;
 function interstitialDue(){
   if(!st||st.done) return false;
   if((INTERSTITIAL_AFTER[TRIES]||[3,4]).indexOf(st.attempts.length)<0) return false;
@@ -3408,7 +3691,7 @@ function monthLines(i){
   const first=!openMonths().length&&i>0;
   return T('Every cloth of {m}, about thirty, yours forever.',{m:monthName(i)})+' '+
     (first?T('Your first month brings {m} with it.',{m:monthName(i-1)})+' ':'')+
-    (PAID()?'':T('No advertising of any kind once you have bought one.'));
+    (PAID()?'':(looms(dayNum)?T('Every loom, every day.')+' ':'')+T('No advertising of any kind once you have bought one.'));
 }
 function showOffer(placement,day){
   const sale=monthOnSale();
@@ -3421,7 +3704,7 @@ function showOffer(placement,day){
   $('offerBuy').textContent=T('Open {m}',{m:monthName(sale)});
   offerNote('');
   /* §12.4 "yesterday's cloth": one cloth, this once, for an advertisement. */
-  const adOk=offerDay!==null&&ADS.available('cloth')&&adDays().length<AD_CLOTHS_PER_DAY;
+  const adOk=offerDay!==null&&ADS.available('cloth')&&adDays().length+(adLoom()?1:0)<AD_CLOTHS_PER_DAY;
   $('offerAd').hidden=!adOk;
   if(adOk){ $('offerAd').textContent=T('Or watch an advert to play this one cloth');
     LOG.mark('adoffer','rewarded_ad_offered',{placement:'cloth',day_number:offerDay}); }
@@ -3454,6 +3737,7 @@ function afterPurchase(){
     $('offerLines').textContent=monthLines(sale); $('offerPrice').textContent=SHOP.price(SKU.MONTH);
     $('offerBuy').textContent=T('Open {m}',{m:monthName(sale)}); }
   if(!$('monthSheet').hidden&&(PAID()||monthOnSale()===null)) $('monthSheet').hidden=true;
+  if(!$('loomSheet').hidden&&PAID()){ const l=loomAsked; closeLoomSheet(false); if(l&&looms(viewDay)) openDay(viewDay,l); }
   applyThread();
   render();
   if($('setPanel').classList.contains('show')) paintSettings();
@@ -3662,6 +3946,104 @@ $('moreSheetAd').onclick=()=>{ SFX.play('tap');
   ADS.show('more',ok=>{ if(!ok) return; closeMoreSheet(false); takeMore('ad'); }); };
 $('moreSheetNo').onclick=()=>{ SFX.play('tap'); closeMoreSheet(true); };
 
+/* ---------- the three looms, on the screen: the President, 13 October 2026 ---------
+   Three buttons in the cloth heading. Before the day's first weave any of them
+   is a free choice, and it is remembered for the days after. After it, the
+   loom woven is the day's; another is opened by an advertisement (today, once)
+   or by any purchase, and a tap on one that is shut says so rather than doing
+   nothing. */
+function paintLooms(){
+  const box=$('looms'), on=looms(viewDay);
+  box.hidden=!on; $('clothHead').classList.toggle('has-looms',on);
+  box.innerHTML='';
+  if(!on) return;
+  box.setAttribute('aria-label',T('Which loom'));
+  LOOMS.forEach(l=>{
+    const b=document.createElement('button'), open=loomOpen(viewDay,l), r=dayRec(viewDay,l);
+    b.type='button'; b.className=(l===LOOM?'on':'')+(open?'':' shut');
+    b.setAttribute('aria-pressed',l===LOOM?'true':'false');
+    b.dataset.loom=l;
+    b.innerHTML=T(LOOM_NAME[l])+(r&&r.done?'<i>'+(r.won?'✓':'×')+'</i>':'');
+    b.onclick=()=>{ SFX.play('tap'); pickLoom(l); };
+    box.appendChild(b);
+  });
+}
+function pickLoom(l){
+  if(!looms(viewDay)||l===LOOM||LOOMS.indexOf(l)<0||weaving) return false;   // never mid-weave
+  DEMO.stop(false); endPreview();
+  if(!loomOpen(viewDay,l)){ openLoomSheet(l); return false; }
+  /* Chosen before anything was woven today: that is the player's loom from now on. */
+  if(primaryLoom(viewDay)===null&&!archive){ PROF.loom=l; STORE.setJSON(PKEY,PROF); }
+  LOG.mark('loom','loom_chosen',{day_number:viewDay,loom:l,from:LOOM,archive:archive?1:0});
+  openDay(viewDay,l);
+  return true;
+}
+let loomAsked=null;
+/* The loom's advertisement shares the cloth placement's daily ceiling. */
+function loomAdOk(){ return viewDay===dayNum&&adLoom()===null&&adDays().length<AD_CLOTHS_PER_DAY&&ADS.available('cloth'); }
+function loomBuyOk(){ return SHOP.has()&&monthOnSale()!==null&&!!SHOP.price(SKU.MONTH); }
+function openLoomSheet(l){
+  loomAsked=l;
+  const p=primaryLoom(viewDay)||LOOM, ad=loomAdOk(), buy=loomBuyOk();
+  $('loomSheetTitle').textContent=T(LOOM_TITLE[l]);
+  $('loomSheetLine').textContent=
+    T(viewDay===dayNum?'One loom a day is free, and today yours is {l}.':'One loom a day is free, and on this day yours was {l}.',{l:T(LOOM_NAME[p])})+' '+
+    (ad?T('Watch an advert to weave this one too, today.')+' ':'')+
+    (buy?T('Or open a month of cloths: every loom, every day, and no advertising.'):'')+
+    (!ad&&!buy?T('Choose again tomorrow, before your first weave.'):'');
+  $('loomSheetAd').hidden=!ad; $('loomSheetAd').textContent=ad?T('Watch an advert'):'';
+  const sale=buy?monthOnSale():null;
+  $('loomSheetBuy').hidden=!buy; $('loomSheetBuy').textContent=buy?T('Open {m} · {p}',{m:monthName(sale),p:SHOP.price(SKU.MONTH)}):'';
+  $('loomSheet').hidden=false;
+  if(ad) LOG.mark('adoffer','rewarded_ad_offered',{placement:'cloth',day_number:viewDay,loom:l});
+  LOG.mark('offer','offer_shown',{placement:'loom',loom:l});
+  return true;
+}
+function closeLoomSheet(dismissed){
+  if($('loomSheet').hidden) return;
+  $('loomSheet').hidden=true;
+  if(dismissed) LOG.mark('offerno','offer_dismissed',{placement:'loom',loom:loomAsked});
+}
+$('loomSheetNo').onclick=()=>{ SFX.play('tap'); closeLoomSheet(true); };
+$('loomSheetAd').onclick=()=>{ SFX.play('tap'); const l=loomAsked; if(!l) return;
+  ADS.show('cloth',ok=>{ if(!ok) return;
+    PROF.loomAd={d:dayNum,l:l}; STORE.setJSON(PKEY,PROF);
+    closeLoomSheet(false);
+    LOG.mark('loom','loom_chosen',{day_number:dayNum,loom:l,from:LOOM,ad:1});
+    openDay(dayNum,l); }); };
+$('loomSheetBuy').onclick=()=>{ SFX.play('tap');
+  if(monthOnSale()===null||!SHOP.buy(SKU.MONTH,'loom')) $('loomSheetLine').textContent=T('The store is not available right now.'); };
+
+/* The suggestion, on the end screen of the day's own loom: up after three days
+   solved running on it, down after two lost. Days, not tries: a gap in the
+   calendar ends a run. It never changes the loom by itself. */
+function loomAdvice(){
+  if(archive||!looms(viewDay)||!st||!st.done||primaryLoom(viewDay)!==LOOM) return null;
+  const run=[];
+  for(let d=viewDay;d>=LOOMS_FROM&&run.length<3;d--){
+    const r=QUILT.get(d); if(!r||!r.d||(r.l||'n')!==LOOM) break;
+    run.push(!!r.w);
+  }
+  const i=LOOMS.indexOf(LOOM);
+  if(i<LOOMS.length-1&&run.length===3&&run.every(w=>w)) return LOOMS[i+1];
+  if(i>0&&run.length>=2&&!run[0]&&!run[1]) return LOOMS[i-1];
+  return null;
+}
+let loomAdviceShown=null;
+function paintLoomNext(){
+  const b=$('loomNext'), to=loomAdvice();
+  const due=to&&preferredLoom()!==to;
+  b.hidden=!due;
+  if(!due) return;
+  const up=LOOMS.indexOf(to)>LOOMS.indexOf(LOOM);
+  b.textContent=T(up?'Three in a row. Try {l} tomorrow?':'Two lost in a row. Try {l} tomorrow?',{l:T(LOOM_NAME[to])});
+  b.onclick=()=>{ SFX.play('tap');
+    PROF.loom=to; STORE.setJSON(PKEY,PROF);
+    b.onclick=null; b.textContent=T('Tomorrow: {l}.',{l:T(LOOM_NAME[to])});
+    LOG.mark('loomnext','loom_advice_taken',{day_number:viewDay,from:LOOM,loom:to}); paintLooms(); };
+  if(loomAdviceShown!==viewDay){ loomAdviceShown=viewDay; LOG.mark('loomadvice','loom_advice_shown',{day_number:viewDay,from:LOOM,loom:to}); }
+}
+
 /* ---------- §12.1 the Quilt threads: the only cosmetics, reached only from the Quilt ----- */
 /* Every thread must stand off the cream frame (#F2E1CC) and off its two
    neighbours, or a row of the cloth vanishes: the first indigo set had a
@@ -3802,16 +4184,20 @@ $('hintBtn').onclick=()=>{
 };
 $('archPrompt').onclick=()=>{ SFX.play('tap'); openPanel('archPanel',true); };
 $('statsPrompt').onclick=()=>{ SFX.play('tap'); openPanel('statsPanel',true); };
+/* True from the press of Weave until the attempt is recorded: the cloth is
+   animating, and the day on the screen must not change under it. */
+let weaving=false;
 $('weave').onclick=()=>{
-  if(st.done)return;
+  if(st.done||weaving)return;
   if(placedCount()!==freeSlots()){
     /* §17: the biggest target on the screen must never be a dead one. */
     $('hint').textContent=T('Place all {n} operations first.',{n:T(WORD[NOPS])});
     SFX.play('tap'); LOG.mark('earlyweave'); return;
   }
   endPreview(); DEMO.stop(false); COACH.restart();
+  weaving=true;
   LOG.mark('weave','weave_submitted',{day_number:viewDay,attempt_number:st.attempts.length+1,
-    archive:archive?1:0});
+    archive:archive?1:0,loom:LOOM});
   const full=fullOrder(), seq=full.map(i=>P.ops[i]);
   let g=P.start; const frames=[g];
   for(const op of seq){g=apply(op,g);frames.push(g);}
@@ -3824,6 +4210,7 @@ $('weave').onclick=()=>{
                                 : full.map((idx,i)=>idx===secretIdx[i]);
 
   function finish(){
+    weaving=false;
     st.attempts.push({order:full,pins,cloth:g,locked:lockedSlots()});
     st.won=same(g,P.target);
     if(pins.some(Boolean)&&!st.won) SFX.play('pin');
@@ -3838,10 +4225,10 @@ $('weave').onclick=()=>{
          the day opens and never by the result. */
       if(st.won) LOG.mark('solved','puzzle_solved',
         {day_number:viewDay,attempt_count:st.attempts.length,seconds:CLOCK.secs(),
-         streak:PROF.streak||0,archive:archive?1:0});
+         streak:PROF.streak||0,archive:archive?1:0,loom:LOOM});
       else LOG.mark('failed','puzzle_failed',
         {day_number:viewDay,attempts:st.attempts.length,seconds:CLOCK.secs(),
-         streak:PROF.streak||0,archive:archive?1:0});
+         streak:PROF.streak||0,archive:archive?1:0,loom:LOOM});
     }
     /* The day's own seconds, kept so a reopened day can still say how it went,
        and so a result can be sent after a night offline. An archive day is
@@ -3850,8 +4237,13 @@ $('weave').onclick=()=>{
     if(!st.done) st.order=st.order.slice();   // keep the order so a near miss can be nudged
     /* §8.8: the cloth is sewn into the quilt after every weave, in the
        day's own calendar position, whether or not the day is over. */
-    QUILT.put(viewDay,{c:g.join(''),n:st.attempts.length,w:st.won?1:0,d:st.done?1:0,
-                       h:lockedSlots().length,s:st.secs||0});
+    /* One line a day: the loom woven first is the day's (the three looms). */
+    const prim=primaryLoom(viewDay);
+    if(prim===null||prim===LOOM){
+      const line={c:g.join(''),n:st.attempts.length,w:st.won?1:0,d:st.done?1:0,h:lockedSlots().length,s:st.secs||0};
+      if(looms(viewDay)) line.l=LOOM;
+      QUILT.put(viewDay,line);
+    }
     save(st); render();
     if(!st.done) setTimeout(maybeInterstitial,INTERSTITIAL_DELAY_MS);
     else if(!st.won){ clearTimeout(moreSheetTimer); moreSheetTimer=setTimeout(openMoreSheet,MORE_SHEET_DELAY_MS); }
@@ -3859,7 +4251,7 @@ $('weave').onclick=()=>{
            clearTimeout(reviewTimer); reviewTimer=setTimeout(maybeAskReview,REVIEW_DELAY_MS); }
     /* Last, and never in the way: the screen above is already complete. The
        analytics switch is the off switch for this too (§22.1). */
-    if(!WEB&&SCORES.url&&st.done&&!archive&&!A.isOff()){ RANK.queue(viewDay,st.won?st.attempts.length:0,st.secs||0); scoresGo(); }
+    if(!WEB&&SCORES.url&&st.done&&!archive&&!A.isOff()){ RANK.queue(viewDay,st.won?st.attempts.length:0,st.secs||0,looms(viewDay)?LOOM:null); scoresGo(); }
   }
 
   if(SET.get('motion')){ paint($('workCloth'),g); finish(); return; }
@@ -4028,7 +4420,7 @@ function paintArchive(){
   const L=$('archList'); L.innerHTML='';
   const win=archWindow();
   for(let d=dayNum;d>dayNum-win&&d>=0;d--){
-    const free=freeDay(d), rec=STORE.getJSON(DKEY(d),null);
+    const free=freeDay(d), rec=dayRec(d,loomFor(d));
     const b=document.createElement('button');
     b.className='day'+(free?'':' locked')+(d===dayNum?' today':'');
     const mark=!free?'–':rec&&rec.done?(rec.won?'✓':'×'):rec&&rec.attempts&&rec.attempts.length?'·':'';
@@ -4146,15 +4538,18 @@ $('quiltShare').onclick=()=>{ SFX.play('tap'); shareQuilt(); };
    the streak they walked away with and how far into today they had got. Both
    go out as the page is hidden or closed, once per session - a session rolls
    over after thirty idle minutes, so somebody who comes back later sends a
-   fresh pair. */
+   fresh pair. Every other hide sends only the time on screen since the last
+   event (`app_hidden`), so GA4's engagement time is not short of the time
+   between them. */
 (function(){ let lastSent='';
   const end=()=>{
     const s=A.live()?A.session():'local';
-    if(s===lastSent) return; lastSent=s;
+    if(s===lastSent){ A.hidden({day_number:viewDay,loom:LOOM}); A.drain(true); return; }
+    lastSent=s;
     const secs=LOG.secs();
     LOG.mark('end','session_length',
       {seconds:secs,day_number:viewDay,attempts_used:st.attempts.length,
-       solved:st.won?1:0,streak:PROF.streak||0,archive:archive?1:0});
+       solved:st.won?1:0,streak:PROF.streak||0,archive:archive?1:0,loom:LOOM});
     LOG.mark('churn','streak_at_churn',
       {streak:PROF.streak||0,best_streak:PROF.best||0,day_number:viewDay,
        attempts_used:st.attempts.length,solved:st.won?1:0,finished:st.done?1:0,
@@ -4176,6 +4571,7 @@ $('quiltShare').onclick=()=>{ SFX.play('tap'); shareQuilt(); };
 window.VoltixBack=function(){
   if(!$('moreSheet').hidden){ closeMoreSheet(true); return true; }
   if(!$('monthSheet').hidden){ closeMonthSheet(true); return true; }
+  if(!$('loomSheet').hidden){ closeLoomSheet(true); return true; }
   for(const p of PANELS){ if($(p).classList.contains('show')){ $(p).classList.remove('show'); return true; } }
   if(archive){ openDay(dayNum); return true; }          // back to today, not out of the game
   return false;
@@ -4313,10 +4709,37 @@ translateStatic();
 webTrim();
 openDay(dayNum);
 pushReminder();
+/* Advertising consent (EEA and UK), from Google's consent platform through the
+   ads bridge. Sent as `consent_status` when the answer is first known and again
+   only when it changes, because without consent no advertisement is requested at
+   all and the advertising numbers mean nothing without this one. "unknown" is not
+   an answer yet and is not sent. The shell calls VoltixConsent when the platform
+   answers or the player changes their choice in Ad privacy. */
+const CONSENT_KEY='loom.consent.sent';
+function consentNow(){
+  try{ const a=window.VoltixAds; if(!a||!a.consent) return null;
+       const v=String(a.consent()||'').split('|'); return v[0]?{status:v[0],ads:v[1]==='1'?1:0}:null; }catch(e){ return null; }
+}
+window.VoltixConsent=function(){
+  const c=consentNow(); if(!c||c.status==='unknown'||!A.live()) return;
+  const k=c.status+'|'+c.ads; if(STORE.get(CONSENT_KEY)===k) return;
+  STORE.set(CONSENT_KEY,k);
+  LOG.mark('consent','consent_status',{status:c.status,can_request_ads:c.ads});
+};
+/* A tap on the daily notification (§8.4): the shell remembers it until asked,
+   and calls VoltixOpened when the tap reaches a game that was already open. */
+window.VoltixOpened=function(){
+  let from=''; try{ const N=window.VoltixNative; from=N&&N.openedFrom?String(N.openedFrom()||''):''; }catch(e){}
+  if(from==='reminder') LOG.mark('remopen','reminder_opened',
+    {day_number:dayNum,streak:PROF.streak||0,finished:(QUILT.get(dayNum)||{}).d?1:0});
+};
+
 /* The day is open. §18 asks for the streak length at this moment. */
 LOG.mark('open','day_opened',{day_number:dayNum,streak:PROF.streak||0,
   best_streak:PROF.best||0,resumed:st.attempts.length?1:0,finished:st.done?1:0,
-  variant:P.dials.name,slots:NOPS,decoys:DEC,feedback:FEEDBACK,board:N,tries:TRIES,dials_version:DIALS_VERSION});
+  variant:P.dials.name,slots:NOPS,decoys:DEC,feedback:FEEDBACK,board:N,tries:TRIES,dials_version:P.dials.v,loom:LOOM});
+window.VoltixOpened();
+window.VoltixConsent();
 </script>
 <!-- /analytics/ is the site's Pages Function proxying Umami (legal/website-privacy.html).
      Root-absolute on purpose: it resolves only on Cloudflare. -->

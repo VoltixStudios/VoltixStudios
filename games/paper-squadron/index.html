@@ -31,7 +31,7 @@
 <!-- ?v= is a cache buster. There is no build step to fingerprint the file, and a
      browser holding an old stylesheet against new markup renders the page wrong
      rather than merely stale — bump the number whenever style.css changes. -->
-<link rel="stylesheet" href="../../assets/css/style.css?v=9">
+<link rel="stylesheet" href="../../assets/css/style.css?v=10">
 
 <script type="application/ld+json">
 {
@@ -127,11 +127,13 @@
           <p>
             An arcade flight game about a squadron of paper aircraft fighting across a world
             made of stationery — a classroom of notebook mountains, a pirate bay of cardboard
-            ships, and a frozen range of paper peaks.
+            ships, a frozen range of paper peaks, and now a desert kingdom where sand
+            tornadoes stand over the dunes.
           </p>
           <p>
             Tilt your phone to fly, or switch to touch steering if you prefer. Press and hold
-            the right side of the screen to fire.
+            the right side of the screen to fire. New to flying? Flight School teaches the
+            basics in five short missions.
           </p>
 
           <div class="cta-play">
@@ -153,49 +155,128 @@
         </div>
       </div>
 
+      <!-- The newest world gets the launch art, the same picture the push
+           notification carried. Kept until a fifth world replaces it. -->
+      <section class="spot reveal" aria-labelledby="desert-h">
+        <figure class="spot__art">
+          <img src="../../assets/img/ps-desert-kingdom.webp"
+               alt="A paper jet flies low over desert dunes between a sand tornado and a paper cobra rearing out of the sand"
+               width="1200" height="600" loading="lazy" decoding="async">
+        </figure>
+        <div class="spot__body">
+          <p class="eyebrow">New world</p>
+          <h3 class="spot__title" id="desert-h">Desert Kingdom</h3>
+          <p>
+            Sand tornadoes that stand most of the way to the flight ceiling, scarab swarms,
+            and raiders that burrow under the dunes. At the end of it waits THE SAND KING, a
+            paper cobra that rears out of the sand with its hood spread.
+          </p>
+          <p>
+            Clear it for the Dune Falcon, an engineless dart whose DASH trades the boost for a
+            shielded burst straight through the enemy, the Boomerang Cards that cut harder on
+            the way home, and the Desert Hawk.
+          </p>
+        </div>
+      </section>
+
       <ul class="features reveal">
         <li>
-          <h3>Three worlds</h3>
-          <p>Classroom Skies, Pirate Bay and Frost Peaks, each with its own scenery, music,
-             boss and signature aircraft.</p>
+          <h3>Four worlds</h3>
+          <p>Classroom Skies, Pirate Bay, Frost Peaks and Desert Kingdom, each with its own
+             enemies, hazards, music and boss — and every run deals its missions in a new
+             order.</p>
         </li>
         <li>
-          <h3>Missions that change</h3>
-          <p>Escort a balloon, hunt down an ace, run gates against the clock, collect cargo,
-             hold out against elite waves, or take out ground bases. Every flight draws a
-             different sequence.</p>
+          <h3>Ten kinds of mission</h3>
+          <p>Clear the skies, hold out against waves, chase down an enemy ace, destroy ground
+             bases, collect cargo, fly through ring gates, beat elite waves, or fly multi-stage
+             operations back to back.</p>
         </li>
         <li>
           <h3>Bosses with teeth</h3>
-          <p>Multi-stage fights that turn nastier as their armour comes off.</p>
+          <p>Every world ends in a multi-phase fight. Learn its patterns, break its armour,
+             and bring it down.</p>
         </li>
         <li>
-          <h3>Build your plane</h3>
-          <p>Spend folds on durability, speed, agility and luck — and on firepower and fire
-             rate for weapons from the Dart to the Cryo Cannon.</p>
-        </li>
-        <li>
-          <h3>Wingmen</h3>
-          <p>Bring up to two escorts to fly on your flank.</p>
+          <h3>Build your squadron</h3>
+          <p>Clear a world to unlock its plane, weapon and wingman. Spend folds on hull,
+             speed, agility, luck, damage and fire rate, and fly with two wingmen at once.</p>
         </li>
         <li>
           <h3>Weekly survival</h3>
           <p>An endless, steadily harder run in a world that rotates every week, with global
              ranks — and a supply drop waiting for everyone who flew it.</p>
         </li>
+        <li>
+          <h3>Save and come back</h3>
+          <p>Save &amp; Exit from the pause menu, and RESUME later picks up the same mission
+             where the run left off.</p>
+        </li>
       </ul>
 
-      <section class="roster reveal" aria-label="Aircraft in the hangar">
-        <h3 class="roster__title">The hangar</h3>
-        <ul class="roster__grid">
-          <li><img src="../../assets/img/ps-plane-classic.webp" alt="" width="128" height="128" loading="lazy"><span>Classic</span></li>
-          <li><img src="../../assets/img/ps-plane-swift.webp" alt="" width="128" height="128" loading="lazy"><span>Swift</span></li>
-          <li><img src="../../assets/img/ps-plane-falcon.webp" alt="" width="128" height="128" loading="lazy"><span>Falcon</span></li>
-          <li><img src="../../assets/img/ps-plane-corsair.webp" alt="" width="128" height="128" loading="lazy"><span>Corsair</span></li>
-          <li><img src="../../assets/img/ps-plane-scout.webp" alt="" width="128" height="128" loading="lazy"><span>Scout</span></li>
-          <li><img src="../../assets/img/ps-plane-seeker.webp" alt="" width="128" height="128" loading="lazy"><span>Seeker</span></li>
-          <li><img src="../../assets/img/ps-plane-brick.webp" alt="" width="128" height="128" loading="lazy"><span>Brick</span></li>
-          <li><img src="../../assets/img/ps-plane-frosthawk.webp" alt="" width="128" height="128" loading="lazy"><span>Frosthawk</span></li>
+      <section class="worlds reveal" aria-labelledby="worlds-h">
+        <h3 class="roster__title" id="worlds-h">The worlds</h3>
+        <ul class="worlds__grid">
+          <li>
+            <img src="../../assets/img/ps-world-classroom.webp" alt="" width="720" height="273"
+                 loading="lazy" decoding="async">
+            <h4>Classroom Skies</h4>
+            <p>Notebook mountains and pencil towers. Clear it for the Falcon Mk-I.</p>
+          </li>
+          <li>
+            <img src="../../assets/img/ps-world-piratebay.webp" alt="" width="720" height="273"
+                 loading="lazy" decoding="async">
+            <h4>Pirate Bay</h4>
+            <p>Cardboard ships, cannon pods and treasure. Clear it for the Corsair Raider.</p>
+          </li>
+          <li>
+            <img src="../../assets/img/ps-world-frostpeaks.webp" alt="" width="720" height="273"
+                 loading="lazy" decoding="async">
+            <h4>Frost Peaks</h4>
+            <p>Blizzards, icicles and frozen fortresses. Clear it for the F-17 Frost Hawk.</p>
+          </li>
+          <li>
+            <img src="../../assets/img/ps-world-desert.webp" alt="" width="720" height="273"
+                 loading="lazy" decoding="async">
+            <h4>Desert Kingdom <span class="badge">New</span></h4>
+            <p>Sand tornadoes, scarab swarms and THE SAND KING. Clear it for the Dune Falcon.</p>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Phone captures after the 1.7.0 art pass, one per world, landscape as the
+           game is played. A shelf on a phone, a row from tablet width up. -->
+      <section class="shots shots--wide reveal" aria-label="Paper Squadron in flight">
+        <ul class="shots__row">
+          <li><img src="../../assets/img/ps-shot-1.webp" width="800" height="360" loading="lazy" decoding="async"
+                   alt="Classroom Skies: a paper jet and its wingmen fly through a burst of paper over the desk."></li>
+          <li><img src="../../assets/img/ps-shot-2.webp" width="800" height="360" loading="lazy" decoding="async"
+                   alt="Pirate Bay: a paper jet closes on a cardboard cannon boat among red rock islands."></li>
+          <li><img src="../../assets/img/ps-shot-3.webp" width="800" height="360" loading="lazy" decoding="async"
+                   alt="Frost Peaks: a paper jet and its wingmen fly low between the ice peaks."></li>
+        </ul>
+      </section>
+
+      <section class="roster reveal" aria-labelledby="hangar-h">
+        <h3 class="roster__title" id="hangar-h">The hangar</h3>
+        <p class="roster__lead">
+          Every craft is folded around a real fuselage now: wings creased along their length,
+          winglets, intakes and fins, and a livery drawn in marker ink.
+        </p>
+        <h4 class="roster__sub">Planes</h4>
+        <ul class="roster__grid roster__grid--big">
+          <li><img src="../../assets/img/ps-plane-classic.webp" alt="" width="240" height="240" loading="lazy"><span>Rookie Glider</span></li>
+          <li><img src="../../assets/img/ps-plane-scout.webp" alt="" width="240" height="240" loading="lazy"><span>Falcon Mk-I</span></li>
+          <li><img src="../../assets/img/ps-plane-corsair.webp" alt="" width="240" height="240" loading="lazy"><span>Corsair Raider</span></li>
+          <li><img src="../../assets/img/ps-plane-frosthawk.webp" alt="" width="240" height="240" loading="lazy"><span>F-17 Frost Hawk</span></li>
+          <li><img src="../../assets/img/ps-plane-dunefalcon.webp" alt="" width="240" height="240" loading="lazy"><span>Dune Falcon</span></li>
+        </ul>
+        <h4 class="roster__sub">Wingmen</h4>
+        <ul class="roster__grid roster__grid--big">
+          <li><img src="../../assets/img/ps-wing-recon.webp" alt="" width="240" height="240" loading="lazy"><span>Recon</span></li>
+          <li><img src="../../assets/img/ps-wing-bomber.webp" alt="" width="240" height="240" loading="lazy"><span>Bomber</span></li>
+          <li><img src="../../assets/img/ps-wing-frostdrone.webp" alt="" width="240" height="240" loading="lazy"><span>Frost Drone</span></li>
+          <li><img src="../../assets/img/ps-wing-deserthawk.webp" alt="" width="240" height="240" loading="lazy"><span>Desert Hawk</span></li>
         </ul>
       </section>
 

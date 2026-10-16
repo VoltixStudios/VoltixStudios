@@ -29,6 +29,15 @@ STRATA_BOUNDS = [(22, 191), (191, 384), (384, 579), (579, 784), (784, 997)]
 STRATA_ROWS = (52, 653)
 STRATA_NAMES = ["topsoil", "sediment", "igneous", "crystalline", "core"]
 
+CW_TILES = ["basalt", "cinnabar", "cryolite", "pyrite", "nitre",
+            "reinforced", "ledge", "coolant_cache", "crystals"]
+# In the garage's order, common to legendary.
+CW_DRONES = ["standard", "industrial", "scout", "miner", "stealth", "crystal", "hunter", "mecha",
+             "ancient", "energy", "void", "core_guardian", "nova", "inferno", "celestial"]
+# The store screenshots in screenshots/, in the order the page shows them.
+CW_SHOTS = ["06-run-shaft-top", "07-run-fusion-burst", "09-run-overheat", "02-descent-map",
+            "04-garage-legendary"]
+
 
 def trim_black(im, threshold=14, pad=0.04):
     """Crop away the flat black matte these logos are rendered on.
@@ -119,6 +128,37 @@ def build_voltix(logo_path):
     save(card, "og-card.png")
 
 
+def trim_alpha(im, pad=0.06):
+    """Crop a transparent render to what is drawn, then centre it on a square.
+
+    The hangar icons are rendered into a 512px frame with a lot of empty air
+    around each craft, and not the same amount for each, so side by side in a
+    grid they read as different sizes. Cropping to the alpha box and squaring
+    puts every craft at the same fill.
+    """
+    box = im.getchannel("A").point(lambda a: 255 if a > 8 else 0).getbbox()
+    if box:
+        im = im.crop(box)
+    side = round(max(im.size) * (1 + 2 * pad))
+    square = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    square.paste(im, ((side - im.width) // 2, (side - im.height) // 2), im)
+    return square
+
+
+# Paper Squadron's in-flight screenshots, captured on the S21 on 24 September
+# 2026 after the 1.7.0 art pass: Classroom Skies, Pirate Bay and Frost Peaks, in
+# that order. The Desert Kingdom has no phone capture yet, so its picture on the
+# page is the launch art instead. Listed rather than globbed: the folder holds
+# thirty captures and the site shows three.
+PS_SHOTS = ["Screenshot_20260924_094951_Paper Squadron.jpg",
+            "Screenshot_20260924_100058_Paper Squadron.jpg",
+            "Screenshot_20260924_100408_Paper Squadron.jpg"]
+
+PS_PLANES = ["classic", "scout", "corsair", "frosthawk", "dunefalcon"]
+PS_WINGMEN = ["recon", "bomber", "frostdrone", "deserthawk"]
+PS_WORLDS = ["classroom", "piratebay", "frostpeaks", "desert"]
+
+
 def build_paper_squadron(root):
     print("paper squadron")
     res = root / "Resources"
@@ -127,13 +167,31 @@ def build_paper_squadron(root):
     save(trim_black(Image.open(res / "initial_screen.png").convert("RGBA")),
          "papersquadron-poster.webp", width=900)
 
+    # The hangar: the game's own shop icons, which 1.7.0 re-rendered from the
+    # folded meshes. Only the craft the shop sells; SAND SCORPION and CARAVAN
+    # GUARD are built but hidden until a world claims them.
     icons = root / "Assets/_Project/Resources/Icons"
-    for name in ["classic", "swift", "falcon", "corsair", "scout", "seeker", "brick", "frosthawk"]:
-        src = icons / f"plane_{name}.png"
-        if not src.exists():
-            print(f"  ! missing {src.name}")
-            continue
-        save(Image.open(src).convert("RGBA"), f"ps-plane-{name}.webp", width=128, lossless=True)
+    for prefix, out, names in [("plane", "ps-plane", PS_PLANES), ("wingman", "ps-wing", PS_WINGMEN)]:
+        for name in names:
+            src = icons / f"{prefix}_{name}.png"
+            if not src.exists():
+                print(f"  ! missing {src.name}")
+                continue
+            save(trim_alpha(Image.open(src).convert("RGBA")), f"{out}-{name}.webp", width=240)
+
+    # The hub's world cards, one picture per world.
+    worlds = root / "Assets/_Project/Resources/WorldArt"
+    for name in PS_WORLDS:
+        save(Image.open(worlds / f"{name}.png").convert("RGB"), f"ps-world-{name}.webp",
+             width=720, quality=82)
+
+    # The Desert Kingdom launch art, the same picture as the push notification.
+    save(Image.open(root / "store/push/desert-kingdom-launch-1536x768.png").convert("RGB"),
+         "ps-desert-kingdom.webp", width=1200, quality=84)
+
+    for i, name in enumerate(PS_SHOTS, 1):
+        save(Image.open(root / "screenshots" / name).convert("RGB"), f"ps-shot-{i}.webp",
+             width=800, quality=80)
 
 
 def build_coreward(root):
@@ -148,6 +206,20 @@ def build_coreward(root):
     top, bottom = STRATA_ROWS
     for name, (left, right) in zip(STRATA_NAMES, STRATA_BOUNDS):
         save(strata.crop((left, top, right, bottom)), f"cw-strata-{name}.webp", width=240)
+
+    # The block tiles the game draws the shaft with. crystals.png is the
+    # artifact: the game uses the same picture for it on the home screen.
+    art = root / "unity/Coreward/Assets/Resources/Art"
+    for name in CW_TILES:
+        save(Image.open(art / f"{name}.png").convert("RGBA"), f"cw-tile-{name}.webp", width=120)
+
+    for name in CW_DRONES:
+        save(Image.open(art / "Drones" / f"{name}.png").convert("RGBA"), f"cw-drone-{name}.webp",
+             width=180)
+
+    for i, name in enumerate(CW_SHOTS, 1):
+        save(Image.open(root / "screenshots" / f"{name}.png").convert("RGB"), f"cw-shot-{i}.webp",
+             width=540, quality=82)
 
 
 def build_dungeon_gourmand(root):
@@ -183,7 +255,7 @@ def build_loom(root):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--logo", type=Path, default=Path.home() / "voltix_studios/logos/voltix_logo_1.png")
-    ap.add_argument("--paper", type=Path, default=Path.home() / "paper_ace")
+    ap.add_argument("--paper", type=Path, default=Path.home() / "voltix_studios/PaperSquadron")
     ap.add_argument("--coreward", type=Path, default=Path.home() / "voltix_studios/CoreWard")
     ap.add_argument("--gourmand", type=Path,
                     default=Path.home() / "voltix_studios/DungeonGourmand")

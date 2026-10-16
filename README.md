@@ -210,8 +210,9 @@ the originals are multi-megabyte PNGs and the site ships trimmed WebP.
 python3 tools/build_assets.py          # needs Pillow
 ```
 
-It reads from `~/voltix_studios/logos`, `~/paper_ace`, `~/voltix_studios/CoreWard`,
-`~/voltix_studios/DungeonGourmand` and `~/voltix_studios/Loom` by default; pass
+It reads from `~/voltix_studios/logos`, `~/voltix_studios/PaperSquadron`,
+`~/voltix_studios/CoreWard`, `~/voltix_studios/DungeonGourmand` and
+`~/voltix_studios/Loom` by default; pass
 `--logo`, `--paper`, `--coreward`, `--gourmand` or `--loom` to point elsewhere, and
 `--only loom` (or any subset) to rebuild one game without the other roots present. Re-run it
 whenever a logo or a piece of key art changes, and commit the result.
@@ -219,6 +220,15 @@ whenever a logo or a piece of key art changes, and commit the result.
 The one hand-measured thing in it is `STRATA_BOUNDS`, the five panel edges in
 CoreWard's `images/backgrounds.png`. Those panels are not evenly spaced, so if that
 sheet is regenerated the numbers need re-checking.
+
+What each game page shows is listed by name at the top of the script, not globbed:
+`PS_PLANES`, `PS_WINGMEN`, `PS_WORLDS` and `PS_SHOTS` for Paper Squadron's hangar,
+world cards and in-flight captures, and `CW_TILES`, `CW_DRONES` and `CW_SHOTS` for
+CoreWard's block tiles, drone roster and phone captures. The hangar takes only what the
+shop sells, so a new plane or wingman is a name added there and a `<li>` added to the
+page. Paper Squadron's icons are cropped to what is drawn and squared (`trim_alpha`),
+because the game renders each craft into its frame with a different amount of air
+around it.
 
 `assets/img/ps-play-qr.svg`, `cw-play-qr.svg` and `loom-play-qr.svg` — the Play Store
 QRs on the Paper Squadron, CoreWard and Loom pages — are the exception. They are drawn from URLs
@@ -330,7 +340,12 @@ The shared pieces inside a section are named for what they are rather than for
 the game they first appeared in — `.split` is the two-column block, `.data-table`
 the two-column table (CoreWard's minerals, Dungeon Gourmand's elements), and
 `.ladder` the numbered progression with no art of its own. They were `.cw-split`
-and `.minerals__table` while only CoreWard used them.
+and `.minerals__table` while only CoreWard used them. The same rule holds for the
+pieces added in October 2026: `.spot` is a wide picture beside its words (Paper
+Squadron's newest world), `.worlds` a grid of picture-strip cards, `.tiles` a block's
+art beside what it does (CoreWard's obstacles and pickups), `.roster__grid--big` the
+roster at a size rendered art survives, `.shots--wide` the screenshot shelf for
+landscape captures, and `.looms` Loom's three looms with `.cloth--5` for the 5×5.
 
 Paper Squadron's copy is kept in step with `store/play-games-listing.md` in the
 game repo — if the Play listing changes, change it here too.

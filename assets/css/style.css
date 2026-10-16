@@ -346,6 +346,26 @@ p:last-child { margin-bottom: 0; }
 .cloths__arrow { color: var(--muted); font-size: 28px; }
 .cloths figcaption { font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--muted); text-align: center; margin-top: 8px; font-weight: 600; }
+/* Hard's cloth is a 5x5: the same frame, one more thread each way. */
+.cloth--5 { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.cloth--5 i { border-radius: 5px; }
+
+/* Loom's three looms, side by side from tablet width, stacked on a phone. */
+.looms { margin-top: clamp(44px, 5.5vw, 62px); }
+.looms__grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;
+}
+.looms__grid li {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 26px 22px 24px;
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: linear-gradient(180deg, var(--ink-2), var(--ink-1));
+}
+.looms__grid h4 { margin-top: 18px; font-size: 1rem; letter-spacing: .08em; text-transform: uppercase; }
+.looms__grid p { margin: 8px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.6; }
+.looms__note { margin: 18px auto 0; max-width: 760px; text-align: center; color: var(--muted);
+  font-size: .94rem; line-height: 1.62; }
 
 /* Screenshots. On a phone they are a shelf you push sideways, which is the one
    layout that shows a portrait screenshot at a readable size on a portrait
@@ -366,6 +386,14 @@ p:last-child { margin-bottom: 0; }
 @media (min-width: 760px) {
   .shots__row { flex-wrap: wrap; justify-content: center; overflow: visible; }
   .shots__row img { width: 236px; }
+}
+/* Landscape captures (Paper Squadron is flown sideways). */
+.shots--wide .shots__row img { width: min(340px, 84vw); border-radius: 12px; }
+@media (min-width: 760px) {
+  .shots--wide .shots__row img { width: 340px; }
+}
+@media (min-width: 1200px) {
+  .shots--wide .shots__row img { width: 368px; }
 }
 
 .game__glow {
@@ -666,7 +694,105 @@ p:last-child { margin-bottom: 0; }
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--muted);
+  text-align: center;
 }
+/* Rendered craft and drones carry detail a 54px icon throws away. */
+/* Five to a row, so the planes, the wingmen and the drones line up column for
+   column however many each row holds. */
+.roster__grid--big { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.roster__grid--big img { width: 112px; height: 112px; object-fit: contain; }
+.roster__grid small {
+  margin-top: -4px;
+  font-size: .66rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent) 70%, var(--muted));
+}
+.roster__lead { margin: -8px 0 22px; max-width: 720px; color: var(--muted); font-size: .95rem; line-height: 1.62; }
+.roster__sub {
+  margin: 26px 0 12px;
+  font-size: .74rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.roster__lead + .roster__sub { margin-top: 0; }
+
+/* a feature spotlight — a wide picture beside its words. Paper Squadron puts its
+   newest world here. */
+.spot {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: clamp(26px, 4vw, 52px);
+  align-items: center;
+  margin-top: clamp(44px, 5.5vw, 66px);
+  padding: clamp(18px, 2.4vw, 26px);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: linear-gradient(180deg, var(--ink-2), var(--ink-1));
+}
+.spot__art { margin: 0; }
+.spot__art img { width: 100%; height: auto; border-radius: 10px; }
+.spot__title { font-size: clamp(1.5rem, 2.6vw, 2rem); margin-bottom: 14px; }
+.spot__body p:not(.eyebrow) { color: var(--text-dim); line-height: 1.66; }
+.spot__body p:last-child { margin-bottom: 0; }
+
+/* world cards — a picture strip each, two to a row */
+.worlds { margin-top: clamp(44px, 5.5vw, 62px); }
+.worlds__grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;
+}
+.worlds__grid li {
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--ink-1);
+  transition: border-color .3s var(--ease), transform .3s var(--ease);
+}
+.worlds__grid li:hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  transform: translateY(-3px);
+}
+.worlds__grid img { display: block; width: 100%; height: auto; aspect-ratio: 720 / 273; object-fit: cover; }
+.worlds__grid h4 {
+  display: flex; align-items: center; gap: 10px;
+  padding: 15px 18px 0;
+  font-size: .95rem; letter-spacing: .06em; text-transform: uppercase;
+}
+.worlds__grid p { margin: 6px 0 0; padding: 0 18px 17px; color: var(--muted); font-size: .9rem; line-height: 1.55; }
+.badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: color-mix(in srgb, var(--accent) 82%, white);
+  font-size: .64rem;
+  letter-spacing: .14em;
+}
+
+/* tile list — a block's own art beside what it does. CoreWard's obstacles and
+   pickups. */
+.tiles { margin-top: clamp(44px, 5.5vw, 62px); }
+.tiles__grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;
+}
+.tiles__grid li {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 16px 18px;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .022);
+}
+.tiles__grid img { flex: 0 0 auto; width: 52px; height: auto; border-radius: 8px; }
+.tiles__grid h4 { font-size: .9rem; letter-spacing: .05em; text-transform: uppercase; }
+.tiles__grid p { margin: 5px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.55; }
+/* A table whose rows lead with the block's own tile: centred rows, since a 34px
+   tile on a text baseline sits the name at its foot. */
+.data-table--tiles th, .data-table--tiles td { vertical-align: middle; }
+.data-table .tile { display: inline-block; width: 34px; height: auto; margin-right: 12px;
+  border-radius: 6px; vertical-align: middle; }
 
 /* two-column split — a wide table beside a narrow companion: CoreWard puts a
    phone shot there, Dungeon Gourmand a stage ladder */
@@ -1061,6 +1187,7 @@ p:last-child { margin-bottom: 0; }
 @media (max-width: 980px) {
   .game__head,
   .split,
+  .spot,
   .studio { grid-template-columns: 1fr; }
   .game__head--flip .game__art { order: 0; }
   .shot { max-width: 320px; margin-inline: auto; }
@@ -1084,6 +1211,9 @@ p:last-child { margin-bottom: 0; }
   .qr { display: none; }
   .strata__grid { grid-template-columns: repeat(2, 1fr); }
   .strata__grid img { aspect-ratio: 1 / 1.5; }
+  .worlds__grid { grid-template-columns: 1fr; }
+  .roster__grid--big { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .roster__grid--big img { width: 80px; height: 80px; }
 }
 
 /* The two handles are long enough to push a pill wider than a small phone, so

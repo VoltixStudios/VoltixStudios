@@ -31,7 +31,7 @@
 <!-- ?v= is a cache buster. There is no build step to fingerprint the file, and a
      browser holding an old stylesheet against new markup renders the page wrong
      rather than merely stale — bump the number whenever style.css changes. -->
-<link rel="stylesheet" href="../../assets/css/style.css?v=9">
+<link rel="stylesheet" href="../../assets/css/style.css?v=10">
 
 <script type="application/ld+json">
 {
@@ -182,6 +182,23 @@
              are scattered thin and never in the middle column.</p>
         </li>
         <li>
+          <h3>Sixty tiers</h3>
+          <p>Twelve to a stratum, with objectives that change on the way down: reach the
+             floor, reach it without a cinnabar fusion, reach it with the drone already hot.
+             The hard tiers show on the map while they are still locked.</p>
+        </li>
+        <li>
+          <h3>Three ways down</h3>
+          <p>Expedition is the sixty tiers at your own pace. Deep Dive is endless from the
+             surface with no boosts. Daily Shaft is one shaft from today's date, the same rock
+             for everyone, and one attempt.</p>
+        </li>
+        <li>
+          <h3>Shape markers</h3>
+          <p>A switch in Settings gives every mineral its own silhouette as well as its own
+             colour, for anyone who would rather not tell cinnabar from pyrite by hue alone.</p>
+        </li>
+        <li>
           <h3>The rules stay honest</h3>
           <p>Nothing in the economy can extend the fall delay. Reading a collapse is the
              skill, and it is not for sale.</p>
@@ -190,20 +207,24 @@
 
       <div class="split reveal">
         <section aria-labelledby="minerals-h">
-          <h3 id="minerals-h" class="roster__title">Four minerals, four outcomes</h3>
-          <table class="data-table">
+          <h3 id="minerals-h" class="roster__title">Five minerals, five outcomes</h3>
+          <table class="data-table data-table--tiles">
             <thead>
-              <tr><th scope="col">Mineral</th><th scope="col">On fusion</th></tr>
+              <tr><th scope="col">Mineral</th><th scope="col">What it does</th></tr>
             </thead>
             <tbody>
-              <tr><th scope="row"><span class="chip" style="--c:#8b8f98"></span>Basalt</th>
-                  <td>Vanishes cleanly. Neutral filler.</td></tr>
-              <tr><th scope="row"><span class="chip" style="--c:#d4453a"></span>Cinnabar</th>
-                  <td>Releases heat. The gauge jumps — route around it.</td></tr>
-              <tr><th scope="row"><span class="chip" style="--c:#4aa8e0"></span>Cryolite</th>
-                  <td>Vents coolant. The gauge drops — hunt for it.</td></tr>
-              <tr><th scope="row"><span class="chip" style="--c:#e0b03a"></span>Pyrite</th>
-                  <td>Awards a score multiplier. The greed play.</td></tr>
+              <tr><th scope="row"><img class="tile" src="../../assets/img/cw-tile-basalt.webp" alt="" width="120" height="109" loading="lazy">Basalt</th>
+                  <td>Inert. A fusion vanishes cleanly — neutral filler.</td></tr>
+              <tr><th scope="row"><img class="tile" src="../../assets/img/cw-tile-cinnabar.webp" alt="" width="120" height="109" loading="lazy">Cinnabar</th>
+                  <td>Runs hot. A fusion releases heat and the gauge jumps — route around it.</td></tr>
+              <tr><th scope="row"><img class="tile" src="../../assets/img/cw-tile-cryolite.webp" alt="" width="120" height="109" loading="lazy">Cryolite</th>
+                  <td>Coolant. A fusion vents it and the gauge drops — hunt for it.</td></tr>
+              <tr><th scope="row"><img class="tile" src="../../assets/img/cw-tile-pyrite.webp" alt="" width="120" height="109" loading="lazy">Pyrite</th>
+                  <td>Worth Cores. A fusion pays a score multiplier — the greed play.</td></tr>
+              <tr><th scope="row"><img class="tile" src="../../assets/img/cw-tile-nitre.webp" alt="" width="120" height="109" loading="lazy">Nitre</th>
+                  <td>A charge, not a rock. Drill it and a moment later the whole body goes off,
+                      blasting a cross out of the shaft. Pick the moment, then get clear. Found
+                      only below the sediment.</td></tr>
             </tbody>
           </table>
         </section>
@@ -215,30 +236,105 @@
         </figure>
       </div>
 
+      <section class="tiles reveal" aria-labelledby="rock-h">
+        <h3 id="rock-h" class="roster__title">Also in the rock</h3>
+        <ul class="tiles__grid">
+          <li>
+            <img src="../../assets/img/cw-tile-reinforced.webp" alt="" width="120" height="109" loading="lazy">
+            <div><h4>Reinforced rock</h4>
+              <p>Five hits to cut, and it never fuses. An obstacle, not a mineral.</p></div>
+          </li>
+          <li>
+            <img src="../../assets/img/cw-tile-ledge.webp" alt="" width="120" height="109" loading="lazy">
+            <div><h4>Steel ledge</h4>
+              <p>From tier 19, a shelf of plate in the drone's line. Eight hot hits to cut, so
+                 going round is quicker. It never falls: in a collapse, the ground under it is
+                 the safe place to stand.</p></div>
+          </li>
+          <li>
+            <img src="../../assets/img/cw-tile-coolant_cache.webp" alt="" width="120" height="109" loading="lazy">
+            <div><h4>Coolant cache</h4>
+              <p>Drill it and the gauge comes down, no match needed. Scattered thin, and never
+                 in the middle column.</p></div>
+          </li>
+          <li>
+            <img src="../../assets/img/cw-tile-crystals.webp" alt="" width="120" height="103" loading="lazy">
+            <div><h4>Artifact</h4>
+              <p>At most one a tier, in the lower half and off the straight line. It pays in
+                 Cores, and it is never for sale.</p></div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Depths are the cumulative tier floors in the game's TierDefs (one row to the
+           metre): 504, 1,200, 2,196, 3,492 and 4,992. -->
       <section class="strata reveal" aria-labelledby="strata-h">
         <h3 id="strata-h" class="roster__title">Five strata down</h3>
         <ol class="strata__grid">
           <li>
             <img src="../../assets/img/cw-strata-topsoil.webp" alt="" width="169" height="601" loading="lazy">
-            <h4>Topsoil</h4><span>0 – 500 m</span>
+            <h4>Topsoil</h4><span>0 – 504 m</span>
           </li>
           <li>
             <img src="../../assets/img/cw-strata-sediment.webp" alt="" width="193" height="601" loading="lazy">
-            <h4>Sediment</h4><span>500 – 1500 m</span>
+            <h4>Sediment</h4><span>504 – 1,200 m</span>
           </li>
           <li>
             <img src="../../assets/img/cw-strata-igneous.webp" alt="" width="195" height="601" loading="lazy">
-            <h4>Igneous</h4><span>1500 – 2500 m</span>
+            <h4>Igneous</h4><span>1,200 – 2,196 m</span>
           </li>
           <li>
             <img src="../../assets/img/cw-strata-crystalline.webp" alt="" width="205" height="601" loading="lazy">
-            <h4>Crystalline</h4><span>2500 – 3500 m</span>
+            <h4>Crystalline</h4><span>2,196 – 3,492 m</span>
           </li>
           <li>
             <img src="../../assets/img/cw-strata-core.webp" alt="" width="213" height="601" loading="lazy">
-            <h4>The Core</h4><span>3500 m +</span>
+            <h4>The Core</h4><span>3,492 – 4,992 m</span>
           </li>
         </ol>
+      </section>
+
+      <section class="roster reveal" aria-labelledby="drones-h">
+        <h3 class="roster__title" id="drones-h">Fifteen drones</h3>
+        <p class="roster__lead">
+          Every frame handles differently and takes its own upgrades, so a cheap chassis is a
+          place to start and an expensive one is a project. Clearing new depth with a frame
+          earns it mastery, and more Cores with every level.
+        </p>
+        <ul class="roster__grid roster__grid--big">
+          <li><img src="../../assets/img/cw-drone-standard.webp" alt="" width="180" height="192" loading="lazy"><span>Standard</span><small>Common</small></li>
+          <li><img src="../../assets/img/cw-drone-industrial.webp" alt="" width="180" height="192" loading="lazy"><span>Industrial</span><small>Common</small></li>
+          <li><img src="../../assets/img/cw-drone-scout.webp" alt="" width="180" height="192" loading="lazy"><span>Scout</span><small>Rare</small></li>
+          <li><img src="../../assets/img/cw-drone-miner.webp" alt="" width="180" height="192" loading="lazy"><span>Miner</span><small>Rare</small></li>
+          <li><img src="../../assets/img/cw-drone-stealth.webp" alt="" width="180" height="192" loading="lazy"><span>Stealth</span><small>Rare</small></li>
+          <li><img src="../../assets/img/cw-drone-crystal.webp" alt="" width="180" height="192" loading="lazy"><span>Crystal</span><small>Epic</small></li>
+          <li><img src="../../assets/img/cw-drone-hunter.webp" alt="" width="180" height="192" loading="lazy"><span>Hunter</span><small>Epic</small></li>
+          <li><img src="../../assets/img/cw-drone-mecha.webp" alt="" width="180" height="192" loading="lazy"><span>Mecha</span><small>Epic</small></li>
+          <li><img src="../../assets/img/cw-drone-ancient.webp" alt="" width="180" height="192" loading="lazy"><span>Ancient</span><small>Legendary</small></li>
+          <li><img src="../../assets/img/cw-drone-energy.webp" alt="" width="180" height="192" loading="lazy"><span>Energy</span><small>Legendary</small></li>
+          <li><img src="../../assets/img/cw-drone-void.webp" alt="" width="180" height="192" loading="lazy"><span>Void</span><small>Legendary</small></li>
+          <li><img src="../../assets/img/cw-drone-core_guardian.webp" alt="" width="180" height="192" loading="lazy"><span>Core Guardian</span><small>Legendary</small></li>
+          <li><img src="../../assets/img/cw-drone-nova.webp" alt="" width="180" height="192" loading="lazy"><span>Nova</span><small>Legendary</small></li>
+          <li><img src="../../assets/img/cw-drone-inferno.webp" alt="" width="180" height="192" loading="lazy"><span>Inferno</span><small>Legendary</small></li>
+          <li><img src="../../assets/img/cw-drone-celestial.webp" alt="" width="180" height="192" loading="lazy"><span>Celestial</span><small>Legendary</small></li>
+        </ul>
+      </section>
+
+      <!-- Phone captures from the CoreWard repository's screenshots/, 25 September 2026.
+           A shelf on a phone, a row from tablet width up. -->
+      <section class="shots reveal" aria-label="CoreWard on a phone">
+        <ul class="shots__row">
+          <li><img src="../../assets/img/cw-shot-1.webp" width="540" height="1200" loading="lazy" decoding="async"
+                   alt="A drone at the top of a shaft of mixed mineral blocks, 1,450 metres down."></li>
+          <li><img src="../../assets/img/cw-shot-2.webp" width="540" height="1200" loading="lazy" decoding="async"
+                   alt="A fusion bursts as four blocks of one mineral meet."></li>
+          <li><img src="../../assets/img/cw-shot-3.webp" width="540" height="1200" loading="lazy" decoding="async"
+                   alt="Deep in the shaft, with green nitre among the rock and the heat climbing."></li>
+          <li><img src="../../assets/img/cw-shot-4.webp" width="540" height="1200" loading="lazy" decoding="async"
+                   alt="The descent map: tiers as a path of hexagons through the strata."></li>
+          <li><img src="../../assets/img/cw-shot-5.webp" width="540" height="1200" loading="lazy" decoding="async"
+                   alt="The garage, scrolled down to the legendary drone frames."></li>
+        </ul>
       </section>
 
       <dl class="facts reveal">
@@ -246,7 +342,7 @@
         <div><dt>Genre</dt><dd>Vertical-descent puzzler</dd></div>
         <div><dt>Session</dt><dd>2 – 5 minutes</dd></div>
         <div><dt>Orientation</dt><dd>Portrait, one thumb</dd></div>
-        <div><dt>Status</dt><dd>Playable vertical slice</dd></div>
+        <div><dt>Depth</dt><dd>60 tiers, 4,992 m</dd></div>
         <div><dt>Engine</dt><dd>Unity 6</dd></div>
       </dl>
 

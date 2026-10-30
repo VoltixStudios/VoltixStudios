@@ -100,7 +100,18 @@ Then add the seed to your authenticator app, by scanning the code below or by
 typing the seed by hand ("Voltix Analytics", time-based, 6 digits).
 `);
 const qr = spawnSync("qrencode", ["-t", "ansiutf8", uri], { stdio: ["ignore", "inherit", "ignore"] });
-if (qr.error || qr.status !== 0) console.log(`  (qrencode is not installed; type the seed, or use: ${uri})`);
+if (qr.error || qr.status !== 0) {
+  /* No QR code can be drawn here (sudo apt install qrencode adds it). Typed by
+     hand, the seed is easy to get wrong, so it is shown in groups of four;
+     Google Authenticator answers "key is too short" to a seed with a group
+     missing. */
+  console.log(`  No QR code: qrencode is not installed (sudo apt install qrencode, then run this again).
+  To type it instead, in Google Authenticator: + -> Enter a setup key
+    Account name:  Voltix Analytics
+    Your key:      ${seed.match(/.{1,4}/g).join(" ")}
+                   (${seed.length} characters, letters A-Z and digits 2-7; the spaces do not matter)
+    Type of key:   Time based`);
+}
 console.log(`
 Check: the app should now show the same code as this line - ${await totp(seed)}
 Close this terminal afterwards so the secrets are not left on screen.

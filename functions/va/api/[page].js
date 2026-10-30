@@ -200,6 +200,7 @@ const PAGES = {
   },
 
   async progress(c) {
+    if (c.game === "pocketfoundry") return foundryProgress(c);
     if (c.game !== "loom") return { note: "This game's progress pages arrive with its events." };
     const R = `va_day_result WHERE game = ${c.G} AND played BETWEEN ${c.F} AND ${c.T}
                AND install IN (SELECT install FROM va_daily_user WHERE game = ${c.G} AND ${c.BF("build")})`;
@@ -273,6 +274,43 @@ const PAGES = {
              logins, deleted: deleted.n || 0, since: from, allToday: allToday.batches || 0 };
   },
 };
+
+/* Pocket Foundry's progress (docs/ANALYTICS.md, "The dashboard"): read from the raw batches, which are
+   kept 90 days, as the Health page reads its script errors. Small numbers are expected for months:
+   the page shows counts, and one row per player while there are few. */
+async function foundryProgress(c) {
+  const from = Math.max(c.F, c.T - 89);
+  const X = (k) => `json_extract(e.value, '$.x.${k}')`;
+  const E = `va_batch b, json_each(b.events) e WHERE b.game = ${c.G} AND b.day BETWEEN ${from} AND ${c.T}
+             AND ${c.BF(X("build"))}`;
+  const N = `json_extract(e.value, '$.n')`;
+  const orders = await c.all(`SELECT ${X("level_name")} AS level, MAX(${X("kind")}) AS kind,
+      COUNT(DISTINCT CASE WHEN ${N} = 'level_start' THEN b.install END) AS opened,
+      COUNT(DISTINCT CASE WHEN ${N} = 'level_end' AND ${X("success")} = 1 THEN b.install END) AS filled,
+      SUM(CASE WHEN ${N} = 'level_end' AND ${X("success")} = 1 AND ${X("marks")} = 3 THEN 1 ELSE 0 END) AS perfect,
+      SUM(CASE WHEN ${N} = 'level_end' AND ${X("success")} = 0 THEN 1 ELSE 0 END) AS left_,
+      SUM(CASE WHEN ${N} = 'order_run' AND ${X("result")} = 'failed' THEN 1 ELSE 0 END) AS failed,
+      SUM(CASE WHEN ${N} = 'hint_used' THEN 1 ELSE 0 END) AS hints,
+      SUM(CASE WHEN ${N} = 'solution_used' THEN 1 ELSE 0 END) AS solutions
+    FROM ${E} AND ${N} IN ('level_start', 'level_end', 'order_run', 'hint_used', 'solution_used') AND ${X("level_name")} IS NOT NULL
+    GROUP BY level ORDER BY opened DESC, level LIMIT 60`);
+  const players = await c.all(`SELECT p.install AS install, p.u AS u, p.t AS t, i.dev_model AS model, p.events AS events FROM (
+      SELECT b.install, json_extract(e.value, '$.u') AS u, json_extract(e.value, '$.t') AS t,
+             COUNT(*) OVER (PARTITION BY b.install) AS events,
+             ROW_NUMBER() OVER (PARTITION BY b.install ORDER BY json_extract(e.value, '$.t') DESC) AS rn
+      FROM ${E}) p LEFT JOIN va_install i ON i.game = ${c.G} AND i.install = p.install
+    WHERE p.rn = 1 ORDER BY p.t DESC LIMIT 30`);
+  const ledger = await c.all(`SELECT ${X("virtual_currency_name")} AS currency, ${N} AS dir,
+      COALESCE(${X("source")}, ${X("item_name")}) AS what, SUM(${X("value")}) AS total, COUNT(*) AS n
+    FROM ${E} AND ${N} IN ('earn_virtual_currency', 'spend_virtual_currency') GROUP BY currency, dir, what ORDER BY currency, dir, total DESC`);
+  const fails = await c.all(`SELECT ${X("fail_code")} AS code, COUNT(*) AS n FROM ${E} AND ${N} = 'order_run' AND ${X("result")} = 'failed'
+    GROUP BY code ORDER BY n DESC`);
+  const places = await c.all(`SELECT ${N} AS name, COUNT(*) AS n, COUNT(DISTINCT b.install) AS players FROM ${E}
+    AND ${N} IN ('repair', 'building_upgrade', 'level_running', 'tier_seen', 'connection_built', 'decoration_bought', 'store_upgrade', 'workshop_collect', 'contract_paid', 'tier_claimed', 'daily_reward')
+    GROUP BY name`);
+  return { pf: true, since: from, orders, players: players.map((p) => ({ install: String(p.install).slice(0, 8), model: p.model, t: p.t, events: p.events,
+    u: (() => { try { return JSON.parse(p.u) || {}; } catch (e) { return {}; } })() })), ledger, fails, places };
+}
 
 /* GDD_LOOM.md §21: the eight gates, each with its number, its line and its sample. */
 async function loomGates(c) {

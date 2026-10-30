@@ -328,7 +328,40 @@
     return out;
   };
 
+  /* Pocket Foundry: orders, players, the economy (docs/ANALYTICS.md in the game's repository). */
+  function foundryProgress(d) {
+    const P = d.players, filled = sumBy(d.orders, (r) => r.filled);
+    const tot = (name) => (d.places.find((r) => r.name === name) || { n: 0 }).n;
+    const out = [tiles([
+      ["Players", int(P.length), "since " + dayLabel(d.since)],
+      ["Orders filled", int(filled), "first fills and re-solves, by player"],
+      ["Repairs", int(tot("repair")), "places repaired"],
+      ["Workshop collections", int(tot("workshop_collect"))],
+    ])];
+    out.push(card("Players, latest first", h("div", { class: "small", text: "Each install's most recent state. The id is the first part of the one shown in the game's Playtest notes." }),
+      P.length ? table(["Install", "Phone", "Last seen", "Orders filled", "Repairs", "Furthest island", "Season tier", "Streak", "Days played", "Events"],
+        P.map((p) => [p.install, p.model || "unknown", p.t ? new Date(p.t).toISOString().slice(5, 16).replace("T", " ") : "–",
+          int(p.u.orders_filled || 0), int(p.u.repairs || 0), p.u.furthest_island || "–", p.u.season_tier ?? "–", p.u.streak ?? "–", p.u.days_played ?? "–", int(p.events)]))
+        : empty()));
+    out.push(card("Orders", h("div", { class: "small", text: "Opened and filled count players; perfect, left, failed runs and hints count times." }),
+      d.orders.length ? h("div", { class: "scroll" }, table(["Order", "Kind", "Opened", "Filled", "Perfect", "Left unfilled", "Failed runs", "Hints", "Solutions"],
+        d.orders.map((o) => [o.level, o.kind || "", int(o.opened), int(o.filled), int(o.perfect), int(o.left_), int(o.failed), int(o.hints), int(o.solutions)]))) : empty()));
+    const led = (cur, dir) => d.ledger.filter((r) => r.currency === cur && r.dir === dir);
+    out.push(h("div", { class: "grid3" },
+      ...["cogs", "crystals", "hints"].map((cur) => card("The " + cur + " ledger",
+        h("div", { class: "small", text: "In " + int(sumBy(led(cur, "earn_virtual_currency"), (r) => r.total)) + ", out " + int(sumBy(led(cur, "spend_virtual_currency"), (r) => r.total)) }),
+        hbars(led(cur, "earn_virtual_currency").map((r) => ({ label: "+ " + r.what, n: r.total }))
+          .concat(led(cur, "spend_virtual_currency").map((r) => ({ label: "− " + r.what, n: r.total }))), null)))));
+    out.push(h("div", { class: "grid2" },
+      card("Why runs failed", d.fails.length ? hbars(d.fails.map((r) => ({ label: String(r.code || "unknown").toLowerCase().replace(/_/g, " "), n: r.n })), sumBy(d.fails, (r) => r.n)) : empty()),
+      card("Islands and industry", hbars([["Repairs", "repair"], ["Building upgrades", "building_upgrade"], ["Levels switched on", "level_running"], ["New looks seen", "tier_seen"],
+        ["Connections built", "connection_built"], ["Decorations placed", "decoration_bought"], ["Workshop stores", "store_upgrade"], ["Contracts paid", "contract_paid"],
+        ["Daily rewards", "daily_reward"], ["Season rewards claimed", "tier_claimed"]].map(([l, n]) => ({ label: l, n: tot(n) })), null))));
+    return out;
+  }
+
   PAGES.progress = (d) => {
+    if (d.pf) return foundryProgress(d);
     if (d.note) return [card(null, empty(d.note))];
     const looms = ["e", "n", "h", ""].filter((l) => d.results.some((r) => r.loom === l) || pick(d.opened, "puzzle_started", l).length);
     if (!looms.length) return [card("The day, per loom", empty())];

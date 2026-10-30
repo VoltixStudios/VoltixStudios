@@ -200,6 +200,8 @@ is "the lab is a build of its own on the pages"              "$(api "overview?ga
 is "a game's lab players are not counted as its players"     "$(api "engagement?game=pocketfoundry&build=release" | grep -c 'notify_answer')" "0"
 is "its reminder answers are its own"                         "$(api "engagement?game=pocketfoundry&build=lab" | grep -o '"name":"notify_answer","value":"on","events":1,"players":1')" '"name":"notify_answer","value":"on","events":1,"players":1'
 is "and never another game's"                                 "$(api "engagement?game=loom&build=all" | grep -c 'notify_answer\|notification')" "0"
+is "Pocket Foundry's progress page lists its player"        "$(api "progress?game=pocketfoundry&build=lab" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("pf"), [p["install"] for p in d["players"]])')" "True ['12121212']"
+is "and Loom's own progress page never lists it"              "$(api "progress?game=loom&build=all" | grep -c '"pf":true')" "0"
 is "Health counts only the chosen game's batches"             "$(api "health?game=pocketfoundry&build=all" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(sum(r["batches"] for r in d["intake"]))')" "$(sql "SELECT COUNT(*) FROM va_batch WHERE game = 'pocketfoundry'")"
 is "a second refresh within ten minutes is refused"         "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Cookie: $COOKIE" "$U/va/api/refresh")" "429"
 is "an unknown page is refused"                             "$(curl -s -o /dev/null -w '%{http_code}' -H "Cookie: $COOKIE" "$U/va/api/nothing")" "404"

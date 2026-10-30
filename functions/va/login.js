@@ -25,22 +25,37 @@ function page(message, status = 200, extra = {}) {
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#05060a">
 <title>Voltix Analytics</title>
+<link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
 <style>
-  :root { color-scheme: light dark; --bg:#f6f5f2; --fg:#1d1d1f; --muted:#6b6b70; --line:#d9d7d2; --accent:#3d5afe; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#141416; --fg:#ececef; --muted:#9a9aa2; --line:#2e2e33; --accent:#8c9eff; } }
-  * { box-sizing: border-box; }
-  body { margin:0; min-height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--fg);
-         font:16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; padding:16px; }
-  form { width:100%; max-width:320px; display:grid; gap:12px; }
-  h1 { font-size:20px; margin:0 0 8px; }
-  label { display:grid; gap:4px; font-size:14px; color:var(--muted); }
-  input { font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:transparent; color:var(--fg); }
-  button { font:inherit; padding:10px 12px; border:0; border-radius:8px; background:var(--accent); color:#fff; cursor:pointer; }
-  .note { margin:0; font-size:14px; color:var(--muted); }
+  :root { color-scheme:dark; --ink:#05060a; --ink-1:#090b12; --ink-2:#0e111a; --line:rgba(255,255,255,.09);
+          --text:#e9edf6; --muted:#8792a8; --volt:#35a3ff; --volt-2:#a06bff;
+          --display:"Chakra Petch","Segoe UI Semibold",system-ui,sans-serif; --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; display:grid; place-items:center; padding:16px; color:var(--text);
+         font:400 15px/1.5 var(--body); -webkit-font-smoothing:antialiased;
+         background:radial-gradient(800px 420px at 80% -10%, color-mix(in srgb, var(--volt-2) 22%, transparent), transparent 70%),
+                    radial-gradient(700px 400px at 10% 110%, color-mix(in srgb, var(--volt) 18%, transparent), transparent 70%), var(--ink); }
+  form { width:100%; max-width:340px; display:grid; gap:14px; padding:28px 26px; border:1px solid var(--line); border-radius:18px;
+         background:linear-gradient(180deg, var(--ink-2), var(--ink-1)); box-shadow:0 30px 80px -30px color-mix(in srgb, var(--volt) 35%, transparent); }
+  .brand { display:flex; align-items:center; gap:11px; margin-bottom:6px; }
+  .brand img { width:38px; height:38px; }
+  .brand span { font-family:var(--display); font-weight:700; letter-spacing:.04em; text-transform:uppercase; line-height:1.15; }
+  .brand em { display:block; font-style:normal; font-weight:500; color:var(--muted); letter-spacing:.18em; font-size:.68em; }
+  label { display:grid; gap:6px; font-family:var(--display); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  input { font:inherit; font-family:var(--body); font-size:15px; letter-spacing:0; text-transform:none; padding:11px 12px;
+          border:1px solid var(--line); border-radius:10px; background:var(--ink); color:var(--text); }
+  input:focus { outline:2px solid var(--volt); outline-offset:1px; }
+  button { font-family:var(--display); font-weight:600; font-size:15px; letter-spacing:.03em; padding:12px; border:0; border-radius:999px; cursor:pointer;
+           color:#05070e; background:linear-gradient(100deg, var(--volt), var(--volt-2)); box-shadow:0 8px 30px -10px color-mix(in srgb, var(--volt) 70%, transparent); }
+  .note { margin:0; font-size:14px; color:#ffd29a; }
 </style></head>
 <body><form method="post" action="/va/login">
-  <h1>Voltix Analytics</h1>
+  <div class="brand"><img src="/assets/img/voltix-mark.webp" alt="" width="38" height="38"><span>Voltix<em>Analytics</em></span></div>
   ${note}
   <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
   <label>Authenticator code <input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></label>

@@ -51,7 +51,7 @@
 
   function tiles(list) {
     return h("div", { class: "tiles" }, list.map((t) =>
-      h("div", { class: "tile" }, h("div", { class: "l", text: t[0] }), h("div", { class: "v", text: t[1] }), h("div", { class: "l", text: t[2] || "" }))));
+      h("div", { class: "tile" }, h("div", { class: "l", text: t[0] }), h("div", { class: "v", text: t[1] }), h("div", { class: "n", text: t[2] || "" }))));
   }
   /* Stacked vertical bars: rows of { label, parts: [value...], tip }, colours by part. */
   function bars(rows, colours, height) {
@@ -96,8 +96,8 @@
     const today = d.series.find((r) => r.day === d.today) || { players: 0, new: 0 };
     const new30 = sumBy(d.series, (r) => r.new);
     const out = [tiles([
-      ["Players today", int(today.players), "active on the game day"],
-      ["New players today", int(today.new), int(new30) + " in " + d.range + " days"],
+      [d.custom ? "Players on " + dayLabel(d.today) : "Players today", int(today.players), "active on the game day"],
+      [d.custom ? "New on " + dayLabel(d.today) : "New players today", int(today.new), int(new30) + " in " + d.range + " days"],
       ["D1 return", share(d.d1.r, d.d1.n), "new players of the last 14 days"],
       ["Stickiness", share(d.stick.dau, d.stick.mau), "today / last 30 days"],
       ["Time in game", dur(d.stick.seconds), "per player today"],
@@ -214,7 +214,7 @@
           if (c.fd + k > d.today) return h("td", { text: "–", style: { color: "var(--muted)" } });
           if (c.n < 5) return h("td", { text: "under 5", style: { color: "var(--muted)", fontSize: "11px" } });
           const v = (cell.get(c.fd + ":" + k) || 0) / c.n, a = Math.min(0.92, v * 2.5);
-          return h("td", { text: Math.round(v * 100) + "%", style: { background: "rgba(47,91,234," + a.toFixed(2) + ")", color: a > 0.5 ? "#fff" : "inherit", fontWeight: 600 } });
+          return h("td", { text: Math.round(v * 100) + "%", style: { background: "rgba(53,163,255," + a.toFixed(2) + ")", color: a > 0.55 ? "#05070e" : "var(--text)", fontWeight: 600 } });
         })));
       out.push(card("Retention by cohort, day by day",
         h("div", { class: "small", text: "One row per first day. Each cell: the share of that day's new players who played again exactly n days later." }),
@@ -258,7 +258,7 @@
 
   PAGES.engagement = (d) => {
     const k = d.k;
-    const out = [tiles([["Players today", int(k.dau)], ["This week", int(k.wau), "rolling 7 days"], ["This month", int(k.mau), "rolling 30 days"],
+    const out = [tiles([[d.custom ? "Players on " + dayLabel(d.today) : "Players today", int(k.dau)], ["This week", int(k.wau), "rolling 7 days"], ["This month", int(k.mau), "rolling 30 days"],
       ["Sittings a day", k.spd ? k.spd.toFixed(1) : "–", "per active player"], ["Time in game", dur(k.seconds), "per player per day"]])];
     const hmax = Math.max(1, ...d.heat.map((r) => r.n));
     const grid = h("div", { class: "heat", role: "img", "aria-label": "sittings by hour and weekday" });
@@ -266,7 +266,7 @@
       grid.appendChild(h("span", { class: "small", text: DOW[w] }));
       for (let hr = 0; hr < 24; hr++) {
         const n = (d.heat.find((r) => r.dow === w && r.hour === hr) || {}).n || 0;
-        grid.appendChild(h("div", { title: DOW[w] + " " + hr + ":00, " + n, style: { background: "rgba(47,91,234," + (0.06 + 0.86 * n / hmax).toFixed(2) + ")" } }));
+        grid.appendChild(h("div", { title: DOW[w] + " " + hr + ":00, " + n, style: { background: "rgba(53,163,255," + (0.06 + 0.86 * n / hmax).toFixed(2) + ")" } }));
       }
     }
     grid.appendChild(h("span"));
@@ -317,7 +317,7 @@
       const tot = r.solved + r.failed;
       if (tot < 5) return h("td", { text: tot ? "under 5" : "–", style: { color: "var(--muted)", fontSize: "11px" } });
       const v = r.solved / tot, a = Math.max(0.08, Math.min(0.9, v));
-      return h("td", { text: Math.round(v * 100) + "%", style: { background: "rgba(47,91,234," + a.toFixed(2) + ")", color: a > 0.5 ? "#fff" : "inherit", fontWeight: 600 } });
+      return h("td", { text: Math.round(v * 100) + "%", style: { background: "rgba(53,163,255," + a.toFixed(2) + ")", color: a > 0.55 ? "#05070e" : "var(--text)", fontWeight: 600 } });
     }))));
     out.push(card("Solve rate by weekday (gate 7)", h("div", { class: "scroll" }, h("table", null,
       h("thead", null, h("tr", null, h("th", { class: "left", text: "Loom" }), DOW.map((x) => h("th", { text: x })))), wk))));
@@ -371,7 +371,7 @@
       ["Batches today", int(today.batches), "rows the collector wrote; the free limit is 100,000 a day"],
       ["Events refused", int(sumBy(it, (r) => r.refused)), "since " + dayLabel(d.since)],
       ["Waited offline over an hour", share(d.delay.late, d.delay.n), "average wait " + dur(d.delay.avg)],
-      ["Last nightly run", n ? dayLabel(Math.floor((Date.parse(n.at) - DAY0) / 86400000)) + ", " + n.at.slice(11, 16) : "not yet", n ? "rebuilt from " + dayLabel(n.from) + ", " + n.ms + " ms" : "the first runs at 02:10 UTC"],
+      ["Last summary", n ? dayLabel(Math.floor((Date.parse(n.at) - DAY0) / 86400000)) + ", " + n.at.slice(11, 16) + " UTC" : "not yet", n ? "rebuilt from " + dayLabel(n.from) + ", " + n.ms + " ms" : "they run at 08:00 and 22:00 Spanish time"],
     ])];
     out.push(card("Script errors, since " + dayLabel(d.since), d.errors.length
       ? table(["Version", "Kind", "Line:column", "Where", "Count"],
@@ -386,26 +386,48 @@
   };
 
   /* ---------- the frame ---------- */
-  const state = { page: "overview", game: store.get("game", "loom"), range: store.get("range", "30"), build: store.get("build", "release") };
+  /* Dates for the custom range travel as day numbers, the way the server counts. */
+  const isoToDay = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? Math.round((Date.UTC(+m[1], +m[2] - 1, +m[3]) - DAY0) / 86400000) : null; };
+  const dayToIso = (d) => new Date(DAY0 + d * 86400000).toISOString().slice(0, 10);
+  const todayDay = () => Math.floor((Date.now() - DAY0) / 86400000);
+  const ago = (iso) => { const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
+    return m < 1 ? "just now" : m < 60 ? m + " min ago" : m < 1440 ? Math.round(m / 60) + " h ago" : Math.round(m / 1440) + " days ago"; };
+
+  const state = { page: "overview", game: store.get("game", "loom"), range: store.get("range", "30"), build: store.get("build", "release"),
+                  from: store.get("from", ""), to: store.get("to", "") };
   let ticket = 0;
+
+  function summaryLine(sm) {
+    const el = document.getElementById("summaryLine");
+    if (!sm) { el.textContent = "No summary yet. They run at 08:00 and 22:00 Spanish time, or press Refresh now."; return; }
+    const local = new Date(sm.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    el.textContent = "Figures as of the last summary: " + local + " (" + ago(sm.at) + ", " + (sm.source === "manual" ? "by hand" : "scheduled") +
+      "). Next scheduled at 08:00 and 22:00 Spanish time.";
+  }
 
   async function show() {
     const page = (location.hash || "#overview").slice(1);
     state.page = PAGES[page] ? page : "overview";
-    document.querySelectorAll("nav a").forEach((a) => { if (a.getAttribute("href") === "#" + state.page) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    document.querySelectorAll("nav a:not(.brand)").forEach((a) => { if (a.getAttribute("href") === "#" + state.page) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     document.querySelectorAll("[data-range]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.range === state.range)));
+    document.getElementById("customForm").hidden = state.range !== "custom";
     document.getElementById("title").textContent = TITLES[state.page];
     const box = document.getElementById("page");
     const mine = ++ticket;
     box.replaceChildren(h("p", { class: "empty", text: "Loading…" }));
     try {
-      const q = new URLSearchParams({ game: state.game, range: state.range, build: state.build });
-      const r = await fetch("/va/api/" + state.page + "?" + q, { credentials: "same-origin", headers: { Accept: "application/json" } });
+      const params = { game: state.game, build: state.build };
+      const f = isoToDay(state.from), t = isoToDay(state.to);
+      if (state.range === "custom" && f !== null && t !== null) { params.from = f; params.to = t; }
+      else params.range = state.range === "custom" ? "30" : state.range;
+      const r = await fetch("/va/api/" + state.page + "?" + new URLSearchParams(params), { credentials: "same-origin", headers: { Accept: "application/json" } });
       if (r.status === 401) { location.href = "/va/login"; return; }
       const d = await r.json();
       if (mine !== ticket) return;
       if (!r.ok) throw new Error(d.detail || d.error || r.status);
-      document.getElementById("subtitle").textContent = SUBS[state.page] + " · " + dayLabel(d.from) + " to " + dayLabel(d.today);
+      document.getElementById("subtitle").textContent = SUBS[state.page] + " · " + dayLabel(d.from) + " to " + dayLabel(d.today) +
+        (d.custom ? " (custom)" : "");
+      summaryLine(d.summary);
       box.replaceChildren(h("div", { style: { display: "flex", flexDirection: "column", gap: "20px" } }, PAGES[state.page](d)));
     } catch (e) {
       if (mine !== ticket) return;
@@ -413,13 +435,48 @@
     }
   }
 
+  async function refresh() {
+    const btn = document.getElementById("refresh");
+    const line = document.getElementById("summaryLine");
+    btn.disabled = true; btn.textContent = "Refreshing…";
+    try {
+      const r = await fetch("/va/api/refresh", { method: "POST", credentials: "same-origin", headers: { Accept: "application/json" } });
+      if (r.status === 401) { location.href = "/va/login"; return; }
+      const d = await r.json();
+      if (r.ok) { await show(); line.textContent += " " + d.left_today + " manual refreshes left today."; }
+      else if (d.error === "recent") line.textContent = "A summary ran " + ago(d.at) + ". Try again in " + d.wait_min + " min.";
+      else if (d.error === "limit") line.textContent = "That was the last manual refresh for today (" + d.max + " a day). The next scheduled one is at 08:00 or 22:00.";
+      else line.textContent = "The refresh did not finish: " + (d.detail || d.error || r.status);
+    } catch (e) {
+      line.textContent = "The refresh did not finish: " + (e && e.message || e);
+    } finally { btn.disabled = false; btn.textContent = "Refresh now"; }
+  }
+
   function start() {
     const g = document.getElementById("game"), b = document.getElementById("build");
+    const fi = document.getElementById("from"), ti = document.getElementById("to"), note = document.getElementById("customNote");
     g.value = state.game; b.value = state.build;
+    const max = dayToIso(todayDay());
+    fi.max = max; ti.max = max; fi.min = dayToIso(0); ti.min = dayToIso(0);
+    fi.value = state.from || dayToIso(todayDay() - 29); ti.value = state.to || max;
     g.addEventListener("change", () => { state.game = g.value; store.set("game", g.value); show(); });
     b.addEventListener("change", () => { state.build = b.value; store.set("build", b.value); show(); });
     document.querySelectorAll("[data-range]").forEach((btn) => btn.addEventListener("click", () => {
-      state.range = btn.dataset.range; store.set("range", state.range); show(); }));
+      state.range = btn.dataset.range; store.set("range", state.range);
+      if (state.range === "custom" && !(state.from && state.to)) { document.getElementById("customForm").hidden = false;
+        document.querySelectorAll("[data-range]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.range === "custom"))); return; }
+      show(); }));
+    document.getElementById("customForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const f = isoToDay(fi.value), t = isoToDay(ti.value);
+      if (f === null || t === null || f > t) { note.textContent = "The first day must be on or before the last."; return; }
+      if (t - f >= 400) { note.textContent = "At most 400 days."; return; }
+      note.textContent = "";
+      state.from = fi.value; state.to = ti.value; state.range = "custom";
+      store.set("from", state.from); store.set("to", state.to); store.set("range", "custom");
+      show();
+    });
+    document.getElementById("refresh").addEventListener("click", refresh);
     addEventListener("hashchange", show);
     show();
   }

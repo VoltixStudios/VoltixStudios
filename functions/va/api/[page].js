@@ -33,9 +33,17 @@ const json = (body, status = 200) =>
 function ctx(url, env) {
   const p = url.searchParams;
   const game = Object.prototype.hasOwnProperty.call(GAMES, p.get("game")) ? p.get("game") : "loom";
-  const range = RANGES.includes(parseInt(p.get("range"), 10)) ? parseInt(p.get("range"), 10) : 30;
   const build = BUILDS.includes(p.get("build")) ? p.get("build") : "release";
-  const T = vaDay();
+  /* A custom range: from and to as day numbers (days since 1 January 2026), inside
+     what can exist (day 0 to today) and at most 400 days long. Anything else falls
+     back to the preset range ending today. Every page reads `T` as the range's
+     last day, so "today" figures become that day's. */
+  const today = vaDay();
+  const pf = parseInt(p.get("from"), 10), pt = parseInt(p.get("to"), 10);
+  const custom = Number.isInteger(pf) && Number.isInteger(pt) && pf >= 0 && pf <= pt && pt <= today && pt - pf < 400;
+  const T = custom ? pt : today;
+  const range = custom ? pt - pf + 1
+    : (RANGES.includes(parseInt(p.get("range"), 10)) ? parseInt(p.get("range"), 10) : 30);
   const F = T - range + 1;
   const db = env.VA;
   const all = async (sql) => (await db.prepare(sql).all()).results || [];
@@ -49,7 +57,7 @@ function ctx(url, env) {
              src_source, src_campaign, country, dev_model, dev_os
       FROM va_install WHERE game = ${G}),
     du AS (SELECT * FROM va_daily_user WHERE game = ${G} AND ${BF("build")})`;
-  return { game, range, build, T, F, all, one, G, BF, W };
+  return { game, range, build, custom, T, F, all, one, G, BF, W };
 }
 
 /* Integer median of `col` over `from` (a FROM ... WHERE clause), inside D1. */
@@ -220,6 +228,7 @@ const PAGES = {
     const revenue = await c.all(`SELECT CAST((purchase_time - ${DAY0}) / 86400000 AS INTEGER) AS day, sku, currency,
                                    SUM(price_micros) AS micros, COUNT(*) AS n, verified
                                  FROM va_purchase WHERE game = ${c.G} AND purchase_time >= ${DAY0 + c.F * 86400000}
+                                   AND purchase_time < ${DAY0 + (c.T + 1) * 86400000}
                                  GROUP BY day, sku, currency, verified ORDER BY day`);
     const k = await c.one(`WITH ${c.W}
       SELECT (SELECT COUNT(*) FROM du WHERE day BETWEEN ${c.F} AND ${c.T}) AS playerDays,
@@ -309,7 +318,9 @@ export async function onRequestGet({ request, env, params }) {
   const c = ctx(new URL(request.url), env);
   try {
     const data = await page(c);
-    return json({ game: c.game, range: c.range, build: c.build, today: c.T, from: c.F, ...data });
+    const last = await c.one(`SELECT v FROM va_meta WHERE k = 'nightly_last'`);
+    return json({ game: c.game, range: c.range, build: c.build, custom: c.custom, today: c.T, from: c.F,
+                  summary: last.v ? JSON.parse(last.v) : null, ...data });
   } catch (e) {
     return json({ error: "query", detail: String(e && e.message || e).slice(0, 200) }, 500);
   }

@@ -53,8 +53,13 @@ CREATE TABLE IF NOT EXISTS va_install (
   events       INTEGER NOT NULL DEFAULT 0,
   cap_day      INTEGER,                   -- the day cap_n counts for
   cap_n        INTEGER NOT NULL DEFAULT 0,-- events accepted from this install that day
+  tester       INTEGER,                   -- 1: a test install (Google's pre-launch robots,
+                                          -- marked by hand or by the nightly rule); its
+                                          -- events count under Tests, never Players
   PRIMARY KEY (game, install)
 );
+-- A database made before 30 October 2026 lacks `tester`; add it once with:
+--   ALTER TABLE va_install ADD COLUMN tester INTEGER;
 
 -- One row per purchase the game reported. verified = 1 only when Google's
 -- signature checked out against the game's licence key; revenue counts only

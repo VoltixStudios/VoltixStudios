@@ -76,7 +76,7 @@ the new one is saved.
 
 ## 3b. The nightly summaries (a small Worker of their own)
 
-The dashboard reads summaries that a Worker rebuilds every night at 02:10 UTC
+The dashboard reads summaries that a Worker rebuilds twice a day, at 08:00 and 22:00 Spanish time
 (`workers/va-nightly/`). Pages Functions cannot run on a schedule, so it is a
 separate Worker. It has no address, so nothing can call it. Free plan: cron
 triggers are included.
@@ -91,7 +91,7 @@ triggers are included.
    deployment.
 
 Its test, `bash workers/va-nightly/test.sh`, seeds a local database with known
-players and checks every summary (25 checks).
+players and checks every summary (28 checks).
 
 ## 4. Deploy and check
 

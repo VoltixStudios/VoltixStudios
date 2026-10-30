@@ -132,7 +132,8 @@ export async function signedIn(request, env, ms = Date.now()) {
 /* ---------- the headers every /va/ answer carries ---------- */
 export const VA_HEADERS = {
   "Content-Security-Policy":
-    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; " +
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "font-src https://fonts.gstatic.com; img-src 'self' data:; " +
     "connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'",
   "X-Frame-Options": "DENY",
   "X-Content-Type-Options": "nosniff",

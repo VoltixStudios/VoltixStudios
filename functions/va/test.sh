@@ -18,6 +18,8 @@ mkdir -p "$WORK/functions" "$WORK/tools"
 cp -r "$SITE/functions/_va" "$SITE/functions/collect" "$SITE/functions/va" "$WORK/functions/"
 cp -r "$SITE/va" "$WORK/"
 cp "$SITE/tools/va-secrets.mjs" "$WORK/tools/"
+mkdir -p "$WORK/workers/va-nightly/src"
+cp "$SITE/workers/va-nightly/src/index.js" "$WORK/workers/va-nightly/src/"   # the Refresh now button runs the same summary
 echo "ok" > "$WORK/index.html"
 cat > "$WORK/wrangler.jsonc" <<'JSON'
 {
@@ -177,6 +179,15 @@ is "its script too, but only with the login"                "$(curl -s -o /dev/n
 for page in overview acquisition retention engagement progress money health; do
   is "the $page page's data answers"                        "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/$page?game=loom&range=30&build=all" | grep -o '"today":[0-9]*' | head -1 | cut -d: -f1)" '"today"'
 done
+T0=$(( ($(date -u +%s) - $(date -u -d 2026-01-01 +%s)) / 86400 ))
+is "a custom range is honoured"                             "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/overview?game=loom&from=$((T0-10))&to=$((T0-3))" | grep -o '"custom":true,"today":[0-9]*,"from":[0-9]*')" "\"custom\":true,\"today\":$((T0-3)),\"from\":$((T0-10))"
+is "a custom range ending in the future falls back"         "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/overview?game=loom&from=$((T0-3))&to=$((T0+5))" | grep -o '"custom":false')" '"custom":false'
+is "Refresh now without a login is refused"                 "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$U/va/api/refresh")" "401"
+is "Refresh now from another site is refused"               "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Cookie: $COOKIE" -H 'Origin: https://evil.example' "$U/va/api/refresh")" "403"
+is "Refresh now runs the summary"                           "$(curl -s -X POST -H "Cookie: $COOKIE" "$U/va/api/refresh" | grep -o '"ok":true')" '"ok":true'
+is "and records it as done by hand"                         "$(sql "SELECT json_extract(v, '\$.source') FROM va_meta WHERE k = 'nightly_last'")" "manual"
+is "the pages say when it ran"                              "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/health?game=loom" | grep -o '"summary":{"at"')" '"summary":{"at"'
+is "a second refresh within ten minutes is refused"         "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Cookie: $COOKIE" "$U/va/api/refresh")" "429"
 is "an unknown page is refused"                             "$(curl -s -o /dev/null -w '%{http_code}' -H "Cookie: $COOKIE" "$U/va/api/nothing")" "404"
 is "a game, range or build not on the lists falls back"     "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/overview?game=x%27;DROP&range=999&build=evil" | grep -o '"game":"loom","range":30,"build":"release"')" '"game":"loom","range":30,"build":"release"'
 is "the same code cannot sign in twice"                     "$(login "$PASSWORD" "$CODE" | tail -1)" "401"

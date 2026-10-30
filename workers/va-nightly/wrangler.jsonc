@@ -12,8 +12,11 @@
   "compatibility_date": "2026-09-01",
   "workers_dev": false,
   "preview_urls": false,
-  // 02:10 UTC every day: after midnight in Spain, before anyone is up.
-  "triggers": { "crons": ["10 2 * * *"] },
+  // Twice a day, at 08:00 and 22:00 in Spain (Sr. Orra, 30 October 2026). Cloudflare
+  // schedules run in UTC, so these are Spain's winter hours (CET, UTC+1). On the last
+  // Sunday of March, summer time (CEST, UTC+2), change them to "0 6 * * *" and
+  // "0 20 * * *"; back to these on the last Sunday of October.
+  "triggers": { "crons": ["0 7 * * *", "0 21 * * *"] },
   "d1_databases": [
     { "binding": "VA", "database_name": "va", "database_id": "911df83d-68ab-45f0-b5d2-6f0d92a55592" }
   ]

@@ -4,7 +4,8 @@
  * no request, and reaches the database only through its D1 binding. Pages
  * Functions cannot run on a schedule, which is the only reason it is not one.
  *
- * Each night it rebuilds, from the raw batches the collector wrote:
+ * Twice a day (08:00 and 22:00 in Spain; wrangler.jsonc) it rebuilds, from the raw
+ * batches the collector wrote:
  *   va_session      one row per sitting
  *   va_daily_user   one row per player per day (retention, engagement)
  *   va_day_result   Loom: the last word on each day and loom
@@ -15,8 +16,8 @@
  * All the work is SQL run inside D1 (json_each over each batch's events), so
  * the Worker's own CPU time stays far under the free plan's limit. What it
  * costs in D1 rows written is the summaries for four days, deleted and
- * written again: at a thousand players a day, roughly 30,000 rows a night,
- * a third of the free daily allowance; at Loom's size today, a few hundred.
+ * written again: at a thousand players a day, roughly 30,000 rows a run, so
+ * 60,000 a day, under the free daily allowance of 100,000; at Loom's size today, a few hundred.
  *
  * VA_BACKFILL_DAYS (a variable, not a secret) widens the window once: set it
  * for the first run after deployment, or after a change to these summaries,
@@ -40,8 +41,13 @@ export const vaDay = (ms) => Math.floor((ms - DAY0) / 86400000);
 
 /* Every event of every batch that can hold a day in the window: a batch
    arrives on or after the day of the events it carries. */
+/* The build an event counts under: what the game said ('release', 'debug'), except
+   that an install marked as a tester counts as 'debug' whatever it sent, so Google's
+   pre-launch robots never appear among the players. */
 const EV = `ev AS (
   SELECT b.game, b.install, b.platform, b.country, b.vc,
+         CASE WHEN (SELECT tester FROM va_install i WHERE i.game = b.game AND i.install = b.install) = 1
+              THEN 'debug' ELSE COALESCE(json_extract(e.value, '$.x.build'), 'release') END AS bld,
          json_extract(e.value, '$.n') AS n,
          json_extract(e.value, '$.t') AS t,
          json_extract(e.value, '$.s') AS s,
@@ -63,7 +69,7 @@ export function statements(from) {
            CAST(SUM(COALESCE(${X("engagement_time_msec")}, 0)) / 1000 AS INTEGER),
            MAX(CASE WHEN n = 'app_open' THEN ${X("cause")} END),
            MAX(CASE WHEN n = 'app_open' THEN ${X("tz_offset")} END),
-           MAX(${X("build")})
+           MAX(bld)
     FROM ev WHERE s IS NOT NULL
     GROUP BY game, install, s
     HAVING MIN(d) >= ?1`, [from]]);
@@ -72,7 +78,7 @@ export function statements(from) {
   s.push([`WITH ${EV}
     INSERT INTO va_daily_user (game, install, day, platform, build, vc, country, events, sessions, seconds,
                                wins, losses, left_, hints, ads, ad_micros, streak, payer)
-    SELECT game, install, d, MAX(platform), MAX(${X("build")}), MAX(vc), MAX(country), COUNT(*), COUNT(DISTINCT s),
+    SELECT game, install, d, MAX(platform), MAX(bld), MAX(vc), MAX(country), COUNT(*), COUNT(DISTINCT s),
            CAST(SUM(COALESCE(${X("engagement_time_msec")}, 0)) / 1000 AS INTEGER),
            SUM(CASE WHEN (n = 'day_result' AND ${X("result")} = 'solved') OR (n = 'level_end' AND ${X("success")} = 1) THEN 1 ELSE 0 END),
            SUM(CASE WHEN (n = 'day_result' AND ${X("result")} = 'failed')
@@ -108,27 +114,36 @@ export function statements(from) {
   s.push(["DELETE FROM va_event_day WHERE day >= ?1", [from]]);
   s.push([`WITH ${EV}
     INSERT INTO va_event_day (game, day, build, name, dim, value, events, players)
-    SELECT game, d, COALESCE(${X("build")}, 'release'), n, '', '', COUNT(*), COUNT(DISTINCT install)
-    FROM ev WHERE d >= ?1 GROUP BY game, d, COALESCE(${X("build")}, 'release'), n`, [from]]);
+    SELECT game, d, bld, n, '', '', COUNT(*), COUNT(DISTINCT install)
+    FROM ev WHERE d >= ?1 GROUP BY game, d, bld, n`, [from]]);
   for (const dim of DIMS) {
     s.push([`WITH ${EV}
       INSERT INTO va_event_day (game, day, build, name, dim, value, events, players)
-      SELECT game, d, COALESCE(${X("build")}, 'release'), n, '${dim}', CAST(${X(dim)} AS TEXT), COUNT(*), COUNT(DISTINCT install)
+      SELECT game, d, bld, n, '${dim}', CAST(${X(dim)} AS TEXT), COUNT(*), COUNT(DISTINCT install)
       FROM ev WHERE d >= ?1 AND ${X(dim)} IS NOT NULL
-      GROUP BY game, d, COALESCE(${X("build")}, 'release'), n, CAST(${X(dim)} AS TEXT)`, [from]]);
+      GROUP BY game, d, bld, n, CAST(${X(dim)} AS TEXT)`, [from]]);
   }
   return s;
 }
 
-export async function nightly(env, now = Date.now()) {
+/* Google's pre-launch report installs the release build on its own phones and
+   emulators. Its emulators name themselves (the model starts "Google sdk_gphone");
+   those are marked as testers here. Its real phones cannot be told apart from
+   the server, so they are marked by hand, and from Loom's next version the app
+   recognises Google's test lab itself and labels its events 'debug'. */
+const TESTER_RULE = "UPDATE va_install SET tester = 1 WHERE tester IS NULL AND dev_model LIKE 'Google sdk_gphone%'";
+
+/* `source` says who asked: the schedule, or the dashboard's Refresh now button. */
+export async function nightly(env, now = Date.now(), source = "schedule") {
   const db = env.VA;
+  await db.prepare(TESTER_RULE).run();
   const today = vaDay(now);
   const back = parseInt(env.VA_BACKFILL_DAYS || "", 10);
   const from = today - (Number.isFinite(back) && back > REDO ? back : REDO);
   const started = Date.now();
   await db.batch(statements(from).map(([sql, args]) => db.prepare(sql).bind(...args)));
   const purged = await db.prepare("DELETE FROM va_batch WHERE day < ?").bind(today - KEEP_DAYS).run();
-  const note = { at: new Date(now).toISOString(), from, today, ms: Date.now() - started,
+  const note = { at: new Date(now).toISOString(), source, from, today, ms: Date.now() - started,
                  purged: (purged.meta && purged.meta.changes) || 0 };
   await db.prepare("INSERT INTO va_meta (k, v) VALUES ('nightly_last', ?) ON CONFLICT (k) DO UPDATE SET v = excluded.v")
     .bind(JSON.stringify(note)).run();

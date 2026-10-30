@@ -42,6 +42,16 @@ loom/play/                 today's Loom cloth, playable here: a copy of the game
 functions/analytics/       Pages Function: first-party proxy for Umami
 functions/loom/            Pages Function: Loom's day counters, and how to turn
                            them on (SETUP.md). Needs a D1 binding called LOOM
+functions/collect/         Voltix Analytics: the collector the games post to, and
+                           a player's deletion. Needs a D1 binding called VA
+functions/va/              Voltix Analytics: the login and the dashboard's API, the
+                           schema, the tests and how to turn it on (SETUP.md)
+functions/_va/             shared by the two above; not a route
+va/                        the Voltix Analytics dashboard page; holds no data, and
+                           no page on the site links to it
+tools/va-secrets.mjs       makes the dashboard's three login secrets
+workers/va-nightly/        Voltix Analytics: the nightly summaries, a Worker on a
+                           cron with no address; deployed on its own (SETUP.md)
 assets/css/style.css       palette, header, buttons, social, footer
 assets/css/doc.css         long-form document pages only
 assets/js/main.js          sticky header, scroll reveal, scroll-spy — all optional

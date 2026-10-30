@@ -1,0 +1,20 @@
+// Voltix Analytics — the nightly summaries. A Worker with a schedule and no
+// address: workers_dev is off and there is no route, so nothing can call it.
+//
+//   npx wrangler deploy            from this folder, once the database exists
+//
+// database_id: the id of the D1 database "va" (Cloudflare → Storage & Databases
+// → D1 → va, or `npx wrangler d1 list`). It is not a secret; it is useless
+// without the account. Until it is filled in, deploying fails, which is meant.
+{
+  "name": "va-nightly",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  // 02:10 UTC every day: after midnight in Spain, before anyone is up.
+  "triggers": { "crons": ["10 2 * * *"] },
+  "d1_databases": [
+    { "binding": "VA", "database_name": "va", "database_id": "FILL-IN-THE-VA-DATABASE-ID" }
+  ]
+}

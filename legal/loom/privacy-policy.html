@@ -114,13 +114,13 @@
       </p>
 
       <dl class="doc-meta" data-lang="en">
-        <div><dt>Effective date</dt><dd>17 October 2026</dd></div>
+        <div><dt>Effective date</dt><dd>30 October 2026</dd></div>
         <div><dt>App</dt><dd>Loom <code>com.voltixstudios.loom</code></dd></div>
         <div><dt>Developer</dt><dd>Voltix Studios
           <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
       </dl>
       <dl class="doc-meta" data-lang="es" lang="es">
-        <div><dt>Fecha de entrada en vigor</dt><dd>17 de octubre de 2026</dd></div>
+        <div><dt>Fecha de entrada en vigor</dt><dd>30 de octubre de 2026</dd></div>
         <div><dt>Aplicación</dt><dd>Loom <code>com.voltixstudios.loom</code></dd></div>
         <div><dt>Desarrollador</dt><dd>Voltix Studios
           <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
@@ -186,7 +186,7 @@
           and a new phone starts a new quilt.
         </p>
 
-        <h2 id="analytics">Analytics (Google Analytics)</h2>
+        <h2 id="analytics">Analytics (Google Analytics and our own)</h2>
         <p>
           To learn whether the game explains itself and whether people come back, the app sends a
           small record of what happened in it to Google Analytics. There is no analytics library
@@ -217,10 +217,40 @@
           IP address and your browser's user agent, and the app marks every request so that Google
           is told not to use it for advertising. Events wait on the phone while it is offline and
           are sent later, oldest first; anything older than three days is dropped. You can switch
-          analytics off on your phone from the playtest log (press and hold the footer of the
-          game's main screen) — the switch is remembered and nothing is sent afterwards. See
+          analytics off in <span class="ui">Settings → Send anonymous statistics</span>, or from the
+          playtest log (press and hold the footer of the game's main screen). The switch is
+          remembered, nothing is sent afterwards, to Google or to us, and what our own server holds
+          for your phone is deleted (see below). See
           <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Google's
           Privacy Policy</a> for how Google processes this data.
+        </p>
+        <p>
+          <strong>Our own analytics.</strong> Since version 29 the same events also go to our own
+          server (a small function on our website, <code>voltixstudios.pages.dev</code>, hosted by
+          Cloudflare), so that we can read the game's numbers without depending on Google. They are
+          stored in our database under the same random identifier, with these additions:
+        </p>
+        <ul>
+          <li>the phone's maker and model, its Android and WebView versions, its language and its
+              screen size, once for each version of the app;</li>
+          <li>where the app was installed from, as Google Play reports it to the app (for example
+              &ldquo;google-play / organic&rdquo;, or the name of an advertising campaign), once;
+              this is never sent to Google Analytics;</li>
+          <li>the phone's time zone, as a number of minutes from UTC, so that we know at what time
+              of day people play;</li>
+          <li>for a purchase, the receipt Google signed and the price you paid, so that only real
+              purchases are counted; the purchase token inside the receipt is read and never
+              stored;</li>
+          <li>what an advertisement earned us, as AdMob reports it to the app.</li>
+        </ul>
+        <p>
+          Our server records the country that Cloudflare works out from your IP address, and never
+          stores the address itself. The individual events are deleted after 90 days. A daily
+          summary for each identifier (which days it played, for how long, and each day's result)
+          is kept, so that we can see whether people come back over months. Cloudflare processes
+          this data for us as our host and does not use it for anything else. Turning analytics
+          off asks our server to delete everything it holds under your phone's identifier, at
+          once; <a href="delete-account.html">Delete Your Data</a> explains the other ways.
         </p>
 
         <h2 id="scores">Comparing your day with other players</h2>
@@ -342,8 +372,9 @@
         <h2 id="deletion">Data deletion</h2>
         <p>
           Everything on the phone is deleted by uninstalling the app. The Android backup, what
-          Google Play holds about your purchases and what Google Analytics holds about your play
-          are covered, route by route, in <a href="delete-account.html">Delete Your Data</a>.
+          Google Play holds about your purchases, and what Google Analytics and our own analytics
+          hold about your play are covered, route by route, in
+          <a href="delete-account.html">Delete Your Data</a>.
         </p>
 
         <h2 id="children">Children</h2>
@@ -427,7 +458,7 @@
           igual que antes y un teléfono nuevo empieza una colcha nueva.
         </p>
 
-        <h2 id="analytics-es">Analíticas (Google Analytics)</h2>
+        <h2 id="analytics-es">Analíticas (Google Analytics y las nuestras)</h2>
         <p>
           Para saber si el juego se explica solo y si la gente vuelve, la aplicación envía a Google
           Analytics un pequeño registro de lo que ha pasado en ella. No hay ninguna biblioteca de
@@ -459,11 +490,42 @@
           de usuario de tu navegador, y la aplicación marca cada petición para indicar a Google
           que no la use con fines publicitarios. Los eventos esperan en el teléfono mientras no hay
           conexión y se envían después, los más antiguos primero; lo que tenga más de tres días se
-          descarta. Puedes desactivar las analíticas en tu teléfono desde el registro de pruebas
-          (mantén pulsado el pie de la pantalla principal del juego): la elección se recuerda y no
-          se envía nada más. Consulta la
+          descarta. Puedes desactivar las analíticas en <span class="ui">Ajustes → Enviar estadísticas
+          anónimas</span>, o desde el registro de pruebas (mantén pulsado el pie de la pantalla
+          principal del juego). La elección se recuerda, no se envía nada más, ni a Google ni a
+          nosotros, y se borra lo que nuestro propio servidor guarda de tu teléfono (ver más abajo).
+          Consulta la
           <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Política de
           Privacidad de Google</a> para saber cómo trata Google estos datos.
+        </p>
+        <p>
+          <strong>Nuestras propias analíticas.</strong> Desde la versión 29, los mismos eventos van
+          también a nuestro propio servidor (una pequeña función de nuestra web,
+          <code>voltixstudios.pages.dev</code>, alojada en Cloudflare), para que podamos leer las
+          cifras del juego sin depender de Google. Se guardan en nuestra base de datos con el mismo
+          identificador aleatorio, y con estos añadidos:
+        </p>
+        <ul>
+          <li>la marca y el modelo del teléfono, sus versiones de Android y de WebView, su idioma y
+              el tamaño de su pantalla, una vez por cada versión de la aplicación;</li>
+          <li>desde dónde se instaló la aplicación, tal como Google Play se lo comunica (por
+              ejemplo, &laquo;google-play / organic&raquo;, o el nombre de una campaña de
+              publicidad), una sola vez; esto nunca se envía a Google Analytics;</li>
+          <li>la zona horaria del teléfono, como un número de minutos respecto a UTC, para saber a
+              qué hora del día se juega;</li>
+          <li>en una compra, el recibo firmado por Google y el precio que pagaste, para que solo se
+              cuenten las compras reales; el token de compra que va dentro del recibo se lee y nunca
+              se guarda;</li>
+          <li>lo que nos ha pagado un anuncio, tal como AdMob se lo comunica a la aplicación.</li>
+        </ul>
+        <p>
+          Nuestro servidor anota el país que Cloudflare deduce de tu dirección IP, y nunca guarda la
+          dirección. Los eventos individuales se borran a los 90 días. Se conserva un resumen diario
+          por identificador (qué días jugó, cuánto tiempo y el resultado de cada día), para saber si
+          la gente vuelve con los meses. Cloudflare trata estos datos por cuenta nuestra, como
+          proveedor de alojamiento, y no los usa para nada más. Al desactivar las analíticas, se pide
+          a nuestro servidor que borre en el acto todo lo que guarda con el identificador de tu
+          teléfono; <a href="delete-account.html">Eliminar tus datos</a> explica las demás vías.
         </p>
 
         <h2 id="scores-es">Comparar tu día con otros jugadores</h2>
@@ -590,7 +652,7 @@
         <p>
           Todo lo que hay en el teléfono se elimina desinstalando la aplicación. La copia de
           seguridad de Android, lo que Google Play guarda sobre tus compras y lo que Google
-          Analytics guarda sobre tus partidas se explica, vía por vía, en
+          Analytics y nuestras propias analíticas guardan sobre tus partidas se explica, vía por vía, en
           <a href="delete-account.html">Eliminar tus datos</a>.
         </p>
 

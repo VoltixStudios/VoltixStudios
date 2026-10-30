@@ -330,6 +330,7 @@ p:last-child { margin-bottom: 0; }
 .game--cw { --accent: #ff8a2b; --accent-2: #ffc04d; }
 .game--dg { --accent: #e8a33a; --accent-2: #5fb6e0; }
 .game--loom { --accent: #3b8bf0; --accent-2: #f2d9a6; }
+.game--pf { --accent: #e88a48; --accent-2: #3fa59d; }
 
 /* Loom's cloth, drawn rather than photographed: the game is a 4x4 grid of three
    thread colours, so the section can show a real day's plain cloth and pattern

@@ -252,6 +252,14 @@ def build_loom(root):
         save(Image.open(src).convert("RGB"), f"loom-shot-{i}.webp", width=540, quality=82)
 
 
+def build_pocket_foundry(root):
+    print("pocket foundry")
+    # The Parcel Yard with all four places repaired, the island's last state in the game
+    # (art/README.md in the game's repository). A painted scene on its sky: nothing to trim.
+    save(Image.open(root / "art" / "raw" / "s1-4.png").convert("RGB"),
+         "pocketfoundry-key.webp", width=1280)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--logo", type=Path, default=Path.home() / "voltix_studios/logos/voltix_logo_1.png")
@@ -260,13 +268,15 @@ def main():
     ap.add_argument("--gourmand", type=Path,
                     default=Path.home() / "voltix_studios/DungeonGourmand")
     ap.add_argument("--loom", type=Path, default=Path.home() / "voltix_studios/Loom")
-    ap.add_argument("--only", nargs="*", choices=["logo", "paper", "coreward", "gourmand", "loom"],
+    ap.add_argument("--foundry", type=Path, default=Path.home() / "voltix_studios/PocketFoundry")
+    ap.add_argument("--only", nargs="*", choices=["logo", "paper", "coreward", "gourmand", "loom", "foundry"],
                     help="rebuild only these; the other source roots need not exist")
     args = ap.parse_args()
 
     builders = [("logo", args.logo, build_voltix), ("paper", args.paper, build_paper_squadron),
                 ("coreward", args.coreward, build_coreward),
-                ("gourmand", args.gourmand, build_dungeon_gourmand), ("loom", args.loom, build_loom)]
+                ("gourmand", args.gourmand, build_dungeon_gourmand), ("loom", args.loom, build_loom),
+                ("foundry", args.foundry, build_pocket_foundry)]
     if args.only:
         builders = [b for b in builders if b[0] in args.only]
 

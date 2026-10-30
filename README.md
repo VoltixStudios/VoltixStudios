@@ -1,8 +1,8 @@
 # VoltixStudios
 
 The Voltix Studios website — a short home page for the studio, one page for
-each of its four games, **Paper Squadron**, **Loom**, **CoreWard** and **Dungeon
-Gourmand**, Loom's daily cloth playable in the browser, the legal documents Google
+each of its five games, **Paper Squadron**, **Loom**, **CoreWard**, **Dungeon
+Gourmand** and **Pocket Foundry**, Loom's daily cloth playable in the browser, the legal documents Google
 Play requires those games to publish, and the one file Loom reads at launch.
 
 Live at <https://voltixstudios.pages.dev/>, served by Cloudflare Pages.
@@ -27,7 +27,7 @@ Live at <https://voltixstudios.pages.dev/>, served by Cloudflare Pages.
 ## Layout
 
 ```
-index.html                 the home page: hero, the four game cards, studio, contact
+index.html                 the home page: hero, the five game cards, studio, contact
 games/<game>/index.html    one page per game — everything the home page once said about it
 404.html                   self-contained; no assets, works at any depth
 robots.txt  sitemap.xml
@@ -36,6 +36,7 @@ legal/paper-squadron/      privacy policy + account deletion, EN/ES
 legal/loom/                privacy policy + data deletion, EN/ES
 legal/coreward/            privacy policy + terms & virtual currency, EN/ES
 legal/dungeon-gourmand/    privacy policy + terms + deletion, EN/ES
+legal/pocket-foundry/      privacy policy + terms + deletion, EN/ES
 legal/website-privacy.html what the *site* measures, EN/ES — see Analytics below
 loom/config.json           Loom's remote switch: which rewarded placements are on — see below
 loom/play/                 today's Loom cloth, playable here: a copy of the game — see below
@@ -112,6 +113,9 @@ legal/loom/delete-account.html        Play data-safety "data deletion" URL
 legal/dungeon-gourmand/privacy-policy.html
 legal/dungeon-gourmand/terms.html
 legal/dungeon-gourmand/delete-account.html
+legal/pocket-foundry/privacy-policy.html  the app's privacy link (MainActivity.PRIVACY_URL), Play Console + AdMob
+legal/pocket-foundry/terms.html
+legal/pocket-foundry/delete-account.html  Play data-safety "data deletion" URL
 legal/website-privacy.html            the site itself, not a game — no store
                                       references it, so this URL is ours to move
 ```
@@ -166,6 +170,15 @@ id, one local reminder alarm, one JSON of remote configuration from this site,
 rewarded AdMob only behind a consent form, Play Billing for six one-time products.
 Loom has no account, so its deletion page is the CoreWard shape: three routes to
 three owners.
+
+**Pocket Foundry's three documents also describe a game that has not shipped yet**
+(30 October 2026). They were written from the game's repository, `~/voltix_studios/PocketFoundry`:
+`docs/ANALYTICS.md` and `docs/DECISIONS.md` PF-019 for Voltix Analytics, Firebase Analytics
+(release builds only, no advertising id), Crashlytics, Cloud Messaging by topic and the local
+reminders; `game/src/economy.js` for the catalogue; `android/README.md` for the shell. Each opens
+with the in-development note. The game's interface is English only, so the Spanish text names
+its menu items in English. The key art is the Parcel Yard fully repaired
+(`build_assets.py --only foundry`).
 
 ## Loom in the browser
 

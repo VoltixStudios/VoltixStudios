@@ -66,11 +66,13 @@ const POCKETFOUNDRY_EVENTS = [
   "shop_open", "offer_shown", "offer_dismissed", "purchase_started", "purchase_pending",
   "purchase_failed", "purchase",
   "rewarded_ad_offered", "rewarded_ad_started", "rewarded_ad_completed", "interstitial_shown", "ad_paid",
+  // the reminders and Firebase's messages (PocketFoundry PF-019, 30 October 2026)
+  "notify_asked", "notify_answer", "notif_open",
 ];
 
 const POCKETFOUNDRY_PROPS = [
   "app_version", "version_code", "first_day", "days_played", "furthest_island", "orders_filled",
-  "repairs", "season_tier", "pass_owner", "payer", "no_ads", "streak", "ads_consent",
+  "repairs", "season_tier", "pass_owner", "payer", "no_ads", "streak", "ads_consent", "notify_on",
 ];
 
 const LOOM_PROPS = [

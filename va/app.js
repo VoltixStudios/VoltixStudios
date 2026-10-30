@@ -92,6 +92,35 @@
     return h("div", { class: "scroll" }, h("table", null, h("thead", null, head), h("tbody", null, body)));
   }
 
+  /* ---------- each game's own words ----------
+     The figures are always the chosen game's (every query filters on it); what differs between games is
+     which events mean what. A game with no profile here shows its first-day steps as it sends them and
+     the generic cards, never another game's. */
+  const PROFILES = {
+    loom: {
+      steps: [["intro", "Saw the first-day card"], ["demo_done", "Watched the demonstration"], ["loom_chosen", "Chose a loom"],
+              ["first_weave", "First weave"], ["first_result", "First result"], ["reminder_offered", "Offered the reminder"]],
+      headline: ["first_result", "Got a first result"], second: ["loom_chosen", "Chose a first loom"],
+      opens: ["launcher", "reminder", "link"],
+      reminder: [["Offered", "reminder_offered"], ["Accepted", "reminder_accepted"], ["Declined", "reminder_declined"],
+                 ["Refused by Android", "reminder_permission_denied"], ["Opened the game", "reminder_opened"]],
+      use: [["Statistics", "stats_opened"], ["Quilt", "quilt_opened"], ["Archive", "archive_opened"], ["Replayed solution", "solution_replayed"],
+            ["Help", "help_opened"], ["Shared a result", "share_pressed"]],
+    },
+    pocketfoundry: {
+      steps: [["start", "Pressed Start"], ["first_belt", "Laid a first belt"], ["first_run", "Ran the factory"], ["first_failure", "First failed run"],
+              ["first_fill", "Filled a first order"], ["first_island", "Opened an island"], ["first_repair", "Repaired a first place"]],
+      headline: ["first_fill", "Filled a first order"], second: ["first_repair", "Repaired a first place"],
+      opens: ["launcher", "notification"],
+      reminder: [["Asked, in the game's words", "notify_asked"], ["Said yes", "notify_answer:on"], ["Not now", "notify_answer:not_now"],
+                 ["Refused by Android", "notify_answer:denied"], ["Blocked in settings", "notify_answer:blocked"], ["Opened by a notification", "notif_open"]],
+      use: [["Collected a workshop", "workshop_collect"], ["Daily reward", "daily_reward"], ["Used a hint", "hint_used"], ["Bought a solution", "solution_used"],
+            ["Placed a decoration", "decoration_bought"], ["Upgraded a building", "building_upgrade"], ["Paid a contract", "contract_paid"],
+            ["Claimed a season reward", "tier_claimed"], ["Opened the shop", "shop_open"]],
+    },
+  };
+  const profile = (g) => PROFILES[g] || null;
+
   /* ---------- the pages ---------- */
   const PAGES = {};
 
@@ -153,11 +182,14 @@
     const top = sources.slice(0, 3);
     const total = sumBy(d.series, (r) => r.n);
     const step = (s) => sumBy(pick(d.steps, "first_session_step", s), (r) => r.players);
-    const firstResult = step("first_result");
+    const P = profile(d.game);
+    /* Without a profile, the steps the game actually sent, most common first. */
+    const seen = [...new Set(d.steps.filter((r) => r.name === "first_session_step").map((r) => r.value))]
+      .sort((a, b) => step(b) - step(a)).map((s) => [s, s.replace(/_/g, " ")]);
+    const stepList = P ? P.steps : seen;
     const out = [tiles([
       ["New players, " + d.range + " days", int(total)],
-      ["Got a first result", share(firstResult, total), "of new players, first day"],
-      ["Chose a first loom", share(step("loom_chosen"), total)],
+      ...(P ? [[P.headline[1], share(step(P.headline[0]), total), "of new players, first day"], [P.second[1], share(step(P.second[0]), total)]] : []),
       ["Sources", int(sources.length)],
     ])];
     const colours = ["var(--a)", "var(--a2)", "var(--a3)"];
@@ -169,16 +201,13 @@
         if (sources.length > 3) parts[2] += sumBy(rows.filter((r) => top.indexOf(r.source) < 0), (r) => r.n);
         return { parts, tip: dayLabel(day) + ": " + parts.reduce((a, b) => a + b, 0) + " new" };
       }), colours), dayAxis(d.from, d.today)));
-    const steps = ["intro", "demo_done", "loom_chosen", "first_weave", "first_result", "reminder_offered"];
-    const names = { intro: "Saw the first-day card", demo_done: "Watched the demonstration", loom_chosen: "Chose a loom",
-                    first_weave: "First weave", first_result: "First result", reminder_offered: "Offered the reminder" };
     const campHead = h("tr", null, ["Source / campaign", "New", "First result", "D1"].map((t, i) => h("th", { class: i ? null : "left", text: t })));
     const campRows = d.campaigns.map((c) => h("tr", null,
       h("td", { class: "left", text: c.campaign ? c.source + ": " + c.campaign : c.source }),
       h("td", { text: int(c.n) }), h("td", { text: share(c.first, c.n) }), h("td", { text: share(c.d1r, c.d1n) })));
     const campTable = h("div", { class: "scroll" }, h("table", null, h("thead", null, campHead), h("tbody", null, campRows)));
     out.push(h("div", { class: "grid2" },
-      card("The first day, step by step", total ? hbars(steps.map((s) => ({ label: names[s], n: step(s) })), total) : empty()),
+      card("The first day, step by step", total && stepList.length ? hbars(stepList.map(([s, l]) => ({ label: l, n: step(s) })), total) : empty()),
       card("By source and campaign", d.campaigns.length ? campTable : empty())));
     out.push(h("div", { class: "grid3" },
       card("Country", hbars(d.country, total)), card("Phone", hbars(d.model, total)), card("Android version", hbars(d.os, total))));
@@ -284,16 +313,18 @@
         hbars(LB.map((l, i) => ({ label: l, n: (d.lengths.find((r) => r.b === i) || {}).n || 0 })), lt || null)),
       card("Days played in the first week", h("div", { class: "small", text: "New players whose first week is over" }),
         hbars([1, 2, 3, 4, 5, 6, 7].map((n) => ({ label: n + (n === 1 ? " day" : " days"), n: (d.firstWeek.find((r) => r.days === n) || {}).n || 0 })), fw || null))));
-    const t = (n) => sumBy(pick(d.totals, n, ""), (r) => r.players);
+    /* "name" counts players who sent the event; "name:value" those whose `state` was that value. */
+    const t = (key) => { const [n, v] = key.split(":");
+      return v === undefined ? sumBy(pick(d.totals, n, ""), (r) => r.players) : sumBy(pick(d.answers || [], n, v), (r) => r.players); };
     const open = (c) => sumBy(pick(d.opens, "app_open", c), (r) => r.events);
     const ot = sumBy(d.opens, (r) => r.events);
+    const P = profile(d.game);
+    const causes = P ? P.opens : [...new Set(d.opens.map((r) => r.value))];
     out.push(h("div", { class: "grid3" },
-      card("What opened the game", hbars(["launcher", "reminder", "link"].map((c) => ({ label: c, n: open(c) })), ot || null)),
-      card("The reminder", hbars([["Offered", t("reminder_offered")], ["Accepted", t("reminder_accepted")], ["Declined", t("reminder_declined")],
-        ["Refused by Android", t("reminder_permission_denied")], ["Opened the game", t("reminder_opened")]].map(([l, n]) => ({ label: l, n })), null)),
+      card("What opened the game", causes.length ? hbars(causes.map((c) => ({ label: c, n: open(c) })), ot || null) : empty()),
+      card("Reminders", P ? hbars(P.reminder.map(([l, n]) => ({ label: l, n: t(n) })), null) : empty("No reminder events defined for this game.")),
       card("What they use", h("div", { class: "small", text: "Share of player-days" }),
-        hbars([["Statistics", "stats_opened"], ["Quilt", "quilt_opened"], ["Archive", "archive_opened"], ["Replayed solution", "solution_replayed"],
-          ["Help", "help_opened"], ["Shared a result", "share_pressed"]].map(([l, n]) => ({ label: l, n: t(n) })), d.playerDays || null))));
+        P ? hbars(P.use.map(([l, n]) => ({ label: l, n: t(n) })), d.playerDays || null) : empty("No features defined for this game."))));
     return out;
   };
 
@@ -373,7 +404,7 @@
     const today = it.find((r) => r.day === d.today) || { batches: 0, kept: 0, refused: 0 };
     const n = d.nightly;
     const out = [tiles([
-      ["Batches today", int(today.batches), "rows the collector wrote; the free limit is 100,000 a day"],
+      ["Batches today", int(today.batches), "this game's; all games together: " + int(d.allToday || 0) + " of the free 100,000 a day"],
       ["Events refused", int(sumBy(it, (r) => r.refused)), "since " + dayLabel(d.since)],
       ["Waited offline over an hour", share(d.delay.late, d.delay.n), "average wait " + dur(d.delay.avg)],
       ["Last summary", n ? dayLabel(Math.floor((Date.parse(n.at) - DAY0) / 86400000)) + ", " + n.at.slice(11, 16) + " UTC" : "not yet", n ? "rebuilt from " + dayLabel(n.from) + ", " + n.ms + " ms" : "they run at 08:00 and 22:00 Spanish time"],
@@ -385,7 +416,7 @@
     out.push(h("div", { class: "grid3" },
       card("Versions, last 7 days", hbars(d.versions.map((r) => ({ label: r.vc ? "Version " + r.vc : "Unknown", n: r.n })), sumBy(d.versions, (r) => r.n) || null)),
       card("Consent answers", hbars(d.consent.map((r) => ({ label: r.value, n: r.players })), null)),
-      card("Logins and deletions", hbars([["Logins, last day", (d.logins && d.logins.ok) || 0], ["Failed logins, last day", (d.logins && d.logins.failed) || 0],
+      card("Logins (every game) and deletions (this game)", hbars([["Logins, last day", (d.logins && d.logins.ok) || 0], ["Failed logins, last day", (d.logins && d.logins.failed) || 0],
         ["Players' deletion requests", d.deleted]].map(([l, v]) => ({ label: l, n: v })), null))));
     return out;
   };

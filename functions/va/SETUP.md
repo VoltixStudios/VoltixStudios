@@ -128,7 +128,21 @@ Push the site (with your word, as always). Then, in a private browser window:
 bash functions/va/test.sh
 ```
 
-65 checks against a local D1 with made-up secrets and a made-up licence key: the
+79 checks against a local D1 with made-up secrets and a made-up licence key: the
 collector's rules, purchase signatures, the daily cap, deletion, and the login (wrong
 password, wrong code, a code used twice, forged and expired cookies, the lockout,
-headers). Nothing touches the account.
+headers), and that two games under one install id stay apart. Nothing touches the account.
+
+## Games kept apart (30 October 2026)
+
+Every table carries `game`, and every page query filters on the game chosen in the picker; the
+nightly summaries group by it too. The same install id under two games is two players. The only
+figures shared across games are the ones that belong to the whole service: the database's free
+daily limit (Health, "all games together"), the last summary run, and the logins.
+
+What differs between games is what their events mean. `va/app.js` holds a profile per game
+(`PROFILES`): its first-day steps, what opened the game, its reminder figures and the features it
+counts. A game without a profile shows the first-day steps it actually sent and nothing borrowed
+from another game. Pocket Foundry's lab playtests are a build of their own (`lab`), beside
+release and debug. `test.sh`, "Games kept apart", checks all of this against one install id
+seeded in two games.

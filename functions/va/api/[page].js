@@ -24,7 +24,9 @@ import { GAMES } from "../../_va/games.js";
 import { vaDay, DAY0 } from "../../_va/lib.js";
 
 const RANGES = [7, 30, 90];
-const BUILDS = ["release", "debug", "all"];
+/* release: players. debug: the studio's phones, emulators and Google's test robots. lab: the
+   private lab's playtests (Pocket Foundry). web: a public web copy. all: every build together. */
+const BUILDS = ["release", "debug", "lab", "web", "all"];
 const COLS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 21, 30];
 
 const json = (body, status = 200) =>
@@ -188,9 +190,13 @@ const PAGES = {
     const opens = await eventSum(c, ["app_open"], "cause");
     const totals = await eventSum(c, ["reminder_offered", "reminder_accepted", "reminder_declined", "reminder_permission_denied",
       "reminder_opened", "stats_opened", "quilt_opened", "archive_opened", "solution_replayed", "help_opened", "share_pressed",
-      "level_start", "shop_open"], "");
+      "level_start", "shop_open",
+      // Pocket Foundry (PF-019): its reminders and what players use
+      "notify_asked", "notify_answer", "notif_open", "hint_used", "solution_used", "decoration_bought",
+      "workshop_collect", "contract_paid", "tier_claimed", "daily_reward", "building_upgrade"], "");
+    const answers = await eventSum(c, ["notify_answer"], "state");
     const playerDays = await c.one(`WITH ${c.W} SELECT COUNT(*) AS n FROM du WHERE day BETWEEN ${c.F} AND ${c.T}`);
-    return { k, heat, lengths, median: med, firstWeek, opens, totals, playerDays: playerDays.n || 0 };
+    return { k, heat, lengths, median: med, firstWeek, opens, totals, answers, playerDays: playerDays.n || 0 };
   },
 
   async progress(c) {
@@ -257,12 +263,14 @@ const PAGES = {
     const versions = await c.all(`SELECT vc, COUNT(DISTINCT install) AS n FROM va_daily_user
                                   WHERE game = ${c.G} AND day BETWEEN ${c.T - 6} AND ${c.T} GROUP BY vc ORDER BY vc DESC`);
     const intake = await c.all(`SELECT day, COUNT(*) AS batches, SUM(n) AS kept, SUM(refused) AS refused FROM va_batch
-                                WHERE day BETWEEN ${from} AND ${c.T} GROUP BY day ORDER BY day`);
+                                WHERE game = ${c.G} AND day BETWEEN ${from} AND ${c.T} GROUP BY day ORDER BY day`);
+    /* The free plan's limit is the database's, shared by every game: today's batches across all of them. */
+    const allToday = await c.one(`SELECT COUNT(*) AS batches FROM va_batch WHERE day = ${c.T}`);
     const nightly = await c.one(`SELECT v FROM va_meta WHERE k = 'nightly_last'`);
     const logins = await c.one(`SELECT SUM(ok = 0) AS failed, SUM(ok = 1) AS ok FROM va_login`);
     const deleted = await c.one(`SELECT SUM(n) AS n FROM va_deleted WHERE game = ${c.G} AND day BETWEEN ${c.F} AND ${c.T}`);
     return { errors, delay, consent, versions, intake, nightly: nightly.v ? JSON.parse(nightly.v) : null,
-             logins, deleted: deleted.n || 0, since: from };
+             logins, deleted: deleted.n || 0, since: from, allToday: allToday.batches || 0 };
   },
 };
 

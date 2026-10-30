@@ -182,11 +182,25 @@ done
 T0=$(( ($(date -u +%s) - $(date -u -d 2026-01-01 +%s)) / 86400 ))
 is "a custom range is honoured"                             "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/overview?game=loom&from=$((T0-10))&to=$((T0-3))" | grep -o '"custom":true,"today":[0-9]*,"from":[0-9]*')" "\"custom\":true,\"today\":$((T0-3)),\"from\":$((T0-10))"
 is "a custom range ending in the future falls back"         "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/overview?game=loom&from=$((T0-3))&to=$((T0+5))" | grep -o '"custom":false')" '"custom":false'
+# Two games under one install id, so that only the game key can keep them apart (seeded before
+# the one Refresh now below, which builds the summaries the pages read).
+TD=$(( ($(date -u +%s) - $(date -u -d 2026-01-01 +%s)) / 86400 ))
+SAME=12121212-3434-5656-7878-909090909090
+post /collect "{\"v\":1,\"g\":\"pocketfoundry\",\"i\":\"$SAME\",\"p\":\"web\",\"e\":[{\"n\":\"app_open\",\"t\":$NOW,\"s\":\"1\",\"d\":$TD,\"x\":{\"build\":\"lab\",\"cause\":\"notification\"}},{\"n\":\"notify_answer\",\"t\":$NOW,\"s\":\"1\",\"d\":$TD,\"x\":{\"build\":\"lab\",\"state\":\"on\"}}]}" >/dev/null
+post /collect "{\"v\":1,\"g\":\"loom\",\"i\":\"$SAME\",\"p\":\"app\",\"e\":[{\"n\":\"app_open\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"cause\":\"launcher\"}}]}" >/dev/null
 is "Refresh now without a login is refused"                 "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$U/va/api/refresh")" "401"
 is "Refresh now from another site is refused"               "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Cookie: $COOKIE" -H 'Origin: https://evil.example' "$U/va/api/refresh")" "403"
 is "Refresh now runs the summary"                           "$(curl -s -X POST -H "Cookie: $COOKIE" "$U/va/api/refresh" | grep -o '"ok":true')" '"ok":true'
 is "and records it as done by hand"                         "$(sql "SELECT json_extract(v, '\$.source') FROM va_meta WHERE k = 'nightly_last'")" "manual"
 is "the pages say when it ran"                              "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/health?game=loom" | grep -o '"summary":{"at"')" '"summary":{"at"'
+echo "Games kept apart"
+api () { curl -s -H "Cookie: $COOKIE" "$U/va/api/$1"; }
+is "one install id in two games is two players, one in each" "$(sql "SELECT group_concat(game || ':' || build, ',') FROM (SELECT game, build FROM va_daily_user WHERE install = '$SAME' ORDER BY game)")" "loom:release,pocketfoundry:lab"
+is "the lab is a build of its own on the pages"              "$(api "overview?game=pocketfoundry&build=lab" | grep -o '"build":"lab"')" '"build":"lab"'
+is "a game's lab players are not counted as its players"     "$(api "engagement?game=pocketfoundry&build=release" | grep -c 'notify_answer')" "0"
+is "its reminder answers are its own"                         "$(api "engagement?game=pocketfoundry&build=lab" | grep -o '"name":"notify_answer","value":"on","events":1,"players":1')" '"name":"notify_answer","value":"on","events":1,"players":1'
+is "and never another game's"                                 "$(api "engagement?game=loom&build=all" | grep -c 'notify_answer\|notification')" "0"
+is "Health counts only the chosen game's batches"             "$(api "health?game=pocketfoundry&build=all" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(sum(r["batches"] for r in d["intake"]))')" "$(sql "SELECT COUNT(*) FROM va_batch WHERE game = 'pocketfoundry'")"
 is "a second refresh within ten minutes is refused"         "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Cookie: $COOKIE" "$U/va/api/refresh")" "429"
 is "an unknown page is refused"                             "$(curl -s -o /dev/null -w '%{http_code}' -H "Cookie: $COOKIE" "$U/va/api/nothing")" "404"
 is "a game, range or build not on the lists falls back"     "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/overview?game=x%27;DROP&range=999&build=evil" | grep -o '"game":"loom","range":30,"build":"release"')" '"game":"loom","range":30,"build":"release"'

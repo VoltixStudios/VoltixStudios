@@ -33,6 +33,7 @@ const DIMS = [
   "placement", "cause", "step", "loom", "result", "state", "source", "item_id",
   "variant", "level_name", "hero", "kind", "offer", "which", "from", "ad_format",
   "first", "success", "world", "boss", "killer", "virtual_currency_name", "item_name",
+  "status", "first_day",
 ];
 
 export const vaDay = (ms) => Math.floor((ms - DAY0) / 86400000);

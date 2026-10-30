@@ -47,8 +47,9 @@ functions/collect/         Voltix Analytics: the collector the games post to, an
 functions/va/              Voltix Analytics: the login and the dashboard's API, the
                            schema, the tests and how to turn it on (SETUP.md)
 functions/_va/             shared by the two above; not a route
-va/                        the Voltix Analytics dashboard page; holds no data, and
-                           no page on the site links to it
+va/                        the Voltix Analytics dashboard (index.html, app.js); holds
+                           no data, and no page on the site links to it
+functions/va/api/[page].js the dashboard's data, one JSON answer per page
 tools/va-secrets.mjs       makes the dashboard's three login secrets
 workers/va-nightly/        Voltix Analytics: the nightly summaries, a Worker on a
                            cron with no address; deployed on its own (SETUP.md)

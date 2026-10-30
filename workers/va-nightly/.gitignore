@@ -1,0 +1,3 @@
+# wrangler's local cache from deploys and tests; never committed
+.wrangler/
+.dev.vars

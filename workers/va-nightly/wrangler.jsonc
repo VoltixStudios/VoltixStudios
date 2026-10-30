@@ -4,8 +4,8 @@
 //   npx wrangler deploy            from this folder, once the database exists
 //
 // database_id: the id of the D1 database "va" (Cloudflare → Storage & Databases
-// → D1 → va, or `npx wrangler d1 list`). It is not a secret; it is useless
-// without the account. Until it is filled in, deploying fails, which is meant.
+// → D1 → va, or `npx wrangler d1 list`), created by Sr. Orra on 30 October
+// 2026. It is not a secret; it is useless without the account.
 {
   "name": "va-nightly",
   "main": "src/index.js",
@@ -15,6 +15,6 @@
   // 02:10 UTC every day: after midnight in Spain, before anyone is up.
   "triggers": { "crons": ["10 2 * * *"] },
   "d1_databases": [
-    { "binding": "VA", "database_name": "va", "database_id": "FILL-IN-THE-VA-DATABASE-ID" }
+    { "binding": "VA", "database_name": "va", "database_id": "911df83d-68ab-45f0-b5d2-6f0d92a55592" }
   ]
 }

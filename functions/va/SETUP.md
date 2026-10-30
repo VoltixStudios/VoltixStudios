@@ -128,7 +128,7 @@ Push the site (with your word, as always). Then, in a private browser window:
 bash functions/va/test.sh
 ```
 
-55 checks against a local D1 with made-up secrets and a made-up licence key: the
+65 checks against a local D1 with made-up secrets and a made-up licence key: the
 collector's rules, purchase signatures, the daily cap, deletion, and the login (wrong
 password, wrong code, a code used twice, forged and expired cookies, the lockout,
 headers). Nothing touches the account.

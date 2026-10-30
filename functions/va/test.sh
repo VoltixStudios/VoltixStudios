@@ -172,7 +172,13 @@ is "the right password and code sign in"                    "$(echo "$ok" | tail
 COOKIE=$(echo "$ok" | grep -i '^set-cookie:' | sed -E 's/^[Ss]et-[Cc]ookie: ([^;]+).*/\1/')
 is "with a cookie that is HttpOnly, Secure and SameSite=Strict" "$(echo "$ok" | grep -i '^set-cookie:' | grep -c 'HttpOnly' )$(echo "$ok" | grep -i '^set-cookie:' | grep -c 'Secure')$(echo "$ok" | grep -i '^set-cookie:' | grep -c 'SameSite=Strict')" "111"
 is "the API answers with it"                                "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/ping" | grep -o '"ok":true')" '"ok":true'
-is "and the page is served"                                 "$(curl -s -H "Cookie: $COOKIE" "$U/va/" | grep -o 'Signed in')" "Signed in"
+is "and the dashboard is served"                            "$(curl -s -H "Cookie: $COOKIE" "$U/va/" | grep -o 'src="/va/app.js"')" 'src="/va/app.js"'
+is "its script too, but only with the login"                "$(curl -s -o /dev/null -w '%{http_code}' -H "Cookie: $COOKIE" "$U/va/app.js")$(curl -s -o /dev/null -w '%{http_code}' "$U/va/app.js")" "200302"
+for page in overview acquisition retention engagement progress money health; do
+  is "the $page page's data answers"                        "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/$page?game=loom&range=30&build=all" | grep -o '"today":[0-9]*' | head -1 | cut -d: -f1)" '"today"'
+done
+is "an unknown page is refused"                             "$(curl -s -o /dev/null -w '%{http_code}' -H "Cookie: $COOKIE" "$U/va/api/nothing")" "404"
+is "a game, range or build not on the lists falls back"     "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/overview?game=x%27;DROP&range=999&build=evil" | grep -o '"game":"loom","range":30,"build":"release"')" '"game":"loom","range":30,"build":"release"'
 is "the same code cannot sign in twice"                     "$(login "$PASSWORD" "$CODE" | tail -1)" "401"
 FORGED="${COOKIE%?}A"; [ "$FORGED" = "$COOKIE" ] && FORGED="${COOKIE%?}B"
 is "a cookie with a changed signature is refused"           "$(curl -s -o /dev/null -w '%{http_code}' -H "Cookie: $FORGED" "$U/va/api/ping")" "401"

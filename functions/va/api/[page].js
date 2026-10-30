@@ -198,7 +198,10 @@ const PAGES = {
     const R = `va_day_result WHERE game = ${c.G} AND played BETWEEN ${c.F} AND ${c.T}
                AND install IN (SELECT install FROM va_daily_user WHERE game = ${c.G} AND ${c.BF("build")})`;
     const results = await c.all(`SELECT loom, result, COUNT(*) AS n FROM ${R} GROUP BY loom, result`);
-    const opened = await eventSum(c, ["day_opened"], "loom");
+    /* Played: players who started at least one try on a loom, per day (a player
+       who switches looms inside the game is counted on each one they try). The
+       loom the game opens on at launch is not what was played. */
+    const opened = await eventSum(c, ["puzzle_started"], "loom");
     const tries = await c.all(`SELECT loom, MIN(tries, 5) AS t, COUNT(*) AS n FROM ${R} AND result = 'solved' GROUP BY loom, t`);
     const secs = {};
     for (const l of ["e", "n", "h", ""]) {

@@ -40,7 +40,10 @@
                   set(k, v) { try { localStorage.setItem("va." + k, v); } catch (e) {} } };
   const dayLabel = (d) => { const t = new Date(DAY0 + d * 86400000); return t.getUTCDate() + " " + MONTHS[t.getUTCMonth()]; };
   const int = (n) => (n === null || n === undefined ? "–" : Math.round(n).toLocaleString("en-GB"));
-  const share = (r, n) => (!n ? "–" : n < 5 ? "under 5" : Math.round((100 * (r || 0)) / n) + "%");
+  /* Shares are shown as counts, "27/176", never as percentages (Sr. Orra, 30 October
+     2026): with small numbers a percentage hides how few people it is. Bars and
+     colours still scale by the proportion. */
+  const share = (r, n) => (!n ? "–" : int(r || 0) + "/" + int(n));
   const money = (micros) => (micros ? (micros / 1e6).toFixed(2) + " €" : "0 €");
   const dur = (s) => { if (s === null || s === undefined) return "–"; s = Math.round(s);
     return s < 60 ? s + " s" : Math.floor(s / 60) + " m " + String(s % 60).padStart(2, "0") + " s"; };
@@ -120,19 +123,19 @@
     const rows = list.map((g) => {
       let status = chip("wait", "Not enough players"), reading = g.reading;
       if (g.kind === "week") {
-        const w = g.week.filter((r) => r.n >= 5).map((r) => ({ dow: r.dow, rate: r.s / r.n }));
+        const w = g.week.filter((r) => r.n >= 5).map((r) => ({ dow: r.dow, rate: r.s / r.n, s: r.s, n: r.n }));
         const mon = w.find((r) => r.dow === 0);
         if (mon && w.length >= 3) {
           const collapse = w.some((r) => r.rate < mon.rate * 0.5);
           status = collapse ? chip("below", "A collapse") : chip("pass", "Dips, no collapse");
-          reading += ": " + w.sort((a, b) => a.dow - b.dow).map((r) => DOW[r.dow] + " " + Math.round(r.rate * 100) + "%").join(", ");
+          reading += ": " + w.sort((a, b) => a.dow - b.dow).map((r) => DOW[r.dow] + " " + r.s + "/" + r.n).join(", ");
         }
       } else if (g.kind === "any") {
         status = g.num > 0 ? chip("pass", "Pass") : chip("wait", "None yet");
         reading += ": " + g.num;
       } else if (g.den >= (g.min || 5)) {
         const r = g.num / g.den;
-        reading += ": " + Math.round(r * 100) + "% (" + g.num + " of " + g.den + ")";
+        reading += ": " + g.num + "/" + g.den;
         if (g.kind === "line") status = r > g.line ? chip("pass", "Pass") : chip("below", "Below");
         else if (g.kind === "low") status = r < 0.25 ? chip("pass", "Rare") : chip("below", "Common");
         else status = chip("wait", "Watching");
@@ -197,7 +200,10 @@
       }
       classic.push(n >= 5 ? r / n : null); rolling.push(n >= 5 ? rr / n : null);
     }
-    const at = (k) => classic[k - 1] === null ? "–" : Math.round(classic[k - 1] * 100) + "%";
+    /* The tiles: returned / cohort size, over every cohort old enough for that day. */
+    const at = (k) => { let n = 0, r = 0;
+      for (const [fd, sz] of size) if (fd + k <= d.today) { n += sz; r += cell.get(fd + ":" + k) || 0; }
+      return share(r, n); };
     const out = [tiles([["D1", at(1)], ["D7", at(7)], ["D30", at(30)],
       ["Came back after a week away", int(d.returned), "in " + d.range + " days"]])];
     out.push(card("Return curve, day 1 to day 30",
@@ -212,12 +218,11 @@
       const body = cohorts.map((c) => h("tr", null, h("td", { class: "left", text: dayLabel(c.fd) }), h("td", { text: int(c.n) }),
         d.cols.map((k) => {
           if (c.fd + k > d.today) return h("td", { text: "–", style: { color: "var(--muted)" } });
-          if (c.n < 5) return h("td", { text: "under 5", style: { color: "var(--muted)", fontSize: "11px" } });
           const v = (cell.get(c.fd + ":" + k) || 0) / c.n, a = Math.min(0.92, v * 2.5);
-          return h("td", { text: Math.round(v * 100) + "%", style: { background: "rgba(53,163,255," + a.toFixed(2) + ")", color: a > 0.55 ? "#05070e" : "var(--text)", fontWeight: 600 } });
+          return h("td", { text: (cell.get(c.fd + ":" + k) || 0) + "/" + c.n, style: { background: "rgba(53,163,255," + a.toFixed(2) + ")", color: a > 0.55 ? "#05070e" : "var(--text)", fontWeight: 600 } });
         })));
       out.push(card("Retention by cohort, day by day",
-        h("div", { class: "small", text: "One row per first day. Each cell: the share of that day's new players who played again exactly n days later." }),
+        h("div", { class: "small", text: "One row per first day. Each cell: of that day's new players, how many played again exactly n days later." }),
         h("div", { class: "scroll", style: { maxHeight: "560px" } }, h("table", null, h("thead", null, head), h("tbody", null, body)))));
     }
     const seg = (title, rows, fmt) => h("div", null, h("div", { class: "small", text: title }),
@@ -252,7 +257,6 @@
       p.setAttribute("stroke-width", "2.5"); p.setAttribute("vector-effect", "non-scaling-stroke"); svg.appendChild(p);
     });
     const wrap = h("div", null, svg);
-    wrap.appendChild(h("div", { class: "small", text: "Top of the chart: " + Math.round(top * 100) + "%" }));
     return wrap;
   }
 
@@ -295,7 +299,7 @@
 
   PAGES.progress = (d) => {
     if (d.note) return [card(null, empty(d.note))];
-    const looms = ["e", "n", "h", ""].filter((l) => d.results.some((r) => r.loom === l) || pick(d.opened, "day_opened", l).length);
+    const looms = ["e", "n", "h", ""].filter((l) => d.results.some((r) => r.loom === l) || pick(d.opened, "puzzle_started", l).length);
     if (!looms.length) return [card("The day, per loom", empty())];
     const n = (l, res) => (d.results.find((r) => r.loom === l && r.result === res) || {}).n || 0;
     const all = (res) => sumBy(d.results.filter((r) => r.result === res), (r) => r.n);
@@ -303,9 +307,10 @@
     const out = [tiles([["Solved", share(all("solved"), resolved), "of days touched"], ["Left unfinished", share(all("left"), resolved)],
       ["Current streak", d.streak === null ? "–" : d.streak + (d.streak === 1 ? " day" : " days"), "median, players today"],
       ["Quilt squares", d.quilt === null ? "–" : int(d.quilt), "median, all players"]])];
-    out.push(card("The day, per loom", table(["Loom", "Opened", "Solved", "Failed", "Left", "Median time to solve"],
+    out.push(card("The day, per loom", h("div", { class: "small", text: "Played: players who started at least one try on that loom, counted once a day. Solved, failed and left: the last word on each day touched." }),
+      table(["Loom", "Played", "Solved", "Failed", "Left", "Median time to solve"],
       looms.map((l) => { const tot = n(l, "solved") + n(l, "failed") + n(l, "left");
-        return [LOOMS[l], int(sumBy(pick(d.opened, "day_opened", l), (r) => r.events)),
+        return [LOOMS[l], int(sumBy(pick(d.opened, "puzzle_started", l), (r) => r.players)),
                 share(n(l, "solved"), tot), share(n(l, "failed"), tot), share(n(l, "left"), tot), dur(d.secs[l])]; }))));
     out.push(h("div", { class: "grid3" }, looms.filter((l) => l).map((l) => {
       const rows = d.tries.filter((r) => r.loom === l);
@@ -315,9 +320,9 @@
     const wk = h("tbody", null, looms.map((l) => h("tr", null, h("td", { class: "left", text: LOOMS[l] }), DOW.map((x, i) => {
       const r = d.weekday.find((w) => w.loom === l && w.dow === i) || { solved: 0, failed: 0 };
       const tot = r.solved + r.failed;
-      if (tot < 5) return h("td", { text: tot ? "under 5" : "–", style: { color: "var(--muted)", fontSize: "11px" } });
+      if (!tot) return h("td", { text: "–", style: { color: "var(--muted)" } });
       const v = r.solved / tot, a = Math.max(0.08, Math.min(0.9, v));
-      return h("td", { text: Math.round(v * 100) + "%", style: { background: "rgba(53,163,255," + a.toFixed(2) + ")", color: a > 0.55 ? "#05070e" : "var(--text)", fontWeight: 600 } });
+      return h("td", { text: r.solved + "/" + tot, style: { background: "rgba(53,163,255," + a.toFixed(2) + ")", color: a > 0.55 ? "#05070e" : "var(--text)", fontWeight: 600 } });
     }))));
     out.push(card("Solve rate by weekday (gate 7)", h("div", { class: "scroll" }, h("table", null,
       h("thead", null, h("tr", null, h("th", { class: "left", text: "Loom" }), DOW.map((x) => h("th", { text: x })))), wk))));
@@ -326,7 +331,7 @@
     out.push(h("div", { class: "grid2" },
       card("The ladder: days played, ever", hbars([["1 day", L.d1], ["3 days", L.d3], ["7 days", L.d7], ["14 days", L.d14], ["30 days", L.d30],
         ["60 days", L.d60], ["100 days", L.d100]].map(([l, v]) => ({ label: l, n: v || 0 })), L.d1 || null,
-        (r) => (r.n < 5 && r.n > 0 ? "under 5" : share(r.n, L.d1)) + " (" + int(r.n) + ")")),
+        (r) => share(r.n, L.d1))),
       card("Looms, hints and milestones", hbars([["Loom advice shown", ev("loom_advice_shown")], ["Loom advice taken", ev("loom_advice_taken")],
         ["Hints taken", ev("hint_taken")], ["Extra weaves taken", ev("extra_weave_taken")], ["Archive days opened", ev("archive_opened")],
         ["Streak of 7 days or more, today", (d.s7 && d.s7.s7) || 0]].concat(d.milestones.map((m) => ["Milestone " + m.value, m.players])).map(([l, v]) => ({ label: l, n: v })), null))));

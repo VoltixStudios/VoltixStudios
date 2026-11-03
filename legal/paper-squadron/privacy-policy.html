@@ -115,13 +115,13 @@
       </p>
 
       <dl class="doc-meta" data-lang="en">
-        <div><dt>Effective date</dt><dd>20 August 2026</dd></div>
+        <div><dt>Effective date</dt><dd>3 November 2026</dd></div>
         <div><dt>App</dt><dd>Paper Squadron <code>com.voltixstudios.papersquadron</code></dd></div>
         <div><dt>Developer</dt><dd>Voltix Studios
           <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
       </dl>
       <dl class="doc-meta" data-lang="es" lang="es">
-        <div><dt>Fecha de entrada en vigor</dt><dd>20 de agosto de 2026</dd></div>
+        <div><dt>Fecha de entrada en vigor</dt><dd>3 de noviembre de 2026</dd></div>
         <div><dt>Aplicación</dt><dd>Paper Squadron <code>com.voltixstudios.papersquadron</code></dd></div>
         <div><dt>Desarrollador</dt><dd>Voltix Studios
           <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
@@ -141,6 +141,7 @@
             <li><a href="#device">Data stored on your device</a></li>
             <li><a href="#cloud-save">Cloud save</a></li>
             <li><a href="#analytics">Analytics</a></li>
+            <li><a href="#voltix-analytics">Game statistics</a></li>
             <li><a href="#crashes">Crash reporting</a></li>
             <li><a href="#notifications">Notifications</a></li>
             <li><a href="#remote-config">Remote configuration</a></li>
@@ -177,6 +178,23 @@
           missions are played, where players stop). This involves device identifiers, coarse
           device information (model, OS version, country), and in-app events. This data is
           aggregated and is not used to identify you.
+        </p>
+
+        <h2 id="voltix-analytics">Game statistics (Voltix Analytics)</h2>
+        <p>
+          The app also sends the same in-app events to Voltix Analytics, the studio's own
+          statistics service, so that Voltix Studios can measure retention, progress and revenue
+          without depending on a third party's reports. Voltix Studios holds this data itself;
+          Cloudflare stores and processes it on the studio's behalf. What is sent: a random
+          installation id created by the app (not an advertising id, not a device id, not your
+          Google account), the in-app events with their numbers (for example which world was
+          flown and how it ended), the app version, coarse device information (phone model,
+          Android version, language and screen size), the country Cloudflare derives from the
+          connection, and, for purchases, Google Play's signed purchase record and price, so the
+          purchase can be verified. Your IP address is never stored. Raw events are kept for 90
+          days; daily totals that hold no identifier are kept longer.
+          <span class="ui">Settings → Delete My Data</span> deletes everything held about your
+          installation (see <a href="#deletion">Data deletion</a>).
         </p>
 
         <h2 id="crashes">Crash reporting (Firebase Crashlytics)</h2>
@@ -290,7 +308,8 @@
           your leaderboard scores and your cloud save — see
           <a href="delete-account.html">Delete Your Account &amp; Data</a>, which explains both
           the in-app route (<span class="ui">Settings → Delete My Data</span>) and the email
-          route, and sets out exactly what is and is not removed.
+          route, and sets out exactly what is and is not removed. The same action deletes what
+          Voltix Analytics holds about your installation.
         </p>
 
         <h2 id="children">Children</h2>
@@ -327,6 +346,7 @@
             <li><a href="#device-es">Datos guardados en tu dispositivo</a></li>
             <li><a href="#cloud-save-es">Copia de seguridad en la nube</a></li>
             <li><a href="#analytics-es">Analíticas</a></li>
+            <li><a href="#voltix-analytics-es">Estadísticas de juego</a></li>
             <li><a href="#crashes-es">Informes de fallos</a></li>
             <li><a href="#notifications-es">Notificaciones</a></li>
             <li><a href="#remote-config-es">Configuración remota</a></li>
@@ -365,6 +385,25 @@
           identificadores de dispositivo, información aproximada del dispositivo (modelo,
           versión del sistema operativo, país) y eventos dentro de la aplicación. Estos datos
           son agregados y no se usan para identificarte.
+        </p>
+
+        <h2 id="voltix-analytics-es">Estadísticas de juego (Voltix Analytics)</h2>
+        <p>
+          La aplicación también envía esos mismos eventos a Voltix Analytics, el servicio de
+          estadísticas propio del estudio, para que Voltix Studios pueda medir la retención, el
+          progreso y los ingresos sin depender de los informes de terceros. Voltix Studios
+          conserva estos datos por sí mismo; Cloudflare los almacena y procesa por cuenta del
+          estudio. Qué se envía: un identificador de instalación aleatorio creado por la
+          aplicación (no un identificador de publicidad, ni de dispositivo, ni tu cuenta de
+          Google), los eventos del juego con sus cifras (por ejemplo, qué mundo se jugó y cómo
+          terminó), la versión de la aplicación, información aproximada del dispositivo (modelo,
+          versión de Android, idioma y tamaño de pantalla), el país que Cloudflare deduce de la
+          conexión y, en las compras, el registro de compra firmado por Google Play y su precio,
+          para poder verificarla. Tu dirección IP nunca se guarda. Los eventos sin agregar se
+          conservan 90 días; los totales diarios, que no contienen ningún identificador, se
+          conservan más tiempo. <span class="ui">Ajustes → Eliminar mis datos</span> elimina todo
+          lo que se conserva sobre tu instalación (consulta
+          <a href="#deletion-es">Eliminación de datos</a>).
         </p>
 
         <h2 id="crashes-es">Informes de fallos (Firebase Crashlytics)</h2>
@@ -485,7 +524,8 @@
           indicativo, tus puntuaciones de la clasificación y tu copia de seguridad en la nube—
           consulta <a href="delete-account.html">Eliminar tu cuenta y tus datos</a>, que explica
           tanto la vía dentro del juego (<span class="ui">Ajustes → Eliminar mis datos</span>)
-          como la vía por correo, y detalla exactamente qué se elimina y qué no.
+          como la vía por correo, y detalla exactamente qué se elimina y qué no. La misma acción
+          elimina lo que Voltix Analytics conserva sobre tu instalación.
         </p>
 
         <h2 id="children-es">Menores</h2>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at b40bcd3) by
+<!-- Copied from the Loom repository (game/index.html at f6b7200) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone.">
@@ -5044,6 +5044,25 @@ function openPanel(id,bring){
   if(bring) bringIntoView($(id));
   fit();                                  // a panel opening or closing changes the room
 }
+/* A panel closes when the player taps anywhere outside it (the President,
+   3 November 2026). That tap only closes it: it does not also place a tile or
+   press a button underneath, which a player who meant to close a panel did not
+   ask for. The header's buttons still switch panels in one tap, and a sheet,
+   the crowning and the playtest log have their own ways out. A click, not a
+   touch: a finger that scrolls the page is not a tap outside. */
+function outsideTap(t){
+  const id=PANELS.find(p=>$(p).classList.contains('show'));
+  if(!id) return false;
+  const within=sel=>{ try{ return !!(t&&t.closest&&t.closest(sel)); }catch(e){ return false; } };
+  if(within('#'+id)||within('.hbtns')||within('.sheet')||within('#cheer')||within('#logPanel')) return false;
+  if(id==='offerPanel') closeOffer(true);
+  else{ $(id).classList.remove('show'); fit(); }
+  LOG.mark('panelout','panel_closed',{panel:id,how:'outside'});
+  return true;
+}
+try{ document.addEventListener('click',e=>{
+  if(outsideTap(e&&e.target)){ e.stopPropagation(); e.preventDefault(); }
+},true); }catch(e){}
 $('setBtn').onclick=()=>{ SFX.play('tap'); openPanel('setPanel'); };
 $('shopBtn').onclick=()=>{ SFX.play('tap'); openPanel('shopPanel'); };
 $('archBtn').onclick=()=>{ SFX.play('tap'); openPanel('archPanel'); };

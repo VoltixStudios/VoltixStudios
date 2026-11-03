@@ -13,6 +13,10 @@
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const LOOMS = { e: "Easy", n: "Normal", h: "Hard", "": "Before the looms" };
+  /* Loom's ladder (GDD 19.2): a rung's day result names it "r1", "r2", ... */
+  const RUNGS = ["", "Super easy", "Easy", "Not so easy", "Normal", "Tricky", "Hard", "Very hard", "Expert", "Master"];
+  const rungName = (lv) => "Level " + lv + (RUNGS[lv] ? " · " + RUNGS[lv] : "");
+  const tierName = (l) => LOOMS[l] || (/^r\d+$/.test(l) ? "Ladder, " + rungName(+l.slice(1)) : l);
   const TITLES = { overview: "Overview", acquisition: "Acquisition", retention: "Retention", engagement: "Engagement",
                    progress: "Player progress", money: "Money", health: "Health" };
   const SUBS = { overview: "The game at a glance", acquisition: "Who arrives, from where, and whether they start",
@@ -259,7 +263,7 @@
     out.push(h("div", { class: "grid2" },
       card("D7 return, by what happened on day one",
         seg("Source", d.segments.source),
-        d.segments.loom.length ? seg("First loom", d.segments.loom, (l) => LOOMS[l] || l) : null,
+        d.segments.loom.length ? seg("First loom or rung", d.segments.loom, tierName) : null,
         d.segments.first.length ? seg("First day's result", d.segments.first) : null),
       card("Streak on the last day played", h("div", { class: "small", text: "Players who stopped (7 days without playing), by the streak they had" }),
         hbars(["1", "2", "3", "4–6", "7–13", "14+"].map((l) => ({ label: l, n: (d.churn.find((r) => r.label === l) || {}).n || 0 })),
@@ -364,7 +368,8 @@
     if (d.pf) return foundryProgress(d);
     if (d.note) return [card(null, empty(d.note))];
     const looms = ["e", "n", "h", ""].filter((l) => d.results.some((r) => r.loom === l) || pick(d.opened, "puzzle_started", l).length);
-    if (!looms.length) return [card("The day, per loom", empty())];
+    const climb = climbCards(d);
+    if (!looms.length) return climb.length ? climb : [card("The day, per loom", empty())];
     const n = (l, res) => (d.results.find((r) => r.loom === l && r.result === res) || {}).n || 0;
     const all = (res) => sumBy(d.results.filter((r) => r.result === res), (r) => r.n);
     const resolved = all("solved") + all("failed") + all("left");
@@ -399,8 +404,32 @@
       card("Looms, hints and milestones", hbars([["Loom advice shown", ev("loom_advice_shown")], ["Loom advice taken", ev("loom_advice_taken")],
         ["Hints taken", ev("hint_taken")], ["Extra weaves taken", ev("extra_weave_taken")], ["Archive days opened", ev("archive_opened")],
         ["Streak of 7 days or more, today", (d.s7 && d.s7.s7) || 0]].concat(d.milestones.map((m) => ["Milestone " + m.value, m.players])).map(([l, v]) => ({ label: l, n: v })), null))));
-    return out;
+    return climb.concat(out);
   };
+
+  /* The ladder, first on the page once there is any: rung by rung, then how
+     far each day's climb got, then the shop and Live weave. */
+  function climbCards(d) {
+    const rows = d.rungs || [];
+    if (!rows.length) return [];
+    const top = Math.max(...rows.map((r) => r.lv));
+    const n = (lv, res) => (rows.find((r) => r.lv === lv && r.result === res) || {}).n || 0;
+    const players = (lv) => ((d.reach || []).find((r) => r.lv === lv) || {}).players || 0;
+    const rungTable = table(["Rung", "Reached", "Solved", "Failed", "Left"],
+      Array.from({ length: top }, (_, i) => i + 1).map((lv) => {
+        const tot = n(lv, "solved") + n(lv, "failed") + n(lv, "left");
+        return [rungName(lv), int(players(lv)), share(n(lv, "solved"), tot), share(n(lv, "failed"), tot), share(n(lv, "left"), tot)];
+      }));
+    const reached = d.reached || [], climbs = sumBy(reached, (r) => r.n);
+    const ev = (name) => sumBy(pick(d.climb || [], name, ""), (r) => r.events);
+    return [
+      card("The climb, rung by rung", h("div", { class: "small", text: "Reached: players with a result on that rung, today's climbs only. Solved, failed and left: the last word on each rung touched." }), rungTable),
+      h("div", { class: "grid2" },
+        card("Level reached, per climb", hbars(Array.from({ length: 11 }, (_, lv) => ({ label: lv === 10 ? "10+" : String(lv), n: (reached.find((r) => r.lv === lv) || {}).n || 0 })), climbs || null)),
+        card("Climbs ended, the shop and Live weave", hbars([["Climbs ended on a lost rung", ev("climb_ended")], ["Shop opened", ev("shop_opened")],
+          ["Live weave switched", ev("live_weave_toggled")], ["Panels closed by a tap outside", ev("panel_closed")]].map(([l, v]) => ({ label: l, n: v })), null))),
+    ];
+  }
 
   PAGES.money = (d) => {
     const k = d.k;

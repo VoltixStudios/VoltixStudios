@@ -188,6 +188,14 @@ TD=$(( ($(date -u +%s) - $(date -u -d 2026-01-01 +%s)) / 86400 ))
 SAME=12121212-3434-5656-7878-909090909090
 post /collect "{\"v\":1,\"g\":\"pocketfoundry\",\"i\":\"$SAME\",\"p\":\"web\",\"e\":[{\"n\":\"app_open\",\"t\":$NOW,\"s\":\"1\",\"d\":$TD,\"x\":{\"build\":\"lab\",\"cause\":\"notification\"}},{\"n\":\"notify_answer\",\"t\":$NOW,\"s\":\"1\",\"d\":$TD,\"x\":{\"build\":\"lab\",\"state\":\"on\"}}]}" >/dev/null
 post /collect "{\"v\":1,\"g\":\"loom\",\"i\":\"$SAME\",\"p\":\"app\",\"e\":[{\"n\":\"app_open\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"cause\":\"launcher\"}}]}" >/dev/null
+# Loom's ladder (its GDD 19.2): rungs 1 and 2 solved, rung 3 lost, the climb ended at level 2.
+rung () { echo "{\"n\":\"day_result\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"day_number\":$TD,\"loom\":\"r$1\",\"level\":$1,\"result\":\"$2\",\"tries\":$3}}"; }
+LAD="{\"v\":1,\"g\":\"loom\",\"i\":\"$SAME\",\"p\":\"app\",\"e\":[$(rung 1 solved 1),$(rung 2 solved 2),$(rung 3 failed 4),
+ {\"n\":\"climb_ended\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"day_number\":$TD,\"level_reached\":2,\"ended_on\":3},\"u\":{\"best_level\":2,\"live_weave\":0}},
+ {\"n\":\"rung_started\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"level\":3}},
+ {\"n\":\"shop_opened\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"payer\":0}},
+ {\"n\":\"panel_closed\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"panel\":\"shopPanel\",\"how\":\"outside\"}}]}"
+is "Loom's ladder events are kept, not refused"             "$(post /collect "$LAD")" '{"ok":true,"kept":7,"refused":0,"purchases":0}'
 is "Refresh now without a login is refused"                 "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$U/va/api/refresh")" "401"
 is "Refresh now from another site is refused"               "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Cookie: $COOKIE" -H 'Origin: https://evil.example' "$U/va/api/refresh")" "403"
 is "Refresh now runs the summary"                           "$(curl -s -X POST -H "Cookie: $COOKIE" "$U/va/api/refresh" | grep -o '"ok":true')" '"ok":true'
@@ -201,6 +209,8 @@ is "a game's lab players are not counted as its players"     "$(api "engagement?
 is "its reminder answers are its own"                         "$(api "engagement?game=pocketfoundry&build=lab" | grep -o '"name":"notify_answer","value":"on","events":1,"players":1')" '"name":"notify_answer","value":"on","events":1,"players":1'
 is "and never another game's"                                 "$(api "engagement?game=loom&build=all" | grep -c 'notify_answer\|notification')" "0"
 is "Pocket Foundry's progress page lists its player"        "$(api "progress?game=pocketfoundry&build=lab" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("pf"), [p["install"] for p in d["players"]])')" "True ['12121212']"
+is "Loom's progress page shows the climb, rung by rung"   "$(api "progress?game=loom&build=release" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(sorted((r["lv"],r["result"]) for r in d["rungs"]), sorted((r["lv"],r["players"]) for r in d["reach"]), [(r["lv"],r["n"]) for r in d["reached"]])')" "[(1, 'solved'), (2, 'solved'), (3, 'failed')] [(1, 1), (2, 1), (3, 1)] [(2, 1)]"
+is "and counts the climb's end and the shop"                "$(api "progress?game=loom&build=release" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(sorted((r["name"],r["events"]) for r in d["climb"]))')" "[('climb_ended', 1), ('panel_closed', 1), ('shop_opened', 1)]"
 is "and Loom's own progress page never lists it"              "$(api "progress?game=loom&build=all" | grep -c '"pf":true')" "0"
 is "Health counts only the chosen game's batches"             "$(api "health?game=pocketfoundry&build=all" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(sum(r["batches"] for r in d["intake"]))')" "$(sql "SELECT COUNT(*) FROM va_batch WHERE game = 'pocketfoundry'")"
 is "a second refresh within ten minutes is refused"         "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Cookie: $COOKIE" "$U/va/api/refresh")" "429"

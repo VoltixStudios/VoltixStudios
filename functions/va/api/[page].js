@@ -227,7 +227,20 @@ const PAGES = {
       WHERE game = ${c.G} AND result <> 'left' GROUP BY install)`);
     const events = await eventSum(c, ["loom_advice_shown", "loom_advice_taken", "hint_taken", "extra_weave_taken", "archive_opened"], "");
     const milestones = await eventSum(c, ["milestone_shown"], "which");
-    return { results, opened, tries, secs, weekday, ladder, streak, s7, quilt, events, milestones };
+    /* The climb (Loom's GDD 19.2, from 3 November 2026): each rung is its own
+       day result, its loom column "r1", "r2", ... A rung is reached by a player
+       who has a result on it; a climb's level is its highest rung solved, and
+       rungs are climbed in order. Read from the results, so the nightly worker
+       needs no new parameter. */
+    const rungs = await c.all(`SELECT CAST(SUBSTR(loom, 2) AS INTEGER) AS lv, result, COUNT(*) AS n
+                               FROM ${R} AND loom LIKE 'r%' AND COALESCE(archive, 0) = 0 GROUP BY lv, result`);
+    const reach = await c.all(`SELECT CAST(SUBSTR(loom, 2) AS INTEGER) AS lv, COUNT(DISTINCT install) AS players
+                               FROM ${R} AND loom LIKE 'r%' AND COALESCE(archive, 0) = 0 GROUP BY lv`);
+    const reached = await c.all(`SELECT MIN(lv, 10) AS lv, COUNT(*) AS n FROM (
+        SELECT install, puzzle, MAX(CASE WHEN result = 'solved' THEN CAST(SUBSTR(loom, 2) AS INTEGER) ELSE 0 END) AS lv
+        FROM ${R} AND loom LIKE 'r%' AND COALESCE(archive, 0) = 0 GROUP BY install, puzzle) GROUP BY MIN(lv, 10)`);
+    const climb = await eventSum(c, ["climb_ended", "shop_opened", "live_weave_toggled", "panel_closed"], "");
+    return { results, opened, tries, secs, weekday, ladder, streak, s7, quilt, events, milestones, rungs, reach, reached, climb };
   },
 
   async money(c) {

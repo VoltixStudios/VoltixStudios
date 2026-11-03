@@ -33,6 +33,9 @@ const LOOM_EVENTS = [
   "site_opened", "solution_replayed", "stats_opened", "streak_at_churn", "weave_submitted",
   // added for VA (brief of 29 October 2026, "What the game must add")
   "app_open", "install_source", "first_session_step", "day_result", "purchase", "ad_paid",
+  // the ladder, Live weave and the shop (Loom's GDD 19.2 and 12.5, 3 November 2026)
+  "rung_started", "rung_solved", "rung_failed", "climb_ended", "live_weave_toggled",
+  "shop_opened", "panel_closed",
 ];
 
 // AshenRise (codename sombra): ~/voltix_studios/Sombra/docs/ANALYTICS.md §3
@@ -77,7 +80,7 @@ const POCKETFOUNDRY_PROPS = [
 
 const LOOM_PROPS = [
   "app_version", "version_code", "first_day", "payer", "days_played", "streak",
-  "best_streak", "reminder_on", "preferred_loom", "ads_consent",
+  "best_streak", "reminder_on", "preferred_loom", "ads_consent", "best_level", "live_weave",
 ];
 
 export const GAMES = {

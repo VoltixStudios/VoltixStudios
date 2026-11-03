@@ -30,6 +30,12 @@
  * cloth. A result that names none comes from a build older than the looms and
  * is counted in loom_day as it always was.
  *
+ * THE LADDER (Loom's GDD 19.2, from 3 November 2026). A climb is sent once,
+ * when it ends, as the loom "L", and its "attempts" are the level it reached:
+ * 0 for none (the lost column), 1 to 7, and 8 for eight and over. So loom_result
+ * holds one histogram of levels per day with no new table, and a phone is
+ * compared with the people who climbed the same ladder.
+ *
  * Needs a D1 binding called LOOM. The schema is in schema.sql beside this file.
  */
 
@@ -39,7 +45,7 @@ const DAY0 = Date.UTC(2026, 0, 1);              // Loom counts days from here
    only a build older than the looms writes there, and its longest day was a
    Sunday of five tries and two extra. */
 const MAXTRIES = 8;
-const LOOMS = ["e", "n", "h"];
+const LOOMS = ["e", "n", "h", "L"];
 /* Six time bands, in seconds. A band rather than a time because a distribution
    of exact times is a fingerprint and a histogram of bands is not. */
 const BANDS = [30, 60, 120, 240, 480];

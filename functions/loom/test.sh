@@ -108,6 +108,8 @@ is "and the same loom twice counts once"              "$(post "{\"d\":$DAY,\"a\"
 is "seven attempts on a loom are counted"             "$(post "{\"d\":$DAY,\"a\":7,\"k\":\"mmmmmmmmmmmmmmmm\",\"l\":\"e\"}" | grep -o '"solved":\[0,0,0,0,0,0,1,0\]')" '"solved":[0,0,0,0,0,0,1,0]'
 is "the old table is untouched by the looms"          "$(curl -s "localhost:$PORT/loom/scores?d=$DAY" | grep -o '"n":[0-9]*')" '"n":8'
 is "a loom reads back by its letter"                  "$(curl -s "localhost:$PORT/loom/scores?d=$DAY&l=h" | grep -o '"l":"h","n":1')" '"l":"h","n":1'
+is "a climb is counted as the ladder, by its level"   "$(post "{\"d\":$DAY,\"a\":5,\"s\":300,\"k\":\"pppppppppppppppp\",\"l\":\"L\"}" | grep -o '"l":"L","n":1,"solved":\[0,0,0,0,1,0,0,0\]')" '"l":"L","n":1,"solved":[0,0,0,0,1,0,0,0]'
+is "and reads back by its letter"                      "$(curl -s "localhost:$PORT/loom/scores?d=$DAY&l=L" | grep -o '"l":"L","n":1')" '"l":"L","n":1'
 is "a loom that does not exist is refused"            "$(post "{\"d\":$DAY,\"a\":1,\"k\":\"nnnnnnnnnnnnnnnn\",\"l\":\"x\"}")" '{"error":"loom"}'
 fr=$(npx --yes wrangler d1 execute loom --local --json --command "SELECT fresh, flost FROM loom_result WHERE day=$DAY AND tier='h'" 2>/dev/null | tr -d ' \n')
 is "a first day is marked on the loom too"            "$(echo "$fr" | grep -o '"fresh":1,"flost":0')" '"fresh":1,"flost":0'

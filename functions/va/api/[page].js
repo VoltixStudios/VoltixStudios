@@ -201,6 +201,7 @@ const PAGES = {
 
   async progress(c) {
     if (c.game === "pocketfoundry") return foundryProgress(c);
+    if (c.game === "papersquadron") return squadronProgress(c);
     if (c.game !== "loom") return { note: "This game's progress pages arrive with its events." };
     const R = `va_day_result WHERE game = ${c.G} AND played BETWEEN ${c.F} AND ${c.T}
                AND install IN (SELECT install FROM va_daily_user WHERE game = ${c.G} AND ${c.BF("build")})`;
@@ -323,6 +324,34 @@ async function foundryProgress(c) {
     GROUP BY name`);
   return { pf: true, since: from, orders, players: players.map((p) => ({ install: String(p.install).slice(0, 8), model: p.model, t: p.t, events: p.events,
     u: (() => { try { return JSON.parse(p.u) || {}; } catch (e) { return {}; } })() })), ledger, fails, places };
+}
+
+/* Paper Squadron's progress: per world, runs and how they ended (level_end carries level_name,
+   success and left; run_start and boss_defeated carry world_index), the folds and stars ledgers,
+   health packs, gear bought and the hangar's trips to the store. Raw batches, so at most 90 days. */
+async function squadronProgress(c) {
+  const from = Math.max(c.F, c.T - 89);
+  const X = (k) => `json_extract(e.value, '$.x.${k}')`;
+  const E = `va_batch b, json_each(b.events) e WHERE b.game = ${c.G} AND b.day BETWEEN ${from} AND ${c.T}
+             AND ${c.BF(`COALESCE(${X("build")}, 'release')`)}`;
+  const N = `json_extract(e.value, '$.n')`;
+  const ends = await c.all(`SELECT ${X("end_reason")} AS reason, COUNT(*) AS n FROM ${E} AND ${N} = 'run_end'
+    GROUP BY reason ORDER BY n DESC`);
+  const levels = await c.all(`SELECT ${X("level_name")} AS world, MIN(${X("world_index")}) AS idx,
+      COUNT(DISTINCT b.install) AS players, COUNT(*) AS runs,
+      SUM(CASE WHEN ${X("success")} = 1 THEN 1 ELSE 0 END) AS won,
+      SUM(CASE WHEN ${X("success")} = 0 AND COALESCE(${X("left")}, 0) = 0 THEN 1 ELSE 0 END) AS lost,
+      SUM(CASE WHEN ${X("left")} = 1 THEN 1 ELSE 0 END) AS left_
+    FROM ${E} AND ${N} = 'level_end' AND ${X("level_name")} IS NOT NULL GROUP BY world ORDER BY idx`);
+  const bosses = await c.all(`SELECT ${X("world_index")} AS idx, COUNT(*) AS n FROM ${E} AND ${N} = 'boss_defeated' GROUP BY idx`);
+  const worlds = levels.map((r) => ({ ...r, bosses: (bosses.find((b) => b.idx === r.idx) || { n: 0 }).n }));
+  const ledger = await c.all(`SELECT ${X("virtual_currency_name")} AS currency, ${N} AS dir, SUM(${X("value")}) AS total, COUNT(*) AS n
+    FROM ${E} AND ${N} IN ('earn_virtual_currency', 'spend_virtual_currency') GROUP BY currency, dir`);
+  const packs = await c.one(`SELECT COUNT(*) AS n, SUM(${X("healed")}) AS healed FROM ${E} AND ${N} = 'health_pack'`);
+  const short = await c.one(`SELECT COUNT(*) AS n FROM ${E} AND ${N} = 'shop_short'`);
+  const gear = await c.all(`SELECT ${X("item_id")} AS item, COUNT(*) AS n FROM ${E} AND ${N} = 'gear_bought'
+    GROUP BY item ORDER BY n DESC LIMIT 15`);
+  return { ps: true, since: from, worlds, ends, ledger, packs, short, gear };
 }
 
 /* GDD_LOOM.md §21: the eight gates, each with its number, its line and its sample. */

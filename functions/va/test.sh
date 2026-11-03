@@ -45,6 +45,7 @@ LIC=$(openssl rsa -in lic.pem -pubout -outform DER 2>/dev/null | base64 -w0)
   echo "VA_TOTP_SEED=\"$SEED\""
   echo "VA_COOKIE_KEY=\"$CKEY\""
   echo "VA_LICENCE_LOOM=\"$LIC\""
+  echo "VA_LICENCE_PAPERSQUADRON=\"$LIC\""
 } > .dev.vars
 
 npx --yes wrangler d1 execute va --local --file functions/va/schema.sql >/dev/null 2>&1
@@ -119,6 +120,7 @@ pj () { python3 -c 'import json,sys; print(json.dumps(sys.argv[1]))' "$1"; }
 OTHER=22222222-3333-4444-5555-666666666666
 is "AshenRise's events are accepted under sombra"          "$(post /collect "{\"v\":1,\"g\":\"sombra\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"level_end\",\"x\":{\"level_name\":\"1-5\",\"success\":true}},{\"n\":\"puzzle_solved\"}]}")" '{"ok":true,"kept":1,"refused":1,"purchases":0}'
 is "Pocket Foundry's events are accepted"                   "$(post /collect "{\"v\":1,\"g\":\"pocketfoundry\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"order_run\"},{\"n\":\"level_end\"}]}")" '{"ok":true,"kept":2,"refused":0,"purchases":0}'
+is "Paper Squadron's events are accepted, its ads under VA's names" "$(post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"level_end\",\"x\":{\"build\":\"debug\",\"level_name\":\"classroom\",\"success\":true}},{\"n\":\"health_pack\",\"x\":{\"build\":\"debug\"}},{\"n\":\"rewarded_ad_completed\"},{\"n\":\"ad_rewarded\"}]}")" '{"ok":true,"kept":3,"refused":1,"purchases":0}'
 is "ad_impression, which GA4 reserves, is not a Loom event"  "$(post /collect "{\"v\":1,\"g\":\"loom\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"ad_impression\"},{\"n\":\"ad_paid\"}]}")" '{"ok":true,"kept":1,"refused":1,"purchases":0}'
 is "a game without its licence key yet never verifies a purchase" "$(post /collect "{\"v\":1,\"g\":\"sombra\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[],\"pur\":[{\"data\":$(pj '{"orderId":"GPA.0000-1111-2222-33333","packageName":"com.voltixstudios.ashenrise","productId":"sombra_gems_100","purchaseToken":"t9"}'),\"sig\":\"AAAA\",\"price_micros\":990000,\"currency\":\"EUR\"}]}" >/dev/null; sql "SELECT verified FROM va_purchase WHERE id = 'GPA.0000-1111-2222-33333'")" "0"
 
@@ -140,6 +142,9 @@ is "one signed for another app is not"                      "$(sql "SELECT verif
 is "the purchase token is never stored"                     "$(sql "SELECT COUNT(*) FROM va_purchase WHERE id LIKE '%tok%' OR sku LIKE '%tok%'")" "0"
 post /collect "$BUY" >/dev/null
 is "the same order sent twice is one row"                   "$(sql "SELECT COUNT(*) FROM va_purchase WHERE game = 'loom'")" "3"
+P4='{"orderId":"GPA.3333-4444-5555-66666","packageName":"com.voltixstudios.papersquadron","productId":"paper_pack","purchaseTime":'$NOW',"purchaseToken":"tok4"}'
+post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"purchase_completed\"}],\"pur\":[{\"data\":$(pj "$P4"),\"sig\":\"$(signed "$P4")\",\"price_micros\":1990000,\"currency\":\"EUR\"}]}" >/dev/null
+is "a Paper Squadron purchase Google signed is verified"    "$(sql "SELECT verified, sku FROM va_purchase WHERE id = 'GPA.3333-4444-5555-66666'")" "1|paper_pack"
 
 echo "The daily cap"
 CAPID=99999999-8888-7777-6666-555555555555
@@ -196,6 +201,15 @@ LAD="{\"v\":1,\"g\":\"loom\",\"i\":\"$SAME\",\"p\":\"app\",\"e\":[$(rung 1 solve
  {\"n\":\"shop_opened\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"payer\":0}},
  {\"n\":\"panel_closed\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"panel\":\"shopPanel\",\"how\":\"outside\"}}]}"
 is "Loom's ladder events are kept, not refused"             "$(post /collect "$LAD")" '{"ok":true,"kept":7,"refused":0,"purchases":0}'
+# Paper Squadron: a world won, its boss, stars in, a health pack, one trip to the store.
+PSQ=34343434-5656-7878-9090-121212121212
+post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$PSQ\",\"p\":\"app\",\"e\":[
+  {\"n\":\"app_open\",\"t\":$NOW,\"s\":\"a1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"cause\":\"launcher\"}},
+  {\"n\":\"boss_defeated\",\"t\":$NOW,\"s\":\"a1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"world_index\":1}},
+  {\"n\":\"earn_virtual_currency\",\"t\":$NOW,\"s\":\"a1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"virtual_currency_name\":\"stars\",\"value\":3}},
+  {\"n\":\"health_pack\",\"t\":$NOW,\"s\":\"a1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"healed\":30}},
+  {\"n\":\"shop_short\",\"t\":$NOW,\"s\":\"a1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"what\":\"buy\"}},
+  {\"n\":\"level_end\",\"t\":$NOW,\"s\":\"a1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"level_name\":\"classroom\",\"world_index\":1,\"success\":true,\"left\":false,\"engagement_time_msec\":240000}}]}" >/dev/null
 is "Refresh now without a login is refused"                 "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$U/va/api/refresh")" "401"
 is "Refresh now from another site is refused"               "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Cookie: $COOKIE" -H 'Origin: https://evil.example' "$U/va/api/refresh")" "403"
 is "Refresh now runs the summary"                           "$(curl -s -X POST -H "Cookie: $COOKIE" "$U/va/api/refresh" | grep -o '"ok":true')" '"ok":true'
@@ -211,6 +225,8 @@ is "and never another game's"                                 "$(api "engagement
 is "Pocket Foundry's progress page lists its player"        "$(api "progress?game=pocketfoundry&build=lab" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("pf"), [p["install"] for p in d["players"]])')" "True ['12121212']"
 is "Loom's progress page shows the climb, rung by rung"   "$(api "progress?game=loom&build=release" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(sorted((r["lv"],r["result"]) for r in d["rungs"]), sorted((r["lv"],r["players"]) for r in d["reach"]), [(r["lv"],r["n"]) for r in d["reached"]])')" "[(1, 'solved'), (2, 'solved'), (3, 'failed')] [(1, 1), (2, 1), (3, 1)] [(2, 1)]"
 is "and counts the climb's end and the shop"                "$(api "progress?game=loom&build=release" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(sorted((r["name"],r["events"]) for r in d["climb"]))')" "[('climb_ended', 1), ('panel_closed', 1), ('shop_opened', 1)]"
+is "Paper Squadron's progress page has its world, boss and pack" "$(api "progress?game=papersquadron&build=release" | python3 -c 'import json,sys; d=json.load(sys.stdin); w=d["worlds"][0]; print(d.get("ps"), w["world"], w["won"], w["bosses"], d["packs"]["n"], d["short"]["n"])')" "True classroom 1 1 1 1"
+is "its level_end counts as the day's win, with its time in game" "$(sql "SELECT wins, seconds FROM va_daily_user WHERE game = 'papersquadron' AND install = '$PSQ'")" "1|240"
 is "and Loom's own progress page never lists it"              "$(api "progress?game=loom&build=all" | grep -c '"pf":true')" "0"
 is "Health counts only the chosen game's batches"             "$(api "health?game=pocketfoundry&build=all" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(sum(r["batches"] for r in d["intake"]))')" "$(sql "SELECT COUNT(*) FROM va_batch WHERE game = 'pocketfoundry'")"
 is "a second refresh within ten minutes is refused"         "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Cookie: $COOKIE" "$U/va/api/refresh")" "429"

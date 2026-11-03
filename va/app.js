@@ -122,6 +122,19 @@
             ["Placed a decoration", "decoration_bought"], ["Upgraded a building", "building_upgrade"], ["Paid a contract", "contract_paid"],
             ["Claimed a season reward", "tier_claimed"], ["Opened the shop", "shop_open"]],
     },
+    /* Paper Squadron: the coached first flight's steps (FlightCoach), its reminders and its hangar.
+       PaperSquadron/docs/ANALYTICS-VA.md. */
+    papersquadron: {
+      steps: [["turn", "Turned"], ["climb", "Climbed"], ["speed", "Throttled up"], ["fire", "Fired"], ["boost", "Boosted"],
+              ["orders", "Read the orders"], ["complete", "Finished the coached flight"]],
+      headline: ["complete", "Finished the coached flight"], second: ["fire", "Fired a first shot"],
+      opens: ["launcher", "resume"],
+      reminder: [["Asked for permission", "notif_permission"], ["Switched reminders", "notif_toggled"],
+                 ["Reminders scheduled", "notif_scheduled"], ["Opened by a reminder", "notif_opened"]],
+      use: [["Flew a world", "run_start"], ["Cleared a world", "world_cleared"], ["Weekly survival", "survival_start"],
+            ["Bought gear", "gear_bought"], ["Upgraded gear", "gear_upgraded"], ["Picked up a health pack", "health_pack"],
+            ["Short at the hangar", "shop_short"], ["Opened the store", "iap_store_open"]],
+    },
   };
   const profile = (g) => PROFILES[g] || null;
 
@@ -364,8 +377,35 @@
     return out;
   }
 
+  /* Paper Squadron: the worlds, how runs end, the two currencies, health packs and the hangar's
+     pull toward the store (PaperSquadron/docs/ANALYTICS-VA.md). */
+  function squadronProgress(d) {
+    const W = d.worlds;
+    const out = [tiles([
+      ["Runs flown", int(sumBy(W, (r) => r.runs)), "since " + dayLabel(d.since)],
+      ["Worlds won", int(sumBy(W, (r) => r.won)), "level_end with success"],
+      ["Health packs", int(d.packs.n || 0), int(d.packs.healed || 0) + " hull restored"],
+      ["Sent to the store", int(d.short.n || 0), "short of folds or stars in the hangar"],
+    ])];
+    out.push(card("Worlds", h("div", { class: "small", text: "Players count installs; won, shot down or failed and left count runs." }),
+      W.length ? table(["World", "Players", "Runs", "Won", "Shot down or failed", "Left", "Bosses beaten"],
+        W.map((r) => [r.world, int(r.players), int(r.runs), int(r.won), int(r.lost), int(r.left_), int(r.bosses)])) : empty()));
+    const led = (cur, dir) => d.ledger.filter((r) => r.currency === cur && r.dir === dir);
+    const total = (cur, dir) => int(sumBy(led(cur, dir), (r) => r.total));
+    out.push(h("div", { class: "grid2" },
+      ...["folds", "stars"].map((cur) => card("The " + cur + " ledger",
+        h("div", { class: "small", text: "In " + total(cur, "earn_virtual_currency") + ", out " + total(cur, "spend_virtual_currency") }),
+        hbars([{ label: "Earned", n: sumBy(led(cur, "earn_virtual_currency"), (r) => r.total) },
+               { label: "Spent", n: sumBy(led(cur, "spend_virtual_currency"), (r) => r.total) }], null)))));
+    out.push(h("div", { class: "grid2" },
+      card("Why runs ended", d.ends.length ? hbars(d.ends.map((r) => ({ label: String(r.reason || "unknown").replace(/_/g, " "), n: r.n })), sumBy(d.ends, (r) => r.n)) : empty()),
+      card("Gear bought", d.gear.length ? hbars(d.gear.map((r) => ({ label: r.item, n: r.n })), null) : empty())));
+    return out;
+  }
+
   PAGES.progress = (d) => {
     if (d.pf) return foundryProgress(d);
+    if (d.ps) return squadronProgress(d);
     if (d.note) return [card(null, empty(d.note))];
     const looms = ["e", "n", "h", ""].filter((l) => d.results.some((r) => r.loom === l) || pick(d.opened, "puzzle_started", l).length);
     const climb = climbCards(d);

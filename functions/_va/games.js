@@ -14,6 +14,7 @@
  *   loom           ~/voltix_studios/Loom/ANALYTICS.md
  *   sombra         ~/voltix_studios/Sombra/docs/ANALYTICS.md (AshenRise)
  *   pocketfoundry  ~/voltix_studios/PocketFoundry/docs/ANALYTICS.md
+ *   papersquadron  ~/voltix_studios/PaperSquadron/docs/ANALYTICS-VA.md
  * The install source (utm_*) is not a user property here: it arrives once, in
  * the batch's `src`, and is kept on the install.
  */
@@ -78,6 +79,40 @@ const POCKETFOUNDRY_PROPS = [
   "repairs", "season_tier", "pass_owner", "payer", "no_ads", "streak", "ads_consent", "notify_on",
 ];
 
+// Paper Squadron (Unity): ~/voltix_studios/PaperSquadron/docs/ANALYTICS-VA.md. Every event
+// the game sends Firebase, under its own names, except the advert, purchase and first-session
+// funnels, which take Loom's names so the shared pages read them (the game's VoltixAnalytics.cs
+// renames them on the way out), plus the VA-only app_open, app_hidden and ad_paid.
+const PAPERSQUADRON_EVENTS = [
+  "app_open", "app_hidden", "screen_view", "consent_status", "ad_paid",
+  "rewarded_ad_offered", "rewarded_ad_started", "rewarded_ad_completed", "interstitial_offered",
+  "interstitial_shown", "ad_dismissed", "ad_failed",
+  "tutorial_begin", "first_session_step", "tutorial_complete", "tutorial_backstop", "tutorial_hint",
+  "tutorial_nudge", "card_shown", "card_tapped", "card_dismissed", "flight_assist",
+  "run_start", "mission_start", "mission_failed", "orders_announced", "run_saved", "run_end",
+  "level_end", "boss_defeated", "world_cleared", "content_cleared", "fly_again", "loadout_launch",
+  "health_pack", "survival_start", "survival_end", "badge_earned",
+  "gear_bought", "gear_upgraded", "gear_evolved", "shop_short", "sale_activated",
+  "earn_virtual_currency", "spend_virtual_currency", "economy_converted",
+  "weekly_crate_shown", "weekly_crate_opened", "weekly_crate_doubled", "weekly_kit_used",
+  "iap_ready", "iap_unavailable", "iap_fetch_failed", "iap_store_open", "iap_store_close", "iap_offer",
+  "purchase_started", "purchase_completed", "purchase_failed", "iap_pending", "iap_cancelled",
+  "iap_abandoned", "iap_buy_blocked", "iap_duplicate", "iap_entitlement", "iap_invalid_receipt",
+  "iap_redelivered", "iap_restore", "iap_unknown_sku", "offer_shown", "offer_buy", "offer_closed",
+  "notif_permission", "notif_toggled", "notif_scheduled", "notif_suppressed", "notif_opened",
+  "notif_token", "push_received", "review_prompt", "pgs_signin", "rc_activated", "rc_fetch_fail",
+  "cloud_save_adopt", "cloud_save_conflict", "cloud_save_fail", "cloud_save_push", "cloud_save_resolve",
+  "cloud_save_restore", "cloud_save_restored_install", "stats_push_fail",
+  "lb_fetch_fail", "lb_link_conflict", "lb_link_fail", "lb_link_ok", "lb_profile_fail", "lb_rank_fail",
+  "lb_submit_fail", "lb_submit_ok",
+  "account_delete_start", "account_delete_ok", "account_delete_fail", "account_delete_orphan", "va_forgotten",
+];
+
+const PAPERSQUADRON_PROPS = [
+  "app_version", "run_counter", "best_wave", "worlds_cleared", "payer", "no_ads", "notif_on",
+  "rc_variant", "days_played", "streak", "language", "ads_consent",
+];
+
 const LOOM_PROPS = [
   "app_version", "version_code", "first_day", "payer", "days_played", "streak",
   "best_streak", "reminder_on", "preferred_loom", "ads_consent", "best_level", "live_weave",
@@ -102,5 +137,13 @@ export const GAMES = {
     events: new Set(POCKETFOUNDRY_EVENTS),
     props: new Set(POCKETFOUNDRY_PROPS),
     licence: null,
+  },
+  // The licence key is the one built into the game (IapService.LicenseKeyBase64).
+  papersquadron: {
+    pkg: "com.voltixstudios.papersquadron",
+    events: new Set(PAPERSQUADRON_EVENTS),
+    props: new Set(PAPERSQUADRON_PROPS),
+    licence:
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAj6YF8xiiydrfoOCqZEl9NnptX1M6XyzaLejFth4p85hm7hsoPnbl+4KUmwGDJp3hVaC0v56WhlKrDZsT9EgBurZfhqxQ+8HCj6fR5VrO6SHwp75eXN5u+qMGYCyGz45j7b0aqrhVqOntQWFz80/TdeaYi3IqsUeoOVwZRz0pMK7nKJjZ+1egAcrlht/Cj43jVm0DZik/NXIYiok8jZwWD0gEOE2LqUk2lJmgIcgCZKanYVdRxBaznEk0TwNgtv3us2sfdZ6WR4VAKFd8dis7s2DfsqQ3ND/eYOHbwVzy2pbGMkS9kwSYTjeKIObxriJQg+YVSuPjJvCx4Zp3suo8FQIDAQAB",
   },
 };

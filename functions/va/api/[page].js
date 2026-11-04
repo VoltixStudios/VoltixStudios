@@ -22,6 +22,7 @@
 
 import { GAMES } from "../../_va/games.js";
 import { vaDay, DAY0 } from "../../_va/lib.js";
+import { CAMPAIGNS } from "../../_va/campaigns.js";
 
 const RANGES = [7, 30, 90];
 /* release: players. debug: the studio's phones, emulators and Google's test robots. lab: the
@@ -287,7 +288,112 @@ const PAGES = {
     return { errors, delay, consent, versions, intake, nightly: nightly.v ? JSON.parse(nightly.v) : null,
              logins, deleted: deleted.n || 0, since: from, allToday: allToday.batches || 0 };
   },
+
+  /* Today, every game at once: the page the phone opens on. Live where it can be (the raw
+     batches of today and yesterday, so it does not wait for the twice-daily summaries), from
+     the summaries where it must be (day-one return). Players only: release builds, Google's
+     test robots left out by the same rule the nightly Worker applies (ROBOT below). Days are
+     the collector's: UTC, so "today" starts at 01:00 Spanish time in winter. */
+  async today(c) {
+    const T = vaDay(), now = Date.now();
+    const start = DAY0 + T * 86400000;
+    const REL = `COALESCE(json_extract(e.value, '$.x.build'), 'release') = 'release'`;
+    const players = `va_install i WHERE COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT}`;
+    const live = await c.all(`
+      SELECT b.game,
+             COUNT(DISTINCT CASE WHEN b.day = ${T} THEN b.install END) AS today,
+             COUNT(DISTINCT CASE WHEN b.day = ${T - 1} THEN b.install END) AS yesterday
+      FROM va_batch b JOIN va_install i ON i.game = b.game AND i.install = b.install
+      WHERE b.day BETWEEN ${T - 1} AND ${T} AND COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT}
+        AND EXISTS (SELECT 1 FROM json_each(b.events) e WHERE ${REL})
+      GROUP BY b.game`);
+    const last = await c.all(`SELECT game, MAX(received) AS at FROM va_batch WHERE day >= ${T - 7} GROUP BY game`);
+    const camp = CAMPAIGNS.filter((k) => vaDay(Date.parse(k.start)) <= T);
+    const inList = (k) => k.countries.map((x) => `'${x.replace(/[^A-Z]/g, "")}'`).join(",");
+    const fresh = await c.all(`
+      SELECT i.game, COUNT(*) AS n, i.country AS country FROM ${players}
+        AND i.first_seen >= ${start}
+        AND EXISTS (SELECT 1 FROM va_batch b, json_each(b.events) e
+                    WHERE b.game = i.game AND b.install = i.install AND b.day = ${T} AND ${REL})
+      GROUP BY i.game, i.country`);
+    const ads = await c.all(`
+      SELECT b.game, json_extract(e.value, '$.x.currency') AS currency, SUM(json_extract(e.value, '$.x.value')) AS value
+      FROM va_batch b JOIN va_install i ON i.game = b.game AND i.install = b.install, json_each(b.events) e
+      WHERE b.day = ${T} AND COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT} AND json_extract(e.value, '$.n') = 'ad_paid' AND ${REL}
+      GROUP BY b.game, currency`);
+    const bought = await c.all(`
+      SELECT game, currency, COUNT(*) AS n, SUM(COALESCE(price_micros, 0)) AS micros FROM va_purchase
+      WHERE verified = 1 AND purchase_time >= ${start} GROUP BY game, currency`);
+    /* Day-one return of the last seven complete cohorts (first days T-8 to T-2), from the summaries. */
+    const d1 = await c.all(`
+      WITH inst AS (SELECT game, install, COALESCE(first_day, CAST((first_seen - ${DAY0}) / 86400000 AS INTEGER)) AS fd
+                    FROM va_install),
+           du AS (SELECT game, install, day FROM va_daily_user WHERE build = 'release'),
+           coh AS (SELECT i.game, i.install, i.fd FROM inst i JOIN du d ON d.game = i.game AND d.install = i.install AND d.day = i.fd
+                   WHERE i.fd BETWEEN ${T - 8} AND ${T - 2})
+      SELECT game, COUNT(*) AS n,
+             SUM(EXISTS (SELECT 1 FROM du x WHERE x.game = coh.game AND x.install = coh.install AND x.day = coh.fd + 1)) AS r
+      FROM coh GROUP BY game`);
+
+    const games = Object.keys(GAMES).map((g) => {
+      const l = live.find((r) => r.game === g) || {};
+      const f = fresh.filter((r) => r.game === g);
+      const k = camp.find((x) => x.games.includes(g));
+      const d = d1.find((r) => r.game === g) || {};
+      return {
+        game: g, today: l.today || 0, yesterday: l.yesterday || 0,
+        newToday: f.reduce((a, r) => a + r.n, 0),
+        newCampaign: k ? f.filter((r) => k.countries.includes(r.country)).reduce((a, r) => a + r.n, 0) : null,
+        last: (last.find((r) => r.game === g) || {}).at || null,
+        ads: ads.filter((r) => r.game === g && r.value).map((r) => ({ currency: r.currency || "", value: r.value })),
+        purchases: bought.filter((r) => r.game === g).map((r) => ({ currency: r.currency || "", n: r.n, micros: r.micros })),
+        d1: { n: d.n || 0, r: d.r || 0 },
+      };
+    });
+
+    /* Each campaign since its first day: new players from its countries against the rest, live,
+       and their day-one return from the summaries. */
+    const campaigns = [];
+    for (const k of camp) {
+      const S = vaDay(Date.parse(k.start)), R = vaDay(Date.parse(k.review));
+      const gl = k.games.map((g) => `'${g}'`).join(",");
+      const counts = await c.all(`
+        SELECT i.game, (i.country IN (${inList(k)})) AS camp, COUNT(*) AS n FROM ${players}
+          AND i.game IN (${gl}) AND i.first_seen >= ${DAY0 + S * 86400000}
+          AND EXISTS (SELECT 1 FROM va_batch b, json_each(b.events) e
+                      WHERE b.game = i.game AND b.install = i.install AND b.day >= ${S} AND ${REL})
+        GROUP BY i.game, camp`);
+      const ret = await c.all(`
+        WITH du AS (SELECT game, install, day FROM va_daily_user WHERE build = 'release'),
+             coh AS (SELECT i.game, i.install, i.country,
+                            COALESCE(i.first_day, CAST((i.first_seen - ${DAY0}) / 86400000 AS INTEGER)) AS fd
+                     FROM va_install i WHERE i.game IN (${gl}) AND COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT})
+        SELECT coh.game, (coh.country IN (${inList(k)})) AS camp, COUNT(*) AS n,
+               SUM(EXISTS (SELECT 1 FROM du x WHERE x.game = coh.game AND x.install = coh.install AND x.day = coh.fd + 1)) AS r
+        FROM coh JOIN du d ON d.game = coh.game AND d.install = coh.install AND d.day = coh.fd
+        WHERE coh.fd BETWEEN ${S} AND ${T - 1}
+        GROUP BY coh.game, camp`);
+      const part = (g, flag) => {
+        const a = counts.find((r) => r.game === g && !!r.camp === flag) || {};
+        const b = ret.find((r) => r.game === g && !!r.camp === flag) || {};
+        return { n: a.n || 0, d1n: b.n || 0, d1r: b.r || 0 };
+      };
+      campaigns.push({
+        name: k.name, note: k.note, countries: k.countries, budgetEur: k.budgetEur,
+        start: S, review: R, day: T - S + 1, days: R - S,
+        games: k.games.map((g) => ({ game: g, campaign: part(g, true), other: part(g, false) })),
+      });
+    }
+    return { now, games, campaigns };
+  },
 };
+
+/* Google's pre-launch test devices, the same rule as TESTER_RULE in workers/va-nightly/src/index.js
+   (keep the two the same). The nightly run marks them as testers twice a day; between runs the
+   Today page leaves them out by this. */
+const ROBOT = `(COALESCE(i.dev_model, '') LIKE 'Google sdk_gphone%' OR
+  (COALESCE(i.dev_screen, '') IN ('288x448','448x288','480x288','288x480') AND
+   (COALESCE(i.dev_model, '') IN ('OnePlus OnePlus8Pro', 'HUAWEI HRY-LX1T') OR COALESCE(i.dev_webview, '') = '90.0.4430.210')))`;
 
 /* Pocket Foundry's progress (docs/ANALYTICS.md, "The dashboard"): read from the raw batches, which are
    kept 90 days, as the Health page reads its script errors. Small numbers are expected for months:

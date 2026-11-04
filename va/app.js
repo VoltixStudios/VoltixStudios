@@ -17,13 +17,14 @@
   const RUNGS = ["", "Super easy", "Easy", "Not so easy", "Normal", "Tricky", "Hard", "Very hard", "Expert", "Master"];
   const rungName = (lv) => "Level " + lv + (RUNGS[lv] ? " · " + RUNGS[lv] : "");
   const tierName = (l) => LOOMS[l] || (/^r\d+$/.test(l) ? "Ladder, " + rungName(+l.slice(1)) : l);
-  const TITLES = { overview: "Overview", acquisition: "Acquisition", retention: "Retention", engagement: "Engagement",
+  const TITLES = { today: "Today", overview: "Overview", acquisition: "Acquisition", retention: "Retention", engagement: "Engagement",
                    progress: "Player progress", money: "Money", health: "Health" };
-  const SUBS = { overview: "The game at a glance", acquisition: "Who arrives, from where, and whether they start",
+  const SUBS = { today: "Every game, live: the day runs from 01:00 Spanish time", overview: "The game at a glance", acquisition: "Who arrives, from where, and whether they start",
                  retention: "Do they come back, and who does", engagement: "How much they play, when, and what they use",
                  progress: "How far they get", money: "Offers, purchases Google signed, and adverts",
                  health: "Errors, late data, the collector and the nightly run" };
   const NS = "http://www.w3.org/2000/svg";
+  const NAMES = { loom: "Loom", sombra: "AshenRise", pocketfoundry: "Pocket Foundry", papersquadron: "Paper Squadron" };
 
   /* ---------- small helpers ---------- */
   function h(tag, props, ...kids) {
@@ -525,13 +526,58 @@
 
   /* ---------- the frame ---------- */
   /* Dates for the custom range travel as day numbers, the way the server counts. */
+  /* ---------- Today: every game at once, the page a phone opens on ---------- */
+  const adMoney = (v) => (v < 0.01 ? v.toFixed(4) : v.toFixed(2));
+  PAGES.today = (d) => {
+    const T = todayDay();
+    const out = d.campaigns.map((k) => campaignCard(k));
+    const games = d.games.slice().sort((a, b) => (b.today - a.today) || (b.yesterday - a.yesterday) || ((b.last || 0) - (a.last || 0)));
+    for (const g of games) {
+      const stale = !g.last || d.now - g.last > 6 * 3600000;
+      const open = h("a", { class: "btn", href: "#overview", text: "Open" });
+      open.addEventListener("click", () => { state.game = g.game; store.set("game", g.game); document.getElementById("game").value = g.game; });
+      const sold = g.purchases.reduce((a, p) => a + p.n, 0);
+      const takings = g.purchases.map((p) => (p.micros / 1e6).toFixed(2) + " " + p.currency)
+        .concat(g.ads.map((a) => "ads " + adMoney(a.value) + " " + a.currency)).join(" · ");
+      out.push(h("section", { class: "card gcard" },
+        h("div", { class: "ghead" },
+          h("div", null, h("h2", { text: NAMES[g.game] || g.game }),
+            h("div", { class: "small live" + (stale ? " stale" : ""), text: g.last ? "last data " + ago(new Date(g.last).toISOString()) : "no data yet" })),
+          open),
+        tiles([
+          ["Players today", int(g.today), int(g.yesterday) + " yesterday"],
+          ["New today", int(g.newToday), g.newCampaign === null ? "" : int(g.newCampaign) + " from campaign countries"],
+          ["Day-one return", share(g.d1.r, g.d1.n), "started " + dayLabel(T - 8) + "–" + dayLabel(T - 2)],
+          ["Purchases today", int(sold), takings || "no adverts paid yet"],
+        ])));
+    }
+    out.push(h("p", { class: "small", text: "Players only: release builds, without Google's test phones. Players and new players are live; " +
+      "day-one return comes from the summaries. Pull down to reload." }));
+    return out;
+  };
+
+  function campaignCard(k) {
+    const through = Math.max(0, Math.min(1, (k.day - 1) / k.days));
+    const rows = k.games.map((g) => [NAMES[g.game] || g.game, int(g.campaign.n), int(g.other.n),
+      share(g.campaign.d1r, g.campaign.d1n), share(g.other.d1r, g.other.d1n)]);
+    return h("section", { class: "card" },
+      h("div", { class: "ghead" }, h("h2", { text: k.name }),
+        h("span", { class: "small", text: "Day " + Math.min(k.day, k.days) + " of " + k.days + " · judged on " + dayLabel(k.review) })),
+      h("div", { class: "meter", role: "img", "aria-label": Math.round(through * 100) + "% of the way to the review" },
+        h("div", { style: { width: (through * 100) + "%" } })),
+      h("p", { class: "small", style: { margin: 0 }, text: k.note }),
+      table(["Since " + dayLabel(k.start), "Campaign", "Elsewhere", "D1 campaign", "D1 elsewhere"], rows),
+      h("p", { class: "small", style: { margin: 0 }, text: "Counted by country: a new player from " + k.countries.join(", ") +
+        " since " + dayLabel(k.start) + " counts as the campaign's. Spend is read in Google Ads." }));
+  }
+
   const isoToDay = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? Math.round((Date.UTC(+m[1], +m[2] - 1, +m[3]) - DAY0) / 86400000) : null; };
   const dayToIso = (d) => new Date(DAY0 + d * 86400000).toISOString().slice(0, 10);
   const todayDay = () => Math.floor((Date.now() - DAY0) / 86400000);
   const ago = (iso) => { const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
     return m < 1 ? "just now" : m < 60 ? m + " min ago" : m < 1440 ? Math.round(m / 60) + " h ago" : Math.round(m / 1440) + " days ago"; };
 
-  const state = { page: "overview", game: store.get("game", "loom"), range: store.get("range", "30"), build: store.get("build", "release"),
+  const state = { page: "today", game: store.get("game", "loom"), range: store.get("range", "30"), build: store.get("build", "release"),
                   from: store.get("from", ""), to: store.get("to", "") };
   let ticket = 0;
 
@@ -544,9 +590,17 @@
   }
 
   async function show() {
-    const page = (location.hash || "#overview").slice(1);
-    state.page = PAGES[page] ? page : "overview";
-    document.querySelectorAll("nav a:not(.brand)").forEach((a) => { if (a.getAttribute("href") === "#" + state.page) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    const page = (location.hash || "#today").slice(1);
+    state.page = PAGES[page] ? page : "today";
+    document.body.dataset.page = state.page;
+    document.querySelectorAll("nav .tabs a").forEach((a) => {
+      if (a.getAttribute("href") === "#" + state.page) {
+        a.setAttribute("aria-current", "page");
+        /* On a phone the tabs are one strip: keep the current one in view. */
+        if (a.parentElement.scrollWidth > a.parentElement.clientWidth)
+          a.parentElement.scrollTo({ left: a.offsetLeft - (a.parentElement.clientWidth - a.offsetWidth) / 2, behavior: "smooth" });
+      } else a.removeAttribute("aria-current");
+    });
     document.querySelectorAll("[data-range]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.range === state.range)));
     document.getElementById("customForm").hidden = state.range !== "custom";
     document.getElementById("title").textContent = TITLES[state.page];
@@ -563,8 +617,8 @@
       const d = await r.json();
       if (mine !== ticket) return;
       if (!r.ok) throw new Error(d.detail || d.error || r.status);
-      document.getElementById("subtitle").textContent = SUBS[state.page] + " · " + dayLabel(d.from) + " to " + dayLabel(d.today) +
-        (d.custom ? " (custom)" : "");
+      document.getElementById("subtitle").textContent = state.page === "today" ? SUBS.today
+        : SUBS[state.page] + " · " + dayLabel(d.from) + " to " + dayLabel(d.today) + (d.custom ? " (custom)" : "");
       summaryLine(d.summary);
       box.replaceChildren(h("div", { style: { display: "flex", flexDirection: "column", gap: "20px" } }, PAGES[state.page](d)));
     } catch (e) {
@@ -588,6 +642,28 @@
     } catch (e) {
       line.textContent = "The refresh did not finish: " + (e && e.message || e);
     } finally { btn.disabled = false; btn.textContent = "Refresh now"; }
+  }
+
+  /* A phone: pull the page down from the top to load it again (the figures, not the
+     summaries; Refresh now rebuilds those). */
+  function pullToReload() {
+    const tip = document.getElementById("pull");
+    if (!tip || !("ontouchstart" in window)) return;
+    let y0 = null, ready = false;
+    addEventListener("touchstart", (e) => { y0 = window.scrollY <= 0 && e.touches.length === 1 ? e.touches[0].clientY : null; ready = false; }, { passive: true });
+    addEventListener("touchmove", (e) => {
+      if (y0 === null) return;
+      const dy = e.touches[0].clientY - y0;
+      if (dy <= 10 || window.scrollY > 0) { tip.classList.remove("on", "go"); ready = false; return; }
+      ready = dy > 90;
+      tip.textContent = ready ? "Release to reload" : "Pull to reload";
+      tip.classList.add("on"); tip.classList.toggle("go", ready);
+    }, { passive: true });
+    addEventListener("touchend", () => {
+      if (y0 !== null && ready) { tip.textContent = "Reloading…"; show().finally(() => tip.classList.remove("on", "go")); }
+      else tip.classList.remove("on", "go");
+      y0 = null; ready = false;
+    }, { passive: true });
   }
 
   function start() {
@@ -616,6 +692,7 @@
     });
     document.getElementById("refresh").addEventListener("click", refresh);
     addEventListener("hashchange", show);
+    pullToReload();
     show();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();

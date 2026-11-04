@@ -202,7 +202,7 @@ is "with a cookie that is HttpOnly, Secure and SameSite=Strict" "$(echo "$ok" | 
 is "the API answers with it"                                "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/ping" | grep -o '"ok":true')" '"ok":true'
 is "and the dashboard is served"                            "$(curl -s -H "Cookie: $COOKIE" "$U/va/" | grep -o 'src="/va/app.js"')" 'src="/va/app.js"'
 is "its script too, but only with the login"                "$(curl -s -o /dev/null -w '%{http_code}' -H "Cookie: $COOKIE" "$U/va/app.js")$(curl -s -o /dev/null -w '%{http_code}' "$U/va/app.js")" "200302"
-for page in overview acquisition retention engagement progress money health; do
+for page in today overview acquisition retention engagement progress money health; do
   is "the $page page's data answers"                        "$(curl -s -H "Cookie: $COOKIE" "$U/va/api/$page?game=loom&range=30&build=all" | grep -o '"today":[0-9]*' | head -1 | cut -d: -f1)" '"today"'
 done
 T0=$(( ($(date -u +%s) - $(date -u -d 2026-01-01 +%s)) / 86400 ))
@@ -321,6 +321,20 @@ is "after five failures even a good signature waits"        "$(jcode /va/device/
 is "every attempt was recorded"                             "$(sql "SELECT SUM(ok = 1), SUM(ok = 0) FROM va_login")" "1|5"
 for k in 2 3 4 5; do jpost /va/device/enrol "{\"pubkey\":\"$PUB\",\"name\":\"phone $k\"}" "$FRESH" >/dev/null; done
 is "no more than five phones"                               "$(jcode /va/device/enrol "{\"pubkey\":\"$PUB\"}" "$FRESH")" "409"
+
+echo "Today, every game at once"
+TID=56565656-7878-9090-1212-343434343434; RID=56565656-7878-9090-1212-000000000000
+post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$TID\",\"p\":\"app\",\"e\":[{\"n\":\"app_open\",\"t\":$NOW,\"s\":\"t1\",\"q\":1,\"d\":$TD,\"x\":{\"build\":\"release\",\"cause\":\"launcher\"}},{\"n\":\"ad_paid\",\"t\":$NOW,\"s\":\"t1\",\"q\":2,\"d\":$TD,\"x\":{\"build\":\"release\",\"value\":0.0025,\"currency\":\"USD\"}}]}" >/dev/null
+post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$RID\",\"p\":\"app\",\"dev\":{\"model\":\"Google sdk_gphone64_arm64\"},\"e\":[{\"n\":\"app_open\",\"t\":$NOW,\"s\":\"r1\",\"q\":1,\"d\":$TD,\"x\":{\"build\":\"release\"}}]}" >/dev/null
+sqlw "UPDATE va_install SET country = 'SA' WHERE install IN ('$TID', '$RID')"   # a campaign country; the dev server has none
+TJ=$(curl -s -H "Cookie: $FRESH" "$U/va/api/today")
+tj () { echo "$TJ" | python3 -c "import json,sys; d=json.load(sys.stdin); g={x['game']:x for x in d['games']}; print($1)"; }
+is "Today answers for every game"                           "$(tj "','.join(sorted(g))")" "loom,papersquadron,pocketfoundry,sombra"
+is "a campaign-country player counts, Google's test phone does not" "$(tj "g['papersquadron']['newCampaign']")" "1"
+is "a game outside the campaign has no campaign count"      "$(tj "g['pocketfoundry']['newCampaign']")" "None"
+is "the adverts paid today are added up, in their currency" "$(tj "g['papersquadron']['ads']")" "[{'currency': 'USD', 'value': 0.0025}]"
+is "the campaign is followed, Loom and Paper Squadron"      "$(tj "d['campaigns'][0]['name'] + ': ' + ','.join(x['game'] for x in d['campaigns'][0]['games'])")" "Google Ads test: loom,papersquadron"
+is "with Paper Squadron's campaign player counted"          "$(tj "[x for x in d['campaigns'][0]['games'] if x['game']=='papersquadron'][0]['campaign']['n']")" "1"
 
 echo
 echo "$pass passed, $fail failed"

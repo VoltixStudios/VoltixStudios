@@ -141,17 +141,83 @@
   .heat { display:grid; grid-template-columns:40px repeat(24, minmax(0, 1fr)); gap:3px; min-width:640px; align-items:center; }
   .heat div { height:20px; border-radius:4px; }
   .foot { color:var(--muted); font-size:12px; margin:0; padding-top:10px; border-top:1px solid var(--line-soft); }
+
+  /* ── the page list: a column in the sidebar, a strip of tabs on a phone ── */
+  .tabs { display:flex; flex-direction:column; gap:3px; }
+  .mobile-only { display:none; }
+
+  /* ── wide tables keep their first column in view while they scroll sideways ── */
+  td.left, th.left { position:sticky; left:0; z-index:1; background:var(--ink-2); }
+  th { z-index:2; }
+  th.left { z-index:3; }
+
+  /* ── Today: every game at once ── */
+  .ghead { display:flex; gap:8px 12px; align-items:center; justify-content:space-between; }
+  .ghead h2 { font-size:17px; }
+  .ghead .live { margin-top:3px; }
+  .ghead .btn { flex:none; }
+  a.btn { text-decoration:none; }
+  .gcard .tiles { grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); }
+  .gcard .tile { padding:12px 14px; }
+  .gcard .tile .v { font-size:26px; }
+  .live { display:inline-flex; align-items:center; gap:6px; }
+  .live::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--volt); box-shadow:0 0 8px var(--volt); }
+  .live.stale::before { background:var(--warn); box-shadow:0 0 8px var(--warn); }
+  .meter { height:8px; border-radius:5px; background:var(--soft); overflow:hidden; }
+  .meter > div { height:100%; background:linear-gradient(90deg, var(--volt), var(--volt-2)); }
+  body[data-page="today"] nav label.pick, body[data-page="today"] .seg,
+  body[data-page="today"] #customForm { display:none; }
+
+  /* ── pull down to reload, on a phone ── */
+  #pull { position:fixed; left:50%; top:10px; z-index:20; transform:translate(-50%, -70px); padding:8px 16px;
+          border-radius:999px; background:var(--ink-3); border:1px solid var(--line); color:var(--text-dim);
+          font-size:13px; pointer-events:none; transition:transform .2s var(--ease); }
+  #pull.on { transform:translate(-50%, 0); }
+  #pull.go { color:var(--text); border-color:var(--volt); }
+
+  /* ── a phone: the sidebar becomes a bar at the top, the numbers come first ── */
+  @media (max-width:760px) {
+    .wrap { display:block; min-height:0; }
+    nav { position:sticky; top:0; z-index:10; display:grid; grid-template-columns:auto minmax(0, 1fr) minmax(0, 1fr);
+          align-items:center; gap:8px; padding:8px 10px 0; border-right:0; border-bottom:1px solid var(--line-soft); }
+    .brand { padding:0 2px 0 0; }
+    .brand img { width:30px; height:30px; }
+    .brand span { display:none; }
+    nav label.pick { padding:0; font-size:0; gap:0; }
+    nav label.pick select { width:100%; min-height:40px; padding:8px; font-size:14px; }
+    body[data-page="today"] nav { grid-template-columns:auto 1fr; }
+    body[data-page="today"] nav::after { content:"Voltix Analytics"; font-family:var(--display); font-weight:600;
+          letter-spacing:.04em; text-transform:uppercase; font-size:14px; }
+    body[data-page="today"] .tabs { grid-row:2; }
+    .tabs { grid-column:1 / -1; flex-direction:row; gap:4px; overflow-x:auto; scrollbar-width:none;
+            margin:0 -10px; padding:0 10px 8px; }
+    .tabs::-webkit-scrollbar { display:none; }
+    .tabs a { flex:none; padding:10px 14px; white-space:nowrap; }
+    nav .tabs a[aria-current="page"]::before { left:14px; right:14px; top:auto; bottom:3px; width:auto; height:3px; }
+    nav form { display:none; }
+    .mobile-only { display:block; }
+    main { padding:14px 12px 40px; gap:16px; }
+    .head h1 { font-size:22px; }
+    .tools { width:100%; }
+    .seg { flex:1 1 auto; }
+    .seg button { flex:1 1 0; padding:8px 4px; min-height:40px; }
+    .tiles { grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; }
+    .tile { padding:12px 14px; }
+    .tile .v { font-size:24px; }
+    .card { padding:16px 14px; }
+    .grid2, .grid3 { grid-template-columns:minmax(0, 1fr); }
+  }
 </style>
 <script src="/va/app.js" defer></script>
 </head>
 <body>
 <div class="wrap">
   <nav aria-label="Dashboard pages">
-    <a class="brand" href="#overview">
+    <a class="brand" href="#today">
       <img src="/assets/img/voltix-mark.webp" alt="" width="34" height="34" decoding="async">
       <span>Voltix<em>Analytics</em></span>
     </a>
-    <label>Game
+    <label class="pick">Game
       <select id="game">
         <option value="loom">Loom</option>
         <option value="sombra">AshenRise</option>
@@ -159,7 +225,7 @@
         <option value="papersquadron">Paper Squadron</option>
       </select>
     </label>
-    <label>Builds
+    <label class="pick">Builds
       <select id="build">
         <option value="release">Players (release)</option>
         <option value="debug">Tests (debug)</option>
@@ -168,16 +234,20 @@
         <option value="all">Every build</option>
       </select>
     </label>
-    <a href="#overview">Overview</a>
-    <a href="#acquisition">Acquisition</a>
-    <a href="#retention">Retention</a>
-    <a href="#engagement">Engagement</a>
-    <a href="#progress">Player progress</a>
-    <a href="#money">Money</a>
-    <a href="#health">Health</a>
+    <div class="tabs">
+      <a href="#today">Today</a>
+      <a href="#overview">Overview</a>
+      <a href="#acquisition">Acquisition</a>
+      <a href="#retention">Retention</a>
+      <a href="#engagement">Engagement</a>
+      <a href="#progress">Player progress</a>
+      <a href="#money">Money</a>
+      <a href="#health">Health</a>
+    </div>
     <form method="post" action="/va/logout"><button type="submit" class="btn">Sign out</button></form>
   </nav>
   <main>
+    <div id="pull" aria-hidden="true">Pull to reload</div>
     <div class="head">
       <div><h1 id="title">Overview</h1><div class="sub" id="subtitle"></div></div>
       <div class="tools">
@@ -200,6 +270,7 @@
     <div id="page"><p class="empty">Loading…</p></div>
     <p class="foot">One install is one player: clearing the app's data or a second phone counts again. Days are the game's own
       day. Shares are counts: 3/8 means 3 of 8. The summaries are rebuilt twice a day, at 08:00 and 22:00 Spanish time.</p>
+    <form class="mobile-only" method="post" action="/va/logout"><button type="submit" class="btn">Sign out</button></form>
   </main>
 </div>
 </body>

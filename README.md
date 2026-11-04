@@ -37,8 +37,10 @@ legal/loom/                privacy policy + data deletion, EN/ES
 legal/coreward/            privacy policy + terms & virtual currency, EN/ES
 legal/dungeon-gourmand/    privacy policy + terms + deletion, EN/ES
 legal/pocket-foundry/      privacy policy + terms + deletion, EN/ES
+legal/ashenrise/           privacy policy + terms + deletion, EN/ES
 legal/website-privacy.html what the *site* measures, EN/ES — see Analytics below
 loom/config.json           Loom's remote switch: which rewarded placements are on — see below
+pocketfoundry/config.json  Pocket Foundry's remote switch: its four ad placements (the game's store/ADMOB.md)
 loom/play/                 today's Loom cloth, playable here: a copy of the game — see below
 functions/analytics/       Pages Function: first-party proxy for Umami
 functions/loom/            Pages Function: Loom's day counters, and how to turn
@@ -116,6 +118,9 @@ legal/dungeon-gourmand/delete-account.html
 legal/pocket-foundry/privacy-policy.html  the app's privacy link (MainActivity.PRIVACY_URL), Play Console + AdMob
 legal/pocket-foundry/terms.html
 legal/pocket-foundry/delete-account.html  Play data-safety "data deletion" URL
+legal/ashenrise/privacy-policy.html  the app's privacy link (MainActivity.PRIVACY_URL), Play Console + AdMob
+legal/ashenrise/terms.html
+legal/ashenrise/delete-account.html  Play data-safety "data deletion" URL
 legal/website-privacy.html            the site itself, not a game — no store
                                       references it, so this URL is ours to move
 ```
@@ -179,6 +184,16 @@ reminders; `game/src/economy.js` for the catalogue; `android/README.md` for the 
 with the in-development note. The game's interface is English only, so the Spanish text names
 its menu items in English. The key art is the Parcel Yard fully repaired
 (`build_assets.py --only foundry`).
+
+**AshenRise's three documents describe a game that has not shipped yet either**
+(4 November 2026). They were written from the game's repository, `~/voltix_studios/Sombra`:
+`docs/ANALYTICS.md` and `docs/DECISIONS.md` S-020 for Voltix Analytics (game key `sombra`) and
+Firebase Analytics (every build, no advertising id, no Android id, no advertising use), the
+`AN` module and the rules in `game/index.html` for the switch, the catalogue, the chests' odds
+and guarantees and the advertising rules, and `android/` for the shell. There is no
+Crashlytics and no notification. The game itself is in six languages; these documents, like
+the others, are in English and Spanish, and name the game's Settings items as the game shows
+them in each.
 
 ## Loom in the browser
 

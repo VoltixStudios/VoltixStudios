@@ -86,6 +86,21 @@
     <priority>0.4</priority>
   </url>
   <url>
+    <loc>https://voltixstudios.pages.dev/legal/ashenrise/privacy-policy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://voltixstudios.pages.dev/legal/ashenrise/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://voltixstudios.pages.dev/legal/ashenrise/delete-account</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
     <loc>https://voltixstudios.pages.dev/legal/website-privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>

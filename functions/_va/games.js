@@ -37,6 +37,8 @@ const LOOM_EVENTS = [
   // the ladder, Live weave and the shop (Loom's GDD 19.2 and 12.5, 3 November 2026)
   "rung_started", "rung_solved", "rung_failed", "climb_ended", "live_weave_toggled",
   "shop_opened", "panel_closed",
+  // the hint seen, help sold during play (Loom's GDD 11 and 12.2, 4 November 2026)
+  "hint_button_shown", "hint_pressed", "hint_tip_shown", "live_trial_started",
 ];
 
 // AshenRise (codename sombra): ~/voltix_studios/Sombra/docs/ANALYTICS.md §3

@@ -378,13 +378,26 @@ const PAGES = {
         const b = ret.find((r) => r.game === g && !!r.camp === flag) || {};
         return { n: a.n || 0, d1n: b.n || 0, d1r: b.r || 0 };
       };
+      /* Google's own figures for each game's campaign since the first day (va_ads_day). */
+      const names = Object.values(k.ads || {}).map((n) => `'${String(n).replace(/'/g, "")}'`).join(",");
+      const spend = names ? await c.all(`
+        SELECT campaign, MAX(currency) AS currency, SUM(cost_micros) AS cost, SUM(conversions) AS installs,
+               SUM(clicks) AS clicks, SUM(impressions) AS impressions,
+               SUM(CASE WHEN day = ${T} THEN cost_micros ELSE 0 END) AS today
+        FROM va_ads_day WHERE day >= ${S} AND campaign IN (${names}) GROUP BY campaign`) : [];
+      const ads = (g) => {
+        const r = spend.find((x) => k.ads && x.campaign === k.ads[g]);
+        return r ? { campaign: r.campaign, currency: r.currency, cost: r.cost || 0, today: r.today || 0,
+                     installs: r.installs || 0, clicks: r.clicks || 0, impressions: r.impressions || 0 } : null;
+      };
       campaigns.push({
         name: k.name, note: k.note, countries: k.countries, budgetEur: k.budgetEur,
         start: S, review: R, day: T - S + 1, days: R - S,
-        games: k.games.map((g) => ({ game: g, campaign: part(g, true), other: part(g, false) })),
+        games: k.games.map((g) => ({ game: g, campaign: part(g, true), other: part(g, false), ads: ads(g) })),
       });
     }
-    return { now, games, campaigns };
+    const adsLast = await c.one(`SELECT v FROM va_meta WHERE k = 'ads_last'`);
+    return { now, games, campaigns, adsLast: adsLast.v ? JSON.parse(adsLast.v) : null };
   },
 };
 

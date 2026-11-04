@@ -61,6 +61,26 @@ CREATE TABLE IF NOT EXISTS va_install (
 -- A database made before 30 October 2026 lacks `tester`; add it once with:
 --   ALTER TABLE va_install ADD COLUMN tester INTEGER;
 
+-- Google Ads, one row per day and campaign, as the Google Ads script in the
+-- advertising account posts it every hour (functions/collect/ads.js,
+-- tools/google-ads-script.js). Replaced whenever the same day is sent again.
+-- Added 4 November 2026. Holds nothing about any player.
+CREATE TABLE IF NOT EXISTS va_ads_day (
+  day           INTEGER NOT NULL,         -- days since 1 January 2026, in the account's own time zone
+  campaign_id   TEXT    NOT NULL,
+  campaign      TEXT,                     -- its name in Google Ads
+  status        TEXT,
+  channel       TEXT,                     -- MULTI_CHANNEL is an App campaign
+  currency      TEXT,                     -- the account's
+  cost_micros   INTEGER NOT NULL DEFAULT 0,
+  impressions   INTEGER NOT NULL DEFAULT 0,
+  clicks        INTEGER NOT NULL DEFAULT 0,
+  conversions   REAL    NOT NULL DEFAULT 0, -- installs, for an App campaign bidding on installs
+  budget_micros INTEGER,                  -- the daily budget that day
+  updated       INTEGER NOT NULL,         -- ms
+  PRIMARY KEY (day, campaign_id)
+);
+
 -- Phones that may sign in with a fingerprint instead of the password and code:
 -- the public half of a key the phone keeps in its secure hardware, usable there
 -- only after its own fingerprint check (functions/_va/device.js, the VA app).

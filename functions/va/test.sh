@@ -46,6 +46,7 @@ LIC=$(openssl rsa -in lic.pem -pubout -outform DER 2>/dev/null | base64 -w0)
   echo "VA_COOKIE_KEY=\"$CKEY\""
   echo "VA_LICENCE_LOOM=\"$LIC\""
   echo "VA_LICENCE_PAPERSQUADRON=\"$LIC\""
+  echo "VA_ADS_KEY=\"test-ads-key-0123456789\""
 } > .dev.vars
 
 npx --yes wrangler d1 execute va --local --file functions/va/schema.sql >/dev/null 2>&1
@@ -335,6 +336,21 @@ is "a game outside the campaign has no campaign count"      "$(tj "g['pocketfoun
 is "the adverts paid today are added up, in their currency" "$(tj "g['papersquadron']['ads']")" "[{'currency': 'USD', 'value': 0.0025}]"
 is "the campaign is followed, Loom and Paper Squadron"      "$(tj "d['campaigns'][0]['name'] + ': ' + ','.join(x['game'] for x in d['campaigns'][0]['games'])")" "Google Ads test: loom,papersquadron"
 is "with Paper Squadron's campaign player counted"          "$(tj "[x for x in d['campaigns'][0]['games'] if x['game']=='papersquadron'][0]['campaign']['n']")" "1"
+
+echo "Google Ads figures from the script in the account"
+AK="test-ads-key-0123456789"
+apost () { curl -s -X POST "$U/collect/ads" -H 'Content-Type: application/json' ${2:+-H "X-VA-Key: $2"} --data-binary "$1"; }
+D0=$(date -u +%F)
+ADS="{\"v\":1,\"customer\":\"5631789212\",\"currency\":\"EUR\",\"rows\":[{\"date\":\"$D0\",\"campaign_id\":\"111\",\"campaign\":\"Loom-ADS-TEST\",\"status\":\"ENABLED\",\"channel\":\"MULTI_CHANNEL\",\"cost_micros\":950000,\"impressions\":1200,\"clicks\":40,\"conversions\":6,\"budget_micros\":1000000},{\"date\":\"$D0\",\"campaign_id\":\"222\",\"campaign\":\"PS-ADS-TEST\",\"cost_micros\":400000,\"conversions\":2},{\"date\":\"nope\",\"campaign_id\":\"333\",\"cost_micros\":1}]}"
+is "without the key nothing is accepted"                     "$(apost "$ADS")" '{"error":"key"}'
+is "nor with a wrong key"                                    "$(apost "$ADS" wrong-key)" '{"error":"key"}'
+is "with the key each campaign day is kept, a bad row refused" "$(apost "$ADS" "$AK")" '{"ok":true,"kept":2,"refused":1}'
+apost "${ADS//950000/1200000}" "$AK" >/dev/null
+is "a day sent again replaces itself"                        "$(sql "SELECT COUNT(*), MAX(cost_micros) FROM va_ads_day WHERE campaign_id = '111'")" "1|1200000"
+TJ=$(curl -s -H "Cookie: $FRESH" "$U/va/api/today")
+is "Today puts the spend beside the campaign's players"      "$(tj "[(x['game'], x['ads']['cost'], x['ads']['installs']) for x in d['campaigns'][0]['games']]")" "[('loom', 1200000, 6), ('papersquadron', 400000, 2)]"
+is "and says when the figures came"                          "$(tj "d['adsLast']['rows']")" "2"
+is "a player's deletion also clears their event numbers"     "$(post /collect/delete "{\"g\":\"papersquadron\",\"i\":\"$TID\"}" >/dev/null; sql "SELECT COUNT(*) FROM va_seq WHERE install = '$TID'")" "0"
 
 echo
 echo "$pass passed, $fail failed"

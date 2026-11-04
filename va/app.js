@@ -530,7 +530,7 @@
   const adMoney = (v) => (v < 0.01 ? v.toFixed(4) : v.toFixed(2));
   PAGES.today = (d) => {
     const T = todayDay();
-    const out = d.campaigns.map((k) => campaignCard(k));
+    const out = d.campaigns.map((k) => campaignCard(k, d.adsLast));
     const games = d.games.slice().sort((a, b) => (b.today - a.today) || (b.yesterday - a.yesterday) || ((b.last || 0) - (a.last || 0)));
     for (const g of games) {
       const stale = !g.last || d.now - g.last > 6 * 3600000;
@@ -556,19 +556,35 @@
     return out;
   };
 
-  function campaignCard(k) {
-    const through = Math.max(0, Math.min(1, (k.day - 1) / k.days));
-    const rows = k.games.map((g) => [NAMES[g.game] || g.game, int(g.campaign.n), int(g.other.n),
-      share(g.campaign.d1r, g.campaign.d1n), share(g.other.d1r, g.other.d1n)]);
+  const cur = (micros, code) => (micros / 1e6).toFixed(2) + (code && code !== "EUR" ? " " + code : " €");
+  const per = (micros, n, code) => (n > 0 ? cur(micros / n, code) : "–");
+  function campaignCard(k, adsLast) {
+    const withAds = k.games.filter((g) => g.ads);
+    const code = (withAds[0] && withAds[0].ads.currency) || "EUR";
+    const spent = sumBy(withAds, (g) => g.ads.cost), today = sumBy(withAds, (g) => g.ads.today);
+    const installs = sumBy(withAds, (g) => g.ads.installs);
+    const players = sumBy(k.games, (g) => g.campaign.n);
+    const back = sumBy(k.games, (g) => g.campaign.d1r), backOf = sumBy(k.games, (g) => g.campaign.d1n);
+    const budget = (k.budgetEur || 0) * 1e6;
+    const used = budget ? Math.max(0, Math.min(1, spent / budget)) : 0;
+    const rows = k.games.map((g) => [NAMES[g.game] || g.game, g.ads ? cur(g.ads.cost, code) : "–",
+      g.ads ? int(g.ads.installs) : "–", int(g.campaign.n), int(g.other.n), share(g.campaign.d1r, g.campaign.d1n)]);
+    const synced = adsLast ? "Google Ads figures " + ago(new Date(adsLast.at).toISOString()) : "No Google Ads figures yet: they arrive once the script in Google Ads runs";
     return h("section", { class: "card" },
-      h("div", { class: "ghead" }, h("h2", { text: k.name }),
-        h("span", { class: "small", text: "Day " + Math.min(k.day, k.days) + " of " + k.days + " · judged on " + dayLabel(k.review) })),
-      h("div", { class: "meter", role: "img", "aria-label": Math.round(through * 100) + "% of the way to the review" },
-        h("div", { style: { width: (through * 100) + "%" } })),
+      h("div", { class: "ghead" }, h("div", null, h("h2", { text: k.name }),
+        h("div", { class: "small", text: "Day " + Math.min(k.day, k.days) + " of " + k.days + " · judged on " + dayLabel(k.review) }))),
+      tiles([
+        ["Spent", cur(spent, code), (budget ? "of " + cur(budget, code) : "") + (today ? " · " + cur(today, code) + " today" : "")],
+        ["Installs, Google", int(installs), "cost per install " + per(spent, installs, code)],
+        ["Players, VA", int(players), "from campaign countries · " + per(spent, players, code) + " each"],
+        ["Back next day", share(back, backOf), "cost per player back " + per(spent, back, code)],
+      ]),
+      h("div", { class: "meter", role: "img", "aria-label": Math.round(used * 100) + "% of the budget spent" },
+        h("div", { style: { width: (used * 100) + "%" } })),
+      table(["Since " + dayLabel(k.start), "Spent", "Installs", "Players", "Elsewhere", "Back next day"], rows),
       h("p", { class: "small", style: { margin: 0 }, text: k.note }),
-      table(["Since " + dayLabel(k.start), "Campaign", "Elsewhere", "D1 campaign", "D1 elsewhere"], rows),
-      h("p", { class: "small", style: { margin: 0 }, text: "Counted by country: a new player from " + k.countries.join(", ") +
-        " since " + dayLabel(k.start) + " counts as the campaign's. Spend is read in Google Ads." }));
+      h("p", { class: "small", style: { margin: 0 }, text: synced + ". Installs are Google's count; players are VA's: a new player from " +
+        k.countries.join(", ") + " since " + dayLabel(k.start) + " counts as the campaign's." }));
   }
 
   const isoToDay = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? Math.round((Date.UTC(+m[1], +m[2] - 1, +m[3]) - DAY0) / 86400000) : null; };

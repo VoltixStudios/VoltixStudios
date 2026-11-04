@@ -17,7 +17,7 @@
 import { GAMES } from "../_va/games.js";
 import { vaDay } from "../_va/lib.js";
 
-const TABLES = ["va_batch", "va_install", "va_purchase", "va_session", "va_daily_user", "va_day_result"];
+const TABLES = ["va_batch", "va_install", "va_purchase", "va_session", "va_daily_user", "va_day_result", "va_seq"];
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",

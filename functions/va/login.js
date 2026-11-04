@@ -27,7 +27,8 @@ function page(message, status = 200, extra = {}) {
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#05060a">
 <title>Voltix Analytics</title>
-<link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32">
+<link rel="icon" href="/assets/img/va-favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/img/va-touch-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
@@ -55,7 +56,7 @@ function page(message, status = 200, extra = {}) {
   .note { margin:0; font-size:14px; color:#ffd29a; }
 </style></head>
 <body><form method="post" action="/va/login">
-  <div class="brand"><img src="/assets/img/voltix-mark.webp" alt="" width="38" height="38"><span>Voltix<em>Analytics</em></span></div>
+  <div class="brand"><img src="/assets/img/va-emblem.webp" alt="" width="38" height="38"><span>Voltix<em>Analytics</em></span></div>
   ${note}
   <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
   <label>Authenticator code <input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></label>

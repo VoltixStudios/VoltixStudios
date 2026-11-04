@@ -127,11 +127,23 @@ export function statements(from) {
 }
 
 /* Google's pre-launch report installs the release build on its own phones and
-   emulators. Its emulators name themselves (the model starts "Google sdk_gphone");
-   those are marked as testers here. Its real phones cannot be told apart from
-   the server, so they are marked by hand, and from Loom's next version the app
-   recognises Google's test lab itself and labels its events 'debug'. */
-const TESTER_RULE = "UPDATE va_install SET tester = 1 WHERE tester IS NULL AND dev_model LIKE 'Google sdk_gphone%'";
+   emulators. Its emulators name themselves (the model starts "Google sdk_gphone").
+   Its "phones" (found 4 November 2026, in every game: Loom, AshenRise, Pocket
+   Foundry, Paper Squadron) are one virtual device under two names, "OnePlus
+   OnePlus8Pro" and "HUAWEI HRY-LX1T": Android 11, a screen of 288 by 448 (448 by
+   288 in landscape; Unity reports 480 by 288), and WebView 90.0.4430.210, from
+   2021, which a real phone would have updated long ago. The HRY-LX1T never had
+   Android 11 at all. They arrive within hours of each upload, in pairs a few
+   minutes apart, each in another language and often another country, and never
+   come back. Loom's own test lab check (Settings "firebase.test.lab") does not
+   fire on them, so they are caught here, for every game: the screen, with either
+   the model or that WebView. All three together would miss Paper Squadron's,
+   which reports no WebView. */
+const ROBOT_SCREENS = "'288x448','448x288','480x288','288x480'";
+const TESTER_RULE = "UPDATE va_install SET tester = 1 WHERE tester IS NULL AND (" +
+  "dev_model LIKE 'Google sdk_gphone%' OR " +
+  "(dev_screen IN (" + ROBOT_SCREENS + ") AND " +
+  "(dev_model IN ('OnePlus OnePlus8Pro', 'HUAWEI HRY-LX1T') OR dev_webview = '90.0.4430.210')))";
 
 /* `source` says who asked: the schedule, or the dashboard's Refresh now button. */
 export async function nightly(env, now = Date.now(), source = "schedule") {

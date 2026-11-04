@@ -81,6 +81,14 @@ batch("sombra", S, T, [ev("level_end", T, 6000, {"level_name": "1-1", "success":
 for rid, model, tester in (("rrrrrrrr-0000-0000-0000-000000000005", "OnePlus OnePlus8Pro", 1), ("eeeeeeee-0000-0000-0000-000000000006", "Google sdk_gphone16k_arm64", None)):
     batch("loom", rid, T, [ev("app_open", T, 7000, {"cause": "launcher", "cold": 1, "first": 1, "engagement_time_msec": 1})], country="US")
     c.execute("INSERT INTO va_install (game, install, platform, first_seen, first_day, last_seen, dev_model, tester) VALUES ('loom', ?, 'app', ?, ?, ?, ?, ?)", (rid, ms(T), T, ms(T), model, tester))
+# Its virtual phones, unmarked (4 November 2026): the same device in four games under two names.
+for rid, game, model, screen, wv in (("pppppppp-0000-0000-0000-000000000007", "loom", "OnePlus OnePlus8Pro", "288x448", "90.0.4430.210"),
+                                     ("hhhhhhhh-0000-0000-0000-000000000008", "loom", "HUAWEI HRY-LX1T", "288x448", "90.0.4430.210"),
+                                     ("gggggggg-0000-0000-0000-000000000009", "sombra", "OnePlus OnePlus8Pro", "448x288", "90.0.4430.210"),
+                                     ("qqqqqqqq-0000-0000-0000-000000000010", "papersquadron", "OnePlus OnePlus8Pro", "480x288", None),
+                                     ("oooooooo-0000-0000-0000-000000000011", "loom", "OnePlus OnePlus8Pro", "412x915", "141.0.7390.122")):
+    batch(game, rid, T, [ev("app_open", T, 8000, {"cause": "launcher", "cold": 1, "first": 1, "engagement_time_msec": 1})], country="US")
+    c.execute("INSERT INTO va_install (game, install, platform, first_seen, first_day, last_seen, dev_model, dev_screen, dev_webview) VALUES (?, ?, 'app', ?, ?, ?, ?, ?, ?)", (game, rid, ms(T), T, ms(T), model, screen, wv))
 batch("loom", A, T - 95, [ev("app_open", T - 95, 9, {"cause": "launcher", "engagement_time_msec": 1})])
 c.commit()
 print(T)
@@ -122,8 +130,10 @@ is "revenue counts only what Google signed"         "$(sql "SELECT rev_micros FR
 is "a debug build is kept, and marked"              "$(sql "SELECT build FROM va_daily_user WHERE install LIKE 'cccc%'")" "debug"
 is "a robot marked by hand counts as a test"         "$(sql "SELECT build FROM va_daily_user WHERE install LIKE 'rrrr%'")" "debug"
 is "Google's emulator is caught by the rule"         "$(sql "SELECT tester || build FROM va_install i JOIN va_daily_user d USING (game, install) WHERE install LIKE 'eeee%'")" "1debug"
-is "so today's players are only the real one"        "$(sql "SELECT events FROM va_event_day WHERE day=$T AND name='app_open' AND dim='' AND build='release'")" "1"
-is "a level game's wins and losses"                 "$(sql "SELECT wins, losses FROM va_daily_user WHERE game='sombra'")" "1|1"
+is "the pre-launch phones are caught, in every game" "$(sql "SELECT COUNT(*) FROM va_install WHERE tester=1 AND substr(install,1,4) IN ('pppp','hhhh','gggg','qqqq')")" "4"
+is "a real OnePlus 8 Pro is a player"               "$(sql "SELECT COALESCE(tester,0) FROM va_install WHERE install LIKE 'oooo%'")" "0"
+is "so today's players are only the real ones"       "$(sql "SELECT events FROM va_event_day WHERE day=$T AND name='app_open' AND dim='' AND build='release' AND game='loom'")" "2"
+is "a level game's wins and losses"                 "$(sql "SELECT wins, losses FROM va_daily_user WHERE game='sombra' AND install NOT LIKE 'gggg%'")" "1|1"
 
 echo "Sittings"
 is "each session id is one sitting"                 "$(sql "SELECT COUNT(*) FROM va_session WHERE install='$A'")" "5"
@@ -136,8 +146,8 @@ is "left and never finished stays left"             "$(sql "SELECT result FROM v
 is "one row per day and loom"                       "$(sql "SELECT COUNT(*) FROM va_day_result WHERE install='$A'")" "4"
 
 echo "Events per day"
-is "every event counted"                            "$(sql "SELECT events, players FROM va_event_day WHERE day=$T AND name='app_open' AND dim='' AND build='release'")" "1|1"
-is "tests kept apart: the debug phone and both robots" "$(sql "SELECT events FROM va_event_day WHERE day=$T AND name='app_open' AND dim='' AND build='debug'")" "3"
+is "every event counted"                            "$(sql "SELECT SUM(events), SUM(players) FROM va_event_day WHERE day=$T AND name='app_open' AND dim='' AND build='release'")" "2|2"
+is "tests kept apart: the debug phone and every robot" "$(sql "SELECT SUM(events) FROM va_event_day WHERE day=$T AND name='app_open' AND dim='' AND build='debug'")" "7"
 is "split by what opened the game"                  "$(sql "SELECT value FROM va_event_day WHERE day=$T-3 AND name='app_open' AND dim='cause'")" "reminder"
 is "split by placement"                             "$(sql "SELECT events FROM va_event_day WHERE day=$T AND name='rewarded_ad_completed' AND dim='placement' AND value='cloth'")" "1"
 is "split by first-day step"                        "$(sql "SELECT value FROM va_event_day WHERE name='first_session_step' AND dim='step'")" "intro"

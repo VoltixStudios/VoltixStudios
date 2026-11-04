@@ -100,6 +100,27 @@ is "a param that is not a plain value is dropped"          "$(sql "SELECT events
 is "true is stored as 1"                                    "$(sql "SELECT json_extract(events, '\$[0].x.cold') FROM va_batch")" "1"
 is "no address is stored anywhere"                          "$(sql "SELECT COUNT(*) FROM va_batch WHERE events LIKE '%127.0.0.1%'")" "0"
 
+echo "Copies: a batch sent again is stored once"
+DUP=99999999-8888-7777-6666-000000000001
+dev () { printf '{"n":"%s","t":%s,"s":"%s","q":%s,"d":%s,"x":{"build":"debug"}}' "$1" "$NOW" "$2" "$3" "$DAY"; }
+dupb () { printf '{"v":1,"g":"loom","i":"%s","p":"app","vc":34,"e":[%s]}' "$DUP" "$1"; }
+seen () { sql "SELECT group_concat(n || ':' || COALESCE(s, '-') || ':' || COALESCE(q, '-'), ',') FROM (SELECT json_extract(e.value, '\$.n') AS n, json_extract(e.value, '\$.s') AS s, json_extract(e.value, '\$.q') AS q FROM va_batch b, json_each(b.events) e WHERE b.install = '$DUP' ORDER BY b.id, e.key)"; }
+is "a first batch is kept whole"                            "$(post /collect "$(dupb "$(dev app_open A 1),$(dev day_opened A 2)")")" '{"ok":true,"kept":2,"refused":0,"purchases":0}'
+is "the same events sent again with one more keep only the new one" "$(post /collect "$(dupb "$(dev app_open A 1),$(dev day_opened A 2),$(dev app_hidden A 3)")")" '{"ok":true,"kept":1,"refused":0,"purchases":0}'
+is "a batch that is all copies is answered 200 and stores nothing" "$(post /collect "$(dupb "$(dev app_open A 1),$(dev day_opened A 2)")")" '{"ok":true,"kept":0,"refused":0,"purchases":0}'
+is "and adds no row"                                         "$(sql "SELECT COUNT(*) FROM va_batch WHERE install = '$DUP'")" "2"
+is "the same number twice in one batch is stored once"      "$(post /collect "$(dupb "$(dev app_open A 4),$(dev app_open A 4)")")" '{"ok":true,"kept":1,"refused":0,"purchases":0}'
+is "a new session may start its numbers again"              "$(post /collect "$(dupb "$(dev app_open B 1),$(dev app_hidden B 2)")")" '{"ok":true,"kept":2,"refused":0,"purchases":0}'
+NOQ="{\"n\":\"app_hidden\",\"t\":$NOW,\"x\":{\"build\":\"debug\"}}"
+post /collect "$(dupb "$NOQ")" >/dev/null
+is "an event with no number is always kept"                  "$(post /collect "$(dupb "$NOQ")")" '{"ok":true,"kept":1,"refused":0,"purchases":0}'
+is "every numbered event is stored once, in the order sent" "$(seen)" "app_open:A:1,day_opened:A:2,app_hidden:A:3,app_open:A:4,app_open:B:1,app_hidden:B:2,app_hidden:-:-,app_hidden:-:-"
+is "each session keeps its highest number"                  "$(sql "SELECT group_concat(session || '=' || hi, ',') FROM (SELECT session, hi FROM va_seq WHERE install = '$DUP' ORDER BY session)")" "A=4,B=2"
+TWIN="$(dupb "$(dev app_open C 1),$(dev day_opened C 2),$(dev app_hidden C 3)")"
+TW=""; for _ in 1 2 3 4; do post /collect "$TWIN" > /dev/null & TW="$TW $!"; done; wait $TW   # not a bare wait: the dev server is a background job too
+is "four copies sent at the same moment are stored once"    "$(sql "SELECT COUNT(*) FROM va_batch b, json_each(b.events) e WHERE b.install = '$DUP' AND json_extract(e.value, '\$.s') = 'C'")" "3"
+is "a copy beside an unknown event still counts the refusal" "$(post /collect "$(dupb "$(dev app_open C 1),{\"n\":\"made_up_event\"}")")" '{"ok":true,"kept":0,"refused":1,"purchases":0}'
+
 MANY=$(python3 -c 'import json; print(json.dumps({"v":1,"g":"loom","i":"'$ID'","p":"app","e":[{"n":"puzzle_started","x":{"k%d"%i:i for i in range(40)}}]}))')
 post /collect "$MANY" >/dev/null
 is "an event keeps at most 25 params"                       "$(sql "SELECT (SELECT COUNT(*) FROM json_each(json_extract(events, '\$[0].x'))) FROM va_batch ORDER BY id DESC LIMIT 1")" "25"

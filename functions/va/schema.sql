@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS va_install (
   dev_lang     TEXT,
   dev_screen   TEXT,
   batches      INTEGER NOT NULL DEFAULT 0,
-  events       INTEGER NOT NULL DEFAULT 0,
+  events       INTEGER NOT NULL DEFAULT 0,  -- events received, copies the collector dropped included
   cap_day      INTEGER,                   -- the day cap_n counts for
   cap_n        INTEGER NOT NULL DEFAULT 0,-- events accepted from this install that day
   tester       INTEGER,                   -- 1: a test install (Google's pre-launch robots,
@@ -60,6 +60,20 @@ CREATE TABLE IF NOT EXISTS va_install (
 );
 -- A database made before 30 October 2026 lacks `tester`; add it once with:
 --   ALTER TABLE va_install ADD COLUMN tester INTEGER;
+
+-- The highest event number stored so far in each session of each install, so a
+-- batch the phone sends again (it never heard the answer) is not stored twice
+-- (functions/collect/index.js). One small row per session, written once per
+-- batch: a row per event would cost the free plan's daily writes thirty times
+-- over. Added 4 November 2026; it is filled from the batches already stored by
+-- functions/va/dedupe-2026-11-04.sql.
+CREATE TABLE IF NOT EXISTS va_seq (
+  game    TEXT    NOT NULL,
+  install TEXT    NOT NULL,
+  session TEXT    NOT NULL,
+  hi      INTEGER NOT NULL,
+  PRIMARY KEY (game, install, session)
+) WITHOUT ROWID;
 
 -- One row per purchase the game reported. verified = 1 only when Google's
 -- signature checked out against the game's licence key; revenue counts only

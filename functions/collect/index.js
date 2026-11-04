@@ -186,6 +186,7 @@ export async function onRequest({ request, env }) {
 
   const db = env.VA;
   const total = kept.length + refused;
+  let stored = 0;
   try {
     const prior = await db.prepare("SELECT cap_day, cap_n FROM va_install WHERE game = ? AND install = ?")
       .bind(gameKey, b.i).first();
@@ -221,10 +222,42 @@ export async function onRequest({ request, env }) {
         text(dev.model, 64), text(dev.os, 32), text(dev.webview, 32), text(dev.lang, 16), text(dev.screen, 16),
         kept.length, day, total),
     ];
+    /* Each event is stored once. A phone that sent a batch and never heard the
+       answer (the app killed in the background before the reply came, or a
+       request the phone counted as failed after it had already arrived here)
+       sends the same events again, sometimes twice at once. Found 4 November
+       2026: 52 of Loom's events and 18 of Paper Squadron's were stored twice.
+       Within one session every game numbers its events in order (q) and always
+       sends the oldest unanswered ones first, so an event numbered at or below
+       the highest number already stored for its session is a copy, and so is
+       a second event with the same session and number in one batch. The check
+       and the new high mark are in this one transaction, and D1 runs
+       transactions one at a time, so two copies arriving together cannot both
+       get in. An event without a session or a number is kept as it is. */
+    const batchAt = writes.length;
     if (total) {
+      const evs = JSON.stringify(kept);
       writes.push(db.prepare(
-        "INSERT INTO va_batch (game, install, platform, vc, day, received, country, n, refused, events) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-      ).bind(gameKey, b.i, b.p, vc, day, now, country, kept.length, refused, JSON.stringify(kept)));
+        `INSERT INTO va_batch (game, install, platform, vc, day, received, country, n, refused, events)
+         SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, COUNT(*), ?8, json_group_array(json(v) ORDER BY k)
+         FROM (SELECT j.key AS k, j.value AS v,
+                      json_extract(j.value, '$.s') AS s, json_extract(j.value, '$.q') AS q,
+                      ROW_NUMBER() OVER (PARTITION BY json_extract(j.value, '$.s'), json_extract(j.value, '$.q')
+                                         ORDER BY j.key) AS rn
+               FROM json_each(?9) j)
+         WHERE s IS NULL OR q IS NULL
+            OR (rn = 1 AND q > COALESCE((SELECT hi FROM va_seq
+                                         WHERE game = ?1 AND install = ?2 AND session = s), -1))
+         HAVING COUNT(*) > 0 OR ?8 > 0
+         RETURNING n`
+      ).bind(gameKey, b.i, b.p, vc, day, now, country, refused, evs));
+      writes.push(db.prepare(
+        `INSERT INTO va_seq (game, install, session, hi)
+         SELECT ?1, ?2, json_extract(value, '$.s'), MAX(json_extract(value, '$.q')) FROM json_each(?3)
+         WHERE json_extract(value, '$.s') IS NOT NULL AND json_extract(value, '$.q') IS NOT NULL
+         GROUP BY json_extract(value, '$.s')
+         ON CONFLICT (game, install, session) DO UPDATE SET hi = MAX(hi, excluded.hi)`
+      ).bind(gameKey, b.i, evs));
     }
     for (const p of pur) {
       writes.push(db.prepare(
@@ -232,11 +265,15 @@ export async function onRequest({ request, env }) {
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET verified = MAX(verified, excluded.verified)`
       ).bind(p.id, gameKey, b.i, p.sku, p.price, p.currency, p.time, p.verified, now));
     }
-    await db.batch(writes);
+    const results = await db.batch(writes);
+    /* What was stored once the copies were dropped: the new row's n, or none
+       when every event in the batch was a copy. */
+    const row = total && results[batchAt] && results[batchAt].results && results[batchAt].results[0];
+    stored = row ? row.n : 0;
   } catch (e) {
     /* A free-plan limit reached, or D1 away: not the game's fault, and not
        lost — it keeps the batch and sends it again later. */
     return json({ error: "store" }, 503);
   }
-  return json({ ok: true, kept: kept.length, refused, purchases: pur.length });
+  return json({ ok: true, kept: stored, refused, purchases: pur.length });
 }

@@ -1,7 +1,7 @@
 # VoltixStudios
 
 The Voltix Studios website — a short home page for the studio, one page for
-each of its five games, **Paper Squadron**, **Loom**, **CoreWard**, **Dungeon
+each of its six games, **Paper Squadron**, **Loom**, **CoreWard**, **AshenRise**, **Dungeon
 Gourmand** and **Pocket Foundry**, Loom's daily cloth playable in the browser, the legal documents Google
 Play requires those games to publish, and the one file Loom reads at launch.
 
@@ -27,7 +27,7 @@ Live at <https://voltixstudios.pages.dev/>, served by Cloudflare Pages.
 ## Layout
 
 ```
-index.html                 the home page: hero, the five game cards, studio, contact
+index.html                 the home page: hero, the six game cards, studio, contact
 games/<game>/index.html    one page per game — everything the home page once said about it
 404.html                   self-contained; no assets, works at any depth
 robots.txt  sitemap.xml

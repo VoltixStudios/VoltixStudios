@@ -61,6 +61,20 @@ CREATE TABLE IF NOT EXISTS va_install (
 -- A database made before 30 October 2026 lacks `tester`; add it once with:
 --   ALTER TABLE va_install ADD COLUMN tester INTEGER;
 
+-- Phones that may sign in with a fingerprint instead of the password and code:
+-- the public half of a key the phone keeps in its secure hardware, usable there
+-- only after its own fingerprint check (functions/_va/device.js, the VA app).
+-- To stop a phone signing in: DELETE FROM va_device WHERE id = '...';
+-- or all of them: DELETE FROM va_device;  Added 4 November 2026.
+CREATE TABLE IF NOT EXISTS va_device (
+  id        TEXT    PRIMARY KEY,          -- random, made here at enrolment
+  name      TEXT,                         -- the phone's model, so the list can be read
+  pubkey    TEXT    NOT NULL,             -- EC P-256, X.509 SubjectPublicKeyInfo, base64
+  created   INTEGER NOT NULL,             -- ms
+  last_used INTEGER,                      -- ms
+  last_exp  INTEGER NOT NULL DEFAULT 0    -- expiry of the last challenge it signed; only later ones pass
+);
+
 -- The highest event number stored so far in each session of each install, so a
 -- batch the phone sends again (it never heard the answer) is not stored twice
 -- (functions/collect/index.js). One small row per session, written once per

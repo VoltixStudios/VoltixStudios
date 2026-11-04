@@ -273,6 +273,55 @@ is "every attempt was recorded, never the address"          "$(sql "SELECT COUNT
 out=$(curl -s -D - -o /dev/null -X POST -H "Cookie: $COOKIE" "$U/va/logout" | tr -d '\r')
 is "signing out clears the cookie"                          "$(echo "$out" | grep -io 'max-age=0')" "Max-Age=0"
 
+echo "Fingerprint sign-in from the VA app"
+sqlw () { python3 -c 'import sqlite3,sys; c=sqlite3.connect(sys.argv[1]); c.execute(sys.argv[2]); c.commit()' "$DB" "$1"; }
+sqlw "DELETE FROM va_login"          # the lockout above shares this table; start clean
+# Cookies made with the run's own key: one issued now, one issued eleven minutes ago.
+mkcookie () { node -e '
+  const c=require("node:crypto"); const exp=Date.now()+12*3600000-Number(process.argv[2]); const n="BBBBBBBBBBBBBBBB";
+  const s=c.createHmac("sha256",process.argv[1]).update("va1."+exp+"."+n).digest("base64url");
+  console.log("__Host-va="+exp+"."+n+"."+s)' "$CKEY" "$1"; }
+FRESH=$(mkcookie 0); STALE=$(mkcookie 660000)
+# The phone's key, as Android's keystore would make it: EC P-256, public half as SPKI.
+node -e '
+  const c=require("node:crypto"), fs=require("node:fs");
+  for (const f of ["phone", "thief"]) { const k=c.generateKeyPairSync("ec",{namedCurve:"prime256v1"});
+    fs.writeFileSync(f+".pem", k.privateKey.export({type:"pkcs8",format:"pem"}));
+    fs.writeFileSync(f+".pub", k.publicKey.export({type:"spki",format:"der"}).toString("base64")); }'
+PUB=$(cat phone.pub)
+sign () { node -e 'const c=require("node:crypto"),fs=require("node:fs");
+  console.log(c.sign("sha256",Buffer.from(process.argv[2]),fs.readFileSync(process.argv[1]+".pem")).toString("base64"))' "$1" "$2"; }
+jpost () { curl -s -X POST "$U$1" -H 'Content-Type: application/json' ${3:+-H "Cookie: $3"} --data-binary "$2"; }
+jcode () { curl -s -o /dev/null -w '%{http_code}' -X POST "$U$1" -H 'Content-Type: application/json' ${3:+-H "Cookie: $3"} --data-binary "$2"; }
+challenge () { jpost /va/device/challenge '{}' | python3 -c 'import json,sys; print(json.load(sys.stdin)["challenge"])'; }
+dlogin () { printf '{"id":"%s","challenge":"%s","sig":"%s"}' "$1" "$2" "$3"; }
+
+C1=$(challenge)
+is "a challenge needs no session"                           "$(echo "$C1" | tr -cd '.' | wc -c)" "2"
+is "a phone cannot be added without a session"              "$(jcode /va/device/enrol "{\"pubkey\":\"$PUB\"}")" "401"
+is "nor with a session older than ten minutes"              "$(jcode /va/device/enrol "{\"pubkey\":\"$PUB\"}" "$STALE")" "403"
+is "a key that is not an EC P-256 key is refused"           "$(jcode /va/device/enrol '{"pubkey":"AAAA"}' "$FRESH")" "400"
+DEV=$(jpost /va/device/enrol "{\"pubkey\":\"$PUB\",\"name\":\"samsung SM-G998B\"}" "$FRESH" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("id",""))')
+is "a fresh session adds the phone and gets its id"          "$([ ${#DEV} -ge 16 ] && echo yes)" "yes"
+OLDC=$(challenge); C2=$(challenge)
+hdr=$(curl -s -D - -o body.json -X POST "$U/va/device/login" -H 'Content-Type: application/json' --data-binary "$(dlogin "$DEV" "$C2" "$(sign phone "$C2")")" | tr -d '\r')
+is "the challenge signed with the phone's key signs in"     "$(cat body.json)" '{"ok":true}'
+DCOOKIE=$(echo "$hdr" | grep -i '^set-cookie:' | sed -E 's/^[Ss]et-[Cc]ookie: ([^;]+).*/\1/')
+is "and the session it opens reads the dashboard"           "$(curl -s -o /dev/null -w '%{http_code}' -H "Cookie: $DCOOKIE" "$U/va/api/ping")" "200"
+is "the phone's last use is recorded"                       "$(sql "SELECT name, last_used IS NOT NULL FROM va_device WHERE id = '$DEV'")" "samsung SM-G998B|1"
+is "the same signed challenge is refused a second time"     "$(jcode /va/device/login "$(dlogin "$DEV" "$C2" "$(sign phone "$C2")")")" "401"
+is "so is an older challenge signed after a newer one"      "$(jcode /va/device/login "$(dlogin "$DEV" "$OLDC" "$(sign phone "$OLDC")")")" "401"
+C3=$(challenge)
+is "a signature from another key is refused"                "$(jpost /va/device/login "$(dlogin "$DEV" "$C3" "$(sign thief "$C3")")")" '{"error":"signature"}'
+BAD="${C3%.*}.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+is "a challenge this server did not make is refused"        "$(jpost /va/device/login "$(dlogin "$DEV" "$BAD" "$(sign phone "$BAD")")")" '{"error":"challenge"}'
+is "a device this server does not know is told so"          "$(jpost /va/device/login "$(dlogin "nosuchdevice00000000" "$C3" "$(sign phone "$C3")")")" '{"error":"unknown"}'
+C4=$(challenge)
+is "after five failures even a good signature waits"        "$(jcode /va/device/login "$(dlogin "$DEV" "$C4" "$(sign phone "$C4")")")" "429"
+is "every attempt was recorded"                             "$(sql "SELECT SUM(ok = 1), SUM(ok = 0) FROM va_login")" "1|5"
+for k in 2 3 4 5; do jpost /va/device/enrol "{\"pubkey\":\"$PUB\",\"name\":\"phone $k\"}" "$FRESH" >/dev/null; done
+is "no more than five phones"                               "$(jcode /va/device/enrol "{\"pubkey\":\"$PUB\"}" "$FRESH")" "409"
+
 echo
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ] || { echo "--- wrangler log ---"; tail -30 dev.log; exit 1; }

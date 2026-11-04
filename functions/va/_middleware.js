@@ -16,9 +16,12 @@ import { signedIn, withHeaders, VA_HEADERS } from "../_va/lib.js";
 export async function onRequest({ request, env, next }) {
   const path = new URL(request.url).pathname;
   if (path === "/va/login" || path === "/va/login/") return withHeaders(await next());
+  /* The VA app's fingerprint way in (functions/_va/device.js) has to work before
+     there is a session: a challenge, and the signed answer to it. */
+  if (path === "/va/device/challenge" || path === "/va/device/login") return withHeaders(await next());
 
   if (!(await signedIn(request, env))) {
-    if (path.startsWith("/va/api/")) {
+    if (path.startsWith("/va/api/") || path.startsWith("/va/device/")) {
       return new Response(JSON.stringify({ error: "login" }), {
         status: 401, headers: { "Content-Type": "application/json", ...VA_HEADERS },
       });

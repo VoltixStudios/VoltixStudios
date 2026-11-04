@@ -30,7 +30,7 @@ export function unb64(text) {
   for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i);
   return out;
 }
-const b64url = (bytes) => b64(bytes).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+export const b64url = (bytes) => b64(bytes).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
 /* Compares two strings in time that does not depend on where they differ. */
 export function same(a, b) {
@@ -40,7 +40,7 @@ export function same(a, b) {
   return d === 0;
 }
 
-async function hmac(keyText, message, hash = "SHA-256") {
+export async function hmac(keyText, message, hash = "SHA-256") {
   const key = await crypto.subtle.importKey("raw", typeof keyText === "string" ? enc.encode(keyText) : keyText,
     { name: "HMAC", hash }, false, ["sign"]);
   return new Uint8Array(await crypto.subtle.sign("HMAC", key, typeof message === "string" ? enc.encode(message) : message));
@@ -127,6 +127,14 @@ export async function signedIn(request, env, ms = Date.now()) {
   const exp = parseInt(p[0], 10);
   if (!Number.isFinite(exp) || exp <= ms || exp > ms + SESSION_HOURS * 3600 * 1000 + 60000) return false;
   return same(b64url(await hmac(env.VA_COOKIE_KEY, `va1.${p[0]}.${p[1]}`)), p[2]);
+}
+
+/* When the session this request carries began (its expiry less its length), or
+   0 when there is no valid one. The fingerprint enrolment asks for a fresh one. */
+export async function sessionStart(request, env, ms = Date.now()) {
+  if (!(await signedIn(request, env, ms))) return 0;
+  const m = (request.headers.get("Cookie") || "").match(new RegExp(`(?:^|;\\s*)${COOKIE}=([^;]+)`));
+  return parseInt(m[1].split(".")[0], 10) - SESSION_HOURS * 3600 * 1000;
 }
 
 /* ---------- the headers every /va/ answer carries ---------- */

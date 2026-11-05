@@ -1175,6 +1175,34 @@ p:last-child { margin-bottom: 0; }
 }
 .foot__links a:hover { color: var(--volt); }
 
+/* The legal documents on the home and game pages: one column per game, the same three
+   documents in each, above the copyright line. */
+.foot__legal {
+  order: -1;
+  flex-basis: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 22px 26px;
+  padding-bottom: 8px;
+  font-size: .84rem;
+}
+.foot__game { display: flex; flex-direction: column; gap: 7px; }
+.foot__game-name {
+  margin: 0 0 2px;
+  font-family: "Chakra Petch", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.foot__game a {
+  text-decoration: none;
+  color: var(--text-dim);
+  transition: color .2s var(--ease);
+}
+.foot__game a:hover { color: var(--volt); }
+
 /* ── scroll reveal ───────────────────────────────────────────────────────── */
 
 .reveal {
@@ -1230,6 +1258,7 @@ p:last-child { margin-bottom: 0; }
   .foot__top,
   .foot__bar { justify-content: center; text-align: center; }
   .foot__links { width: 100%; justify-content: center; }
+  .foot__legal { grid-template-columns: repeat(2, minmax(0, 1fr)); text-align: left; }
 }
 
 /* Narrow phones: the wordmark's "STUDIOS" is the first thing to go, so the one

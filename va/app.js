@@ -575,16 +575,28 @@
         h("div", { class: "small", text: "Day " + Math.min(k.day, k.days) + " of " + k.days + " · judged on " + dayLabel(k.review) }))),
       tiles([
         ["Spent", cur(spent, code), (budget ? "of " + cur(budget, code) : "") + (today ? " · " + cur(today, code) + " today" : "")],
-        ["Installs, Google", int(installs), "cost per install " + per(spent, installs, code)],
+        ["Downloads, Google", int(installs), "cost per download " + per(spent, installs, code)],
         ["Players, VA", int(players), "from campaign countries · " + per(spent, players, code) + " each"],
         ["Back next day", share(back, backOf), "cost per player back " + per(spent, back, code)],
       ]),
       h("div", { class: "meter", role: "img", "aria-label": Math.round(used * 100) + "% of the budget spent" },
         h("div", { style: { width: (used * 100) + "%" } })),
-      table(["Since " + dayLabel(k.start), "Spent", "Installs", "Players", "Elsewhere", "Back next day"], rows),
+      table(["Since " + dayLabel(k.start), "Spent", "Downloads", "Players", "Elsewhere", "Back next day"], rows),
+      ...withAds.filter((g) => g.ads.actions && g.ads.actions.length).map((g) =>
+        h("p", { class: "small", style: { margin: 0 }, text: (NAMES[g.game] || g.game) + ", as Google counts it: " +
+          g.ads.actions.map((a) => actionLabel(a) + " " + int(a.n)).join(" · ") })),
       h("p", { class: "small", style: { margin: 0 }, text: k.note }),
-      h("p", { class: "small", style: { margin: 0 }, text: synced + ". Installs are Google's count; players are VA's: a new player from " +
+      h("p", { class: "small", style: { margin: 0 }, text: synced + ". Downloads are Google's count, made when the download from Play" +
+        " finishes, whether or not the game is ever opened; players are VA's, who opened it: a new player from " +
         k.countries.join(", ") + " since " + dayLabel(k.start) + " counts as the campaign's." }));
+  }
+
+  /* A conversion action's name in Google Ads, in a few words: the two the campaigns use are the Play
+     download ("Descargas de Loom: … del 2026-10-06T21:04:48") and Firebase's first open. */
+  function actionLabel(a) {
+    if (/first.?open/i.test(a.action)) return "first opens matched to an ad (Firebase)";
+    if (a.category === "DOWNLOAD") return "Play downloads";
+    return a.action.replace(/ del \d{4}-\d{2}-\d{2}T[\d:.]+$/, "");
   }
 
   const isoToDay = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? Math.round((Date.UTC(+m[1], +m[2] - 1, +m[3]) - DAY0) / 86400000) : null; };

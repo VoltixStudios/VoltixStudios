@@ -13,7 +13,7 @@
 export const CAMPAIGNS = [
   {
     name: "Google Ads test",
-    note: "PS-ADS-TEST and Loom-ADS-TEST: EUR 1.00 a day each, target cost per install EUR 0.15, EUR 30 across both (D-057, D-066).",
+    note: "PS-ADS-TEST EUR 1.00 a day, Loom-ADS-TEST EUR 3.00 a day (raised from EUR 1.00 by 5 November), target cost per install EUR 0.15, EUR 30 across both (D-057, D-066).",
     games: ["loom", "papersquadron"],
     /* Each game's campaign by its name in Google Ads, so the spend the Google Ads script
        posts (va_ads_day) can be put beside the players VA counted. */

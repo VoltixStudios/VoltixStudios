@@ -350,6 +350,13 @@ is "a day sent again replaces itself"                        "$(sql "SELECT COUN
 TJ=$(curl -s -H "Cookie: $FRESH" "$U/va/api/today")
 is "Today puts the spend beside the campaign's players"      "$(tj "[(x['game'], x['ads']['cost'], x['ads']['installs']) for x in d['campaigns'][0]['games']]")" "[('loom', 1200000, 6), ('papersquadron', 400000, 2)]"
 is "and says when the figures came"                          "$(tj "d['adsLast']['rows']")" "2"
+ACT="{\"v\":1,\"currency\":\"EUR\",\"from\":\"$D0\",\"to\":\"$D0\",\"rows\":[{\"date\":\"$D0\",\"campaign_id\":\"111\",\"campaign\":\"Loom-ADS-TEST\",\"cost_micros\":1200000,\"conversions\":6}],\"actions\":[{\"date\":\"$D0\",\"campaign_id\":\"111\",\"action\":\"Descargas de Loom (Android) del 2026-10-06T21:04:48.572\",\"category\":\"DOWNLOAD\",\"conversions\":6,\"all_conversions\":6},{\"date\":\"$D0\",\"campaign_id\":\"111\",\"action\":\"Loom - com.voltixstudios.loom (Android) First open\",\"category\":\"DOWNLOAD\",\"conversions\":0,\"all_conversions\":2},{\"date\":\"nope\",\"campaign_id\":\"111\",\"action\":\"x\"}]}"
+is "conversions by action are kept, a bad one refused"       "$(apost "$ACT" "$AK")" '{"ok":true,"kept":1,"actions":2,"refused":1}'
+TJ=$(curl -s -H "Cookie: $FRESH" "$U/va/api/today")
+is "Today shows downloads beside Firebase's first opens"     "$(tj "[(a['category'], a['n']) for a in d['campaigns'][0]['games'][0]['ads']['actions']]")" "[('DOWNLOAD', 6), ('DOWNLOAD', 2)]"
+apost "$(echo "$ACT" | python3 -c 'import json,sys; b=json.load(sys.stdin); b["actions"]=b["actions"][:1]; print(json.dumps(b))')" "$AK" >/dev/null
+is "an action Google drops from a day sent again is dropped" "$(sql "SELECT COUNT(*), SUM(all_conv) FROM va_ads_conv WHERE campaign_id = '111'")" "1|6.0"
+is "a script without actions leaves them as they were"      "$(apost "$ADS" "$AK" >/dev/null; sql "SELECT COUNT(*) FROM va_ads_conv")" "1"
 is "a player's deletion also clears their event numbers"     "$(post /collect/delete "{\"g\":\"papersquadron\",\"i\":\"$TID\"}" >/dev/null; sql "SELECT COUNT(*) FROM va_seq WHERE install = '$TID'")" "0"
 
 echo

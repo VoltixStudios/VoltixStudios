@@ -5,6 +5,9 @@
  * cost, impressions, clicks, conversions (installs, for an App campaign), daily
  * budget and status, and posts them to Voltix Analytics, which shows them on the
  * dashboard's Today page beside the players it counted (functions/collect/ads.js).
+ * It also sends each campaign's conversions by conversion action, so the page can
+ * show the Play downloads a campaign bids on beside the first opens Firebase matched
+ * to an ad, which Google keeps as a secondary action.
  *
  * It reads; it never changes a campaign. It sends nothing about any person.
  *
@@ -41,14 +44,40 @@ function main() {
       conversions: Number(r.metrics.conversions || 0),
     });
   }
+  /* By conversion action. A failure here is logged and the campaign days are still sent. */
+  var actions = null;
+  try {
+    actions = [];
+    var at = AdsApp.search(
+      "SELECT segments.date, campaign.id, segments.conversion_action_name, segments.conversion_action_category, " +
+      "metrics.conversions, metrics.all_conversions " +
+      "FROM campaign WHERE segments.date BETWEEN '" + from + "' AND '" + to + "'");
+    while (at.hasNext()) {
+      var a = at.next();
+      actions.push({
+        date: a.segments.date,
+        campaign_id: String(a.campaign.id),
+        action: a.segments.conversionActionName,
+        category: a.segments.conversionActionCategory,
+        conversions: Number(a.metrics.conversions || 0),
+        all_conversions: Number(a.metrics.allConversions || 0),
+      });
+    }
+  } catch (e) {
+    Logger.log("Conversions by action could not be read, the campaign days are sent without them: " + e);
+    actions = null;
+  }
+  var body = { v: 1, customer: account.getCustomerId(), currency: account.getCurrencyCode(), from: from, to: to, rows: rows };
+  if (actions) body.actions = actions;
   var res = UrlFetchApp.fetch(URL, {
     method: "post",
     contentType: "application/json",
     headers: { "X-VA-Key": KEY },
-    payload: JSON.stringify({ v: 1, customer: account.getCustomerId(), currency: account.getCurrencyCode(), rows: rows }),
+    payload: JSON.stringify(body),
     muteHttpExceptions: true,
   });
-  Logger.log("Sent " + rows.length + " campaign days (" + from + " to " + to + "): " +
+  Logger.log("Sent " + rows.length + " campaign days and " + (actions ? actions.length : "no") +
+             " conversion counts by action (" + from + " to " + to + "): " +
              res.getResponseCode() + " " + res.getContentText());
   if (res.getResponseCode() !== 200) throw new Error("Voltix Analytics did not accept the figures: " + res.getResponseCode());
 }

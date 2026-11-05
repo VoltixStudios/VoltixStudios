@@ -385,10 +385,19 @@ const PAGES = {
                SUM(clicks) AS clicks, SUM(impressions) AS impressions,
                SUM(CASE WHEN day = ${T} THEN cost_micros ELSE 0 END) AS today
         FROM va_ads_day WHERE day >= ${S} AND campaign IN (${names}) GROUP BY campaign`) : [];
+      /* And by conversion action (va_ads_conv): the Play downloads the campaign bids on beside the
+         first opens Firebase matched to an ad, which Google keeps as a secondary action. */
+      const byAction = names ? await c.all(`
+        SELECT d.campaign, v.action, MAX(v.category) AS category, SUM(v.all_conv) AS n
+        FROM va_ads_conv v JOIN (SELECT DISTINCT campaign_id, campaign FROM va_ads_day WHERE campaign IN (${names})) d
+          ON d.campaign_id = v.campaign_id
+        WHERE v.day >= ${S} GROUP BY d.campaign, v.action ORDER BY n DESC`) : [];
       const ads = (g) => {
         const r = spend.find((x) => k.ads && x.campaign === k.ads[g]);
         return r ? { campaign: r.campaign, currency: r.currency, cost: r.cost || 0, today: r.today || 0,
-                     installs: r.installs || 0, clicks: r.clicks || 0, impressions: r.impressions || 0 } : null;
+                     installs: r.installs || 0, clicks: r.clicks || 0, impressions: r.impressions || 0,
+                     actions: byAction.filter((x) => x.campaign === r.campaign)
+                       .map((x) => ({ action: x.action, category: x.category, n: x.n || 0 })) } : null;
       };
       campaigns.push({
         name: k.name, note: k.note, countries: k.countries, budgetEur: k.budgetEur,

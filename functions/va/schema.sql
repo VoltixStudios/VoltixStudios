@@ -81,6 +81,21 @@ CREATE TABLE IF NOT EXISTS va_ads_day (
   PRIMARY KEY (day, campaign_id)
 );
 
+-- Each campaign's conversions by conversion action, as Google Ads counts them (functions/collect/ads.js):
+-- the Play downloads a campaign bids on beside its secondary actions, such as Firebase's first open,
+-- so the dashboard can show downloads, the openings Google matched to an ad, and VA's own players side
+-- by side. Each send replaces the days it covers, because Google keeps revising its recent days.
+CREATE TABLE IF NOT EXISTS va_ads_conv (
+  day          INTEGER NOT NULL,          -- days since 1 January 2026, in the account's own time zone
+  campaign_id  TEXT    NOT NULL,
+  action       TEXT    NOT NULL,          -- the conversion action's name in Google Ads
+  category     TEXT,                      -- DOWNLOAD, for a Play download and a Firebase first open alike
+  conversions  REAL    NOT NULL DEFAULT 0, -- the Conversions column: primary actions only
+  all_conv     REAL    NOT NULL DEFAULT 0, -- the All conversions column: primary and secondary
+  updated      INTEGER NOT NULL,          -- ms
+  PRIMARY KEY (day, campaign_id, action)
+) WITHOUT ROWID;
+
 -- Phones that may sign in with a fingerprint instead of the password and code:
 -- the public half of a key the phone keeps in its secure hardware, usable there
 -- only after its own fingerprint check (functions/_va/device.js, the VA app).

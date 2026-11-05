@@ -6,6 +6,10 @@
  *   - two live rails down the left and right edges of the screen, with a current that runs
  *     along them and a bolt that strikes down one now and then. Only where the screen is wide
  *     enough to leave the page's margins empty, so they never cross text.
+ *   - current along the hero's background grid: now and then a pulse runs along a few of its
+ *     lines and turns at a crossing, like a circuit board, faded out toward the edges with the grid;
+ *   - a spark that runs once around a game card's border: on hover where there is a pointer,
+ *     and the first time each card scrolls into view on a phone.
  *
  * Nothing runs for anyone whose system asks for reduced motion, nothing is drawn while the
  * tab is hidden, and the hero's arcs stop once the hero is scrolled away. No library.
@@ -238,6 +242,105 @@
     layout();
   }
 
-  function go() { ring(); rails(); }
+  /* ── the hero's grid ──────────────────────────────────────────────────── */
+  /* The grid is .hero::before: 1-pixel lines every CELL pixels from the hero's top left. */
+  var CELL = 64;
+
+  function grid() {
+    var hero = document.querySelector(".hero");
+    if (!hero) return;
+    var canvas = document.createElement("canvas");
+    canvas.className = "hero__current";
+    canvas.setAttribute("aria-hidden", "true");
+    hero.insertBefore(canvas, hero.firstChild);
+    var ctx = canvas.getContext("2d"), pulses = [], visible = true, running = false, nextAt = 0;
+
+    function spawn(now) {
+      var w = canvas.width / DPR, h = canvas.height / DPR;
+      var x = CELL * Math.round(rnd(0.18, 0.82) * w / CELL), y = CELL * Math.round(rnd(0.12, 0.72) * h / CELL);
+      var pts = [x, y], dir = pick([[1, 0], [-1, 0], [0, 1], [0, -1]]), legs = 1 + ((Math.random() * 3) | 0);
+      for (var i = 0; i < legs; i++) {
+        var n = 2 + ((Math.random() * 4) | 0);
+        x += dir[0] * n * CELL; y += dir[1] * n * CELL; pts.push(x, y);
+        dir = Math.random() < 0.5 ? [dir[1], dir[0]] : [-dir[1], -dir[0]];   /* a quarter turn */
+      }
+      var len = 0;
+      for (var k = 2; k < pts.length; k += 2) len += Math.abs(pts[k] - pts[k - 2]) + Math.abs(pts[k + 1] - pts[k - 1]);
+      pulses.push({ born: now, pts: pts, len: len, speed: rnd(0.16, 0.3), tail: rnd(70, 130), color: pick(COLORS) });
+    }
+    /* The point at distance d along a pulse's path. */
+    function at(p, d) {
+      for (var k = 2; k < p.pts.length; k += 2) {
+        var x0 = p.pts[k - 2], y0 = p.pts[k - 1], x1 = p.pts[k], y1 = p.pts[k + 1];
+        var seg = Math.abs(x1 - x0) + Math.abs(y1 - y0);
+        if (d <= seg) { var t = seg ? d / seg : 0; return [x0 + (x1 - x0) * t, y0 + (y1 - y0) * t]; }
+        d -= seg;
+      }
+      return [p.pts[p.pts.length - 2], p.pts[p.pts.length - 1]];
+    }
+
+    function frame(now) {
+      if (!visible || document.hidden) { running = false; return; }
+      sizeCanvas(canvas);
+      if (now >= nextAt && pulses.length < 4) { spawn(now); nextAt = now + rnd(500, 1500); }
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = "lighter";
+      for (var i = pulses.length - 1; i >= 0; i--) {
+        var p = pulses[i], head = (now - p.born) * p.speed;
+        if (head - p.tail > p.len) { pulses.splice(i, 1); continue; }
+        var STEP = 4, prev = null;
+        for (var d = Math.max(0, head - p.tail); d <= Math.min(head, p.len); d += STEP) {
+          var pt = at(p, d);
+          if (prev) {
+            ctx.globalAlpha = 0.75 * (1 - (head - d) / p.tail);
+            ctx.strokeStyle = p.color.glow; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(prev[0] + 0.5, prev[1] + 0.5); ctx.lineTo(pt[0] + 0.5, pt[1] + 0.5); ctx.stroke();
+          }
+          prev = pt;
+        }
+        if (head <= p.len) {
+          var hp = at(p, head);
+          ctx.globalAlpha = 1; ctx.fillStyle = p.color.core; ctx.shadowColor = p.color.glow; ctx.shadowBlur = 10;
+          ctx.beginPath(); ctx.arc(hp[0] + 0.5, hp[1] + 0.5, 1.6, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+        }
+      }
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+      requestAnimationFrame(frame);
+    }
+    function start() { if (!running && visible && !document.hidden) { running = true; requestAnimationFrame(frame); } }
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (e) { visible = e[0].isIntersecting; if (visible) start(); }).observe(hero);
+    }
+    document.addEventListener("visibilitychange", start);
+    start();
+  }
+
+  /* ── the game cards ───────────────────────────────────────────────────── */
+  /* The spark itself is CSS (.card.is-charged::after in style.css); this only says when. */
+  function cards() {
+    var list = document.querySelectorAll(".card");
+    if (!list.length) return;
+    function charge(card) {
+      if (card.classList.contains("is-charged")) return;
+      card.classList.add("is-charged");
+      setTimeout(function () { card.classList.remove("is-charged"); }, 1300);
+    }
+    var touch = matchMedia("(hover: none)").matches;
+    Array.prototype.forEach.call(list, function (card) {
+      card.addEventListener("mouseenter", function () { charge(card); });
+      card.addEventListener("focusin", function () { charge(card); });
+    });
+    if (touch && "IntersectionObserver" in window) {
+      var seen = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { seen.unobserve(e.target); setTimeout(function () { charge(e.target); }, 250); }
+        });
+      }, { threshold: 0.6 });
+      Array.prototype.forEach.call(list, function (card) { seen.observe(card); });
+    }
+  }
+
+  function go() { ring(); rails(); grid(); cards(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go();
 })();

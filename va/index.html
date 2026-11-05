@@ -175,6 +175,12 @@
           font-size:13px; pointer-events:none; transition:transform .2s var(--ease); }
   #pull.on { transform:translate(-50%, 0); }
   #pull.go { color:var(--text); border-color:var(--volt); }
+  /* A swipe between tabs: the new page slides in from the side it came from. */
+  #page.slide-next { animation: va-from-right .22s ease-out; }
+  #page.slide-prev { animation: va-from-left .22s ease-out; }
+  @keyframes va-from-right { from { transform: translateX(28px); opacity: .3; } to { transform: none; opacity: 1; } }
+  @keyframes va-from-left { from { transform: translateX(-28px); opacity: .3; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { #page.slide-next, #page.slide-prev { animation: none; } }
 
   /* ── a phone: the sidebar becomes a bar at the top, the numbers come first ── */
   @media (max-width:760px) {

@@ -694,6 +694,47 @@
     }, { passive: true });
   }
 
+  /* Swipe left or right to go to the next or the previous tab, as a phone's own apps do.
+     Not a swipe that is mostly up or down, and not one that scrolled something sideways (a
+     wide table, the tab strip): that one is for the thing it scrolled, until it is at its end. */
+  function swipeTabs() {
+    if (!("ontouchstart" in window)) return;
+    const order = [...document.querySelectorAll("nav .tabs a")].map((a) => a.getAttribute("href").slice(1));
+    const sideways = (el) => {
+      for (; el && el !== document.body; el = el.parentElement) {
+        if (el.scrollWidth > el.clientWidth + 2) {
+          const ox = getComputedStyle(el).overflowX;
+          if (ox === "auto" || ox === "scroll") return el;
+        }
+      }
+      return null;
+    };
+    let x0 = null, y0 = 0, t0 = 0, sc = null, sl0 = 0;
+    addEventListener("touchstart", (e) => {
+      if (e.touches.length !== 1) { x0 = null; return; }
+      const t = e.touches[0];
+      x0 = t.clientX; y0 = t.clientY; t0 = Date.now();
+      sc = sideways(e.target); sl0 = sc ? sc.scrollLeft : 0;
+    }, { passive: true });
+    addEventListener("touchend", (e) => {
+      if (x0 === null) return;
+      const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0, ms = Date.now() - t0;
+      x0 = null;
+      if (Math.abs(dx) < 70 || Math.abs(dx) < 2 * Math.abs(dy) || ms > 800) return;
+      if (sc) {
+        if (Math.abs(sc.scrollLeft - sl0) > 2) return;
+        const atStart = sc.scrollLeft <= 1, atEnd = sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 1;
+        if ((dx > 0 && !atStart) || (dx < 0 && !atEnd)) return;
+      }
+      const i = order.indexOf(state.page), j = i + (dx < 0 ? 1 : -1);
+      if (i < 0 || j < 0 || j >= order.length) return;
+      const box = document.getElementById("page");
+      box.classList.remove("slide-next", "slide-prev"); void box.offsetWidth;
+      box.classList.add(dx < 0 ? "slide-next" : "slide-prev");
+      location.hash = "#" + order[j];
+    }, { passive: true });
+  }
+
   function start() {
     const g = document.getElementById("game"), b = document.getElementById("build");
     const fi = document.getElementById("from"), ti = document.getElementById("to"), note = document.getElementById("customNote");
@@ -721,6 +762,7 @@
     document.getElementById("refresh").addEventListener("click", refresh);
     addEventListener("hashchange", show);
     pullToReload();
+    swipeTabs();
     show();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();

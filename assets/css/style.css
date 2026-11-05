@@ -311,6 +311,59 @@ p:last-child { margin-bottom: 0; }
 .rail--left { left: 0; }
 .rail--right { right: 0; transform: scaleX(-1); }
 
+/* Current along the hero's grid: the same box and the same fade as .hero::before, drawn
+   above it and below the glow. */
+.hero__current {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -3;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(62% 58% at 50% 42%, #000 20%, transparent 78%);
+          mask-image: radial-gradient(62% 58% at 50% 42%, #000 20%, transparent 78%);
+}
+
+/* A spark once around a game card's border, in the game's own colour. The angle is a
+   registered property so it can be animated; a browser without @property simply shows
+   nothing. */
+@property --spark {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.card { position: relative; }
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(from var(--spark),
+    transparent 0 72%,
+    color-mix(in srgb, var(--accent, #35a3ff) 70%, transparent) 88%,
+    #f2fbff 96%,
+    var(--accent, #35a3ff) 98%,
+    transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  filter: drop-shadow(0 0 6px var(--accent, #35a3ff)) drop-shadow(0 0 2px #fff);
+  opacity: 0;
+  pointer-events: none;
+}
+.card.is-charged::after { animation: card-current 1.2s cubic-bezier(.45, .05, .35, 1) 1; }
+@keyframes card-current {
+  0%   { --spark: 0deg;   opacity: 0; }
+  12%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { --spark: 360deg; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card.is-charged::after { animation: none; }
+}
+
 .hero__title {
   font-size: clamp(2.3rem, 6.4vw, 4.1rem);
   letter-spacing: -.02em;

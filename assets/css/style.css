@@ -290,6 +290,27 @@ p:last-child { margin-bottom: 0; }
   filter: drop-shadow(0 16px 44px rgba(53, 163, 255, .3));
 }
 
+/* Electricity (assets/js/sparks.js): arcs around the lockup's ring, drawn on a canvas the
+   script lays over the image, and two rails down the screen's edges, shown only where the
+   page leaves its margins empty. Neither takes a click; neither exists with reduced motion. */
+.hero__sparks {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.rail {
+  position: fixed;
+  top: 0;
+  height: 100vh;
+  width: 44px;
+  z-index: 40;
+  pointer-events: none;
+  display: none;
+}
+.rail--left { left: 0; }
+.rail--right { right: 0; transform: scaleX(-1); }
+
 .hero__title {
   font-size: clamp(2.3rem, 6.4vw, 4.1rem);
   letter-spacing: -.02em;

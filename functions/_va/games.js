@@ -84,9 +84,10 @@ const POCKETFOUNDRY_PROPS = [
 // Paper Squadron (Unity): ~/voltix_studios/PaperSquadron/docs/ANALYTICS-VA.md. Every event
 // the game sends Firebase, under its own names, except the advert, purchase and first-session
 // funnels, which take Loom's names so the shared pages read them (the game's VoltixAnalytics.cs
-// renames them on the way out), plus the VA-only app_open, app_hidden and ad_paid.
+// renames them on the way out), plus the VA-only app_open, app_hidden, ad_paid and, from the
+// game's next release (written 5 November 2026), install_source.
 const PAPERSQUADRON_EVENTS = [
-  "app_open", "app_hidden", "screen_view", "consent_status", "ad_paid",
+  "app_open", "app_hidden", "screen_view", "consent_status", "ad_paid", "install_source",
   "rewarded_ad_offered", "rewarded_ad_started", "rewarded_ad_completed", "interstitial_offered",
   "interstitial_shown", "ad_dismissed", "ad_failed",
   "tutorial_begin", "first_session_step", "tutorial_complete", "tutorial_backstop", "tutorial_hint",

@@ -39,6 +39,9 @@ const LOOM_EVENTS = [
   "shop_opened", "panel_closed",
   // the hint seen, help sold during play (Loom's GDD 11 and 12.2, 4 November 2026)
   "hint_button_shown", "hint_pressed", "hint_tip_shown", "live_trial_started",
+  // a first day's more chances (Loom 1.2.2, 6 November 2026): an order woven twice
+  // refused, the first touch, and a fresh rung-1 cloth after a lost one
+  "weave_repeat", "first_touch", "rung_again",
 ];
 
 // AshenRise (codename sombra): ~/voltix_studios/Sombra/docs/ANALYTICS.md §3

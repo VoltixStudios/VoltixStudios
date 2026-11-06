@@ -4,7 +4,7 @@
  * plain elements and inline SVG: no library and no other site's script, as
  * the page's Content-Security-Policy requires. Every string that came from a
  * player (a phone model, a campaign) is written with textContent, never as
- * HTML. Nothing is kept but the chosen game, range and builds, in this
+ * HTML. Nothing is kept but the chosen game, range, builds and My phones, in this
  * browser's own storage.
  */
 (function () {
@@ -521,6 +521,12 @@
       card("Consent answers", hbars(d.consent.map((r) => ({ label: r.value, n: r.players })), null)),
       card("Logins (every game) and deletions (this game)", hbars([["Logins, last day", (d.logins && d.logins.ok) || 0], ["Failed logins, last day", (d.logins && d.logins.failed) || 0],
         ["Players' deletion requests", d.deleted]].map(([l, v]) => ({ label: l, n: v })), null))));
+    const known = d.known || [];
+    out.push(card("Known phones", known.length
+      ? table(["Install", "Phone", "Counted as", "Version", "First seen", "Last seen"],
+              known.map((k) => [k.id, k.model || "unknown", k.own === 1 ? "yours: out unless My phones" + (k.tag ? " (" + k.tag + ")" : "")
+                : (k.tag || "tagged") + ": a player", k.vc || "–", dayLabel(Math.floor((k.first - DAY0) / 86400000)), ago(new Date(k.last).toISOString())]))
+      : empty("No phone of yours or tagged one has played this game.")));
     return out;
   };
 
@@ -551,7 +557,8 @@
           ["Purchases today", int(sold), takings || "no adverts paid yet"],
         ])));
     }
-    out.push(h("p", { class: "small", text: "Players only: release builds, without Google's test phones. Players and new players are live; " +
+    out.push(h("p", { class: "small", text: "Players only: release builds, without Google's test phones" +
+      (state.mine ? ", with your own phones (My phones is on)" : " or your own phones") + ". Players and new players are live; " +
       "day-one return comes from the summaries. Pull down to reload." }));
     return out;
   };
@@ -606,7 +613,7 @@
     return m < 1 ? "just now" : m < 60 ? m + " min ago" : m < 1440 ? Math.round(m / 60) + " h ago" : Math.round(m / 1440) + " days ago"; };
 
   const state = { page: "today", game: store.get("game", "loom"), range: store.get("range", "30"), build: store.get("build", "release"),
-                  from: store.get("from", ""), to: store.get("to", "") };
+                  from: store.get("from", ""), to: store.get("to", ""), mine: store.get("mine", "0") === "1" };
   let ticket = 0;
 
   function summaryLine(sm) {
@@ -632,11 +639,17 @@
     document.querySelectorAll("[data-range]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.range === state.range)));
     document.getElementById("customForm").hidden = state.range !== "custom";
     document.getElementById("title").textContent = TITLES[state.page];
+    /* My phones only means something where Players are shown: the Today page, and the release builds. */
+    const mb = document.getElementById("mine");
+    mb.hidden = !(state.page === "today" || state.build === "release");
+    mb.setAttribute("aria-pressed", String(state.mine));
+    mb.textContent = "My phones: " + (state.mine ? "in" : "out");
     const box = document.getElementById("page");
     const mine = ++ticket;
     box.replaceChildren(h("p", { class: "empty", text: "Loading…" }));
     try {
       const params = { game: state.game, build: state.build };
+      if (state.mine) params.mine = "1";
       const f = isoToDay(state.from), t = isoToDay(state.to);
       if (state.range === "custom" && f !== null && t !== null) { params.from = f; params.to = t; }
       else params.range = state.range === "custom" ? "30" : state.range;
@@ -759,6 +772,8 @@
       store.set("from", state.from); store.set("to", state.to); store.set("range", "custom");
       show();
     });
+    document.getElementById("mine").addEventListener("click", () => {
+      state.mine = !state.mine; store.set("mine", state.mine ? "1" : "0"); show(); });
     document.getElementById("refresh").addEventListener("click", refresh);
     addEventListener("hashchange", show);
     pullToReload();

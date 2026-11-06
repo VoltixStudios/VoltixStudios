@@ -56,10 +56,21 @@ CREATE TABLE IF NOT EXISTS va_install (
   tester       INTEGER,                   -- 1: a test install (Google's pre-launch robots,
                                           -- marked by hand or by the nightly rule); its
                                           -- events count under Tests, never Players
+  own          INTEGER,                   -- 1: one of Sr. Orra's own phones (6 November 2026,
+                                          -- marked by the nightly OWN_RULE or by hand; 0 by
+                                          -- hand keeps the rule off a stranger); its release
+                                          -- events count under the build 'own', which the
+                                          -- dashboard's "My phones" switch adds to Players
+  tag          TEXT,                      -- a name given by hand to a phone that is known but
+                                          -- still a player ('friend'); it changes no figure,
+                                          -- and Health lists it under Known phones
   PRIMARY KEY (game, install)
 );
 -- A database made before 30 October 2026 lacks `tester`; add it once with:
 --   ALTER TABLE va_install ADD COLUMN tester INTEGER;
+-- One made before 6 November 2026 lacks `own`; add it once, before deploying the code that reads it:
+--   ALTER TABLE va_install ADD COLUMN own INTEGER;
+--   ALTER TABLE va_install ADD COLUMN tag TEXT;
 
 -- Google Ads, one row per day and campaign, as the Google Ads script in the
 -- advertising account posts it every hour (functions/collect/ads.js,

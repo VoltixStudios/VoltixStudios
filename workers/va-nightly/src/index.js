@@ -43,11 +43,17 @@ export const vaDay = (ms) => Math.floor((ms - DAY0) / 86400000);
    arrives on or after the day of the events it carries. */
 /* The build an event counts under: what the game said ('release', 'debug'), except
    that an install marked as a tester counts as 'debug' whatever it sent, so Google's
-   pre-launch robots never appear among the players. */
+   pre-launch robots never appear among the players, and a release build on one of
+   Sr. Orra's own phones (va_install.own) counts as 'own', which the dashboard leaves
+   out of Players unless its "My phones" switch is on. */
 const EV = `ev AS (
   SELECT b.game, b.install, b.platform, b.country, b.vc,
-         CASE WHEN (SELECT tester FROM va_install i WHERE i.game = b.game AND i.install = b.install) = 1
-              THEN 'debug' ELSE COALESCE(json_extract(e.value, '$.x.build'), 'release') END AS bld,
+         CASE (SELECT CASE WHEN i.tester = 1 THEN 'debug' WHEN i.own = 1 THEN 'own' END
+               FROM va_install i WHERE i.game = b.game AND i.install = b.install)
+              WHEN 'debug' THEN 'debug'
+              WHEN 'own' THEN CASE WHEN COALESCE(json_extract(e.value, '$.x.build'), 'release') = 'release'
+                                   THEN 'own' ELSE json_extract(e.value, '$.x.build') END
+              ELSE COALESCE(json_extract(e.value, '$.x.build'), 'release') END AS bld,
          json_extract(e.value, '$.n') AS n,
          json_extract(e.value, '$.t') AS t,
          json_extract(e.value, '$.s') AS s,
@@ -145,20 +151,42 @@ const TESTER_RULE = "UPDATE va_install SET tester = 1 WHERE tester IS NULL AND (
   "(dev_screen IN (" + ROBOT_SCREENS + ") AND " +
   "(dev_model IN ('OnePlus OnePlus8Pro', 'HUAWEI HRY-LX1T') OR dev_webview = '90.0.4430.210')))";
 
+/* Sr. Orra's own phones (6 November 2026): a Galaxy S21 Ultra (SM-G998B) and a
+   Galaxy A33 (SM-A336B), both in Spain. Every install of any game on them is
+   marked `own` the first time the rule sees it, so a reinstall or a new title is
+   caught without anyone listing install ids. Spain is no campaign's country and
+   almost every Spanish install so far has been his, but a stranger in Spain with
+   either phone would be caught too: setting `own = 0` on that install by hand
+   keeps the rule off it for good, as `tester` works. */
+const OWN_RULE = "UPDATE va_install SET own = 1 WHERE own IS NULL AND country = 'ES' AND " +
+  "dev_model IN ('samsung SM-G998B', 'samsung SM-A336B')";
+/* The marked set as one string. When it differs from the one the last summary
+   saw (a phone marked or unmarked, by the rule or by hand), the summary rebuilds
+   every day the raw batches still hold, so old days move to or from 'own' too. */
+const OWN_SET = "SELECT COUNT(*) || ':' || COALESCE(GROUP_CONCAT(k, ','), '') AS v FROM " +
+  "(SELECT game || '/' || install AS k FROM va_install WHERE own = 1 ORDER BY k)";
+
 /* `source` says who asked: the schedule, or the dashboard's Refresh now button. */
 export async function nightly(env, now = Date.now(), source = "schedule") {
   const db = env.VA;
   await db.prepare(TESTER_RULE).run();
+  await db.prepare(OWN_RULE).run();
+  const own = ((await db.prepare(OWN_SET).first()) || {}).v || "0:";
+  const seen = ((await db.prepare("SELECT v FROM va_meta WHERE k = 'own_set'").first()) || {}).v || "0:";
   const today = vaDay(now);
   const back = parseInt(env.VA_BACKFILL_DAYS || "", 10);
-  const from = today - (Number.isFinite(back) && back > REDO ? back : REDO);
+  const redo = own !== seen ? KEEP_DAYS : (Number.isFinite(back) && back > REDO ? back : REDO);
+  const from = today - redo;
   const started = Date.now();
   await db.batch(statements(from).map(([sql, args]) => db.prepare(sql).bind(...args)));
   const purged = await db.prepare("DELETE FROM va_batch WHERE day < ?").bind(today - KEEP_DAYS).run();
   const note = { at: new Date(now).toISOString(), source, from, today, ms: Date.now() - started,
-                 purged: (purged.meta && purged.meta.changes) || 0 };
-  await db.prepare("INSERT INTO va_meta (k, v) VALUES ('nightly_last', ?) ON CONFLICT (k) DO UPDATE SET v = excluded.v")
-    .bind(JSON.stringify(note)).run();
+                 purged: (purged.meta && purged.meta.changes) || 0, own: parseInt(own, 10) || 0 };
+  await db.batch([
+    db.prepare("INSERT INTO va_meta (k, v) VALUES ('nightly_last', ?) ON CONFLICT (k) DO UPDATE SET v = excluded.v")
+      .bind(JSON.stringify(note)),
+    db.prepare("INSERT INTO va_meta (k, v) VALUES ('own_set', ?) ON CONFLICT (k) DO UPDATE SET v = excluded.v").bind(own),
+  ]);
   return note;
 }
 

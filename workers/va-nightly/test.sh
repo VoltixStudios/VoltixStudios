@@ -170,6 +170,48 @@ is "a day inside the window is recalculated"        "$(sql "SELECT seconds FROM 
 is "and the window is recorded"                     "$(sql "SELECT json_extract(v,'\$.from') FROM va_meta WHERE k='nightly_last'")" "$((T-3))"
 stop
 
+echo "Sr. Orra's own phones (6 November 2026)"
+# M: his S21 in Spain, unmarked: release on T-10 (outside an ordinary night's window) and T, a debug build on T-1.
+# N: an A33 in Spain marked 0 by hand, a stranger. X: an S21 in Mexico.
+python3 - "$DB" <<'PY'
+import json, sqlite3, sys, time
+DAY0 = 1767225600000
+T = (int(time.time() * 1000) - DAY0) // 86400000
+c = sqlite3.connect(sys.argv[1])
+def ms(d, h=10): return DAY0 + d * 86400000 + h * 3600000
+def batch(game, install, day, n, build="release", country="ES"):
+    events = [{"n": n, "t": ms(day), "s": str(day), "d": day, "x": {"build": build, "engagement_time_msec": 1000}}]
+    c.execute("INSERT INTO va_batch (game, install, platform, vc, day, received, country, n, refused, events) VALUES (?,?,'app',35,?,?,?,1,0,?)",
+              (game, install, day, ms(day, 12), country, json.dumps(events)))
+for iid, model, country, own in (("mmmmmmmm-0000-0000-0000-000000000012", "samsung SM-G998B", "ES", None),
+                                 ("nnnnnnnn-0000-0000-0000-000000000013", "samsung SM-A336B", "ES", 0),
+                                 ("xxxxxxxx-0000-0000-0000-000000000014", "samsung SM-G998B", "MX", None)):
+    c.execute("INSERT INTO va_install (game, install, platform, first_seen, first_day, last_seen, country, dev_model, own) VALUES ('loom', ?, 'app', ?, ?, ?, ?, ?, ?)",
+              (iid, ms(T - 10), T - 10, ms(T), country, model, own))
+    batch("loom", iid, T - 10, "app_open", country=country)
+    batch("loom", iid, T, "app_open", country=country)
+batch("loom", "mmmmmmmm-0000-0000-0000-000000000012", T - 1, "app_open", build="debug")
+c.commit()
+PY
+M=mmmmmmmm-0000-0000-0000-000000000012
+start ""
+fire
+is "his S21 in Spain is marked as his"              "$(sql "SELECT own FROM va_install WHERE install='$M'")" "1"
+is "an A33 marked 0 by hand stays a player"         "$(sql "SELECT own FROM va_install WHERE install LIKE 'nnnn%'")" "0"
+is "an S21 in Mexico is not his"                    "$(sql "SELECT COALESCE(own, 'none') FROM va_install WHERE install LIKE 'xxxx%'")" "none"
+# (start's own readiness check already fires one run, the full rebuild; fire is a second, ordinary one.)
+is "the set of his phones is remembered"            "$(sql "SELECT v FROM va_meta WHERE k='own_set'")|$(sql "SELECT json_extract(v,'\$.own') FROM va_meta WHERE k='nightly_last'")" "1:loom/$M|1"
+is "his release days count as 'own', old ones too"  "$(sql "SELECT GROUP_CONCAT(build) FROM (SELECT build FROM va_daily_user WHERE install='$M' AND day IN ($T-10, $T) ORDER BY day)")" "own,own"
+is "his debug build stays a test"                   "$(sql "SELECT build FROM va_daily_user WHERE install='$M' AND day=$T-1")" "debug"
+is "his sittings are 'own' too"                     "$(sql "SELECT COUNT(*) FROM va_session WHERE install='$M' AND build='own'")" "2"
+is "events: his apart, the strangers still players" "$(sql "SELECT build || ':' || events FROM va_event_day WHERE day=$T-10 AND name='app_open' AND dim='' AND game='loom' ORDER BY build")" "own:1|release:3"
+fire
+is "the same phones again: an ordinary night"       "$(sql "SELECT json_extract(v,'\$.from') FROM va_meta WHERE k='nightly_last'")" "$((T-3))"
+python3 -c 'import sqlite3,sys; c=sqlite3.connect(sys.argv[1]); c.execute(sys.argv[2]); c.commit()' "$DB" "UPDATE va_install SET own = 0 WHERE install='$M'"
+fire
+is "unmarked by hand: rebuilt, a player again"      "$(sql "SELECT json_extract(v,'\$.from') FROM va_meta WHERE k='nightly_last'")|$(sql "SELECT build FROM va_daily_user WHERE install='$M' AND day=$T-10")" "$((T-90))|release"
+stop
+
 echo
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ] || { echo "--- wrangler log ---"; tail -30 dev.log; exit 1; }

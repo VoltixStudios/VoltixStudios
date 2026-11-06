@@ -10,6 +10,9 @@
  *   ?game=loom       a key of GAMES
  *   &range=30        7, 30 or 90 days, ending today
  *   &build=release   release, debug or all
+ *   &mine=1          with Sr. Orra's own phones among the players (the
+ *                    dashboard's "My phones" switch); without it, release
+ *                    leaves them out (va_install.own, the build 'own')
  *
  * The game and the build are checked against fixed lists before they are
  * written into SQL; numbers are integers. Nothing a player sent is ever put
@@ -26,7 +29,9 @@ import { CAMPAIGNS } from "../../_va/campaigns.js";
 
 const RANGES = [7, 30, 90];
 /* release: players. debug: the studio's phones, emulators and Google's test robots. lab: the
-   private lab's playtests (Pocket Foundry). web: a public web copy. all: every build together. */
+   private lab's playtests (Pocket Foundry). web: a public web copy. all: every build together.
+   The summaries also hold 'own': a release build on one of Sr. Orra's own phones (the nightly
+   Worker's OWN_RULE). It is not offered on its own: release adds it when `mine` is set. */
 const BUILDS = ["release", "debug", "lab", "web", "all"];
 const COLS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 21, 30];
 
@@ -52,7 +57,15 @@ function ctx(url, env) {
   const all = async (sql) => (await db.prepare(sql).all()).results || [];
   const one = async (sql) => (await db.prepare(sql).first()) || {};
   const G = `'${game}'`;
-  const BF = (col) => (build === "all" ? "1 = 1" : `${col} = '${build}'`);
+  const mine = p.get("mine") === "1";
+  const BF = (col) => (build === "all" ? "1 = 1"
+    : build === "release" && mine ? `${col} IN ('release', 'own')` : `${col} = '${build}'`);
+  /* The raw batches carry the build the game sent, so there his phones still say 'release':
+     they are left out by install instead. */
+  const NOTOWN = (col) => (build === "release" && !mine
+    ? `${col} NOT IN (SELECT install FROM va_install WHERE game = ${G} AND own = 1)` : "1 = 1");
+  /* The installs of the chosen builds, for the tables the summaries do not tag (purchases). */
+  const INB = (col) => `${col} IN (SELECT install FROM va_daily_user WHERE game = ${G} AND ${BF("build")})`;
   /* The two sets every page starts from: each install with its first day, and
      each player-day of the chosen build. */
   const W = `inst AS (
@@ -60,7 +73,7 @@ function ctx(url, env) {
              src_source, src_campaign, country, dev_model, dev_os
       FROM va_install WHERE game = ${G}),
     du AS (SELECT * FROM va_daily_user WHERE game = ${G} AND ${BF("build")})`;
-  return { game, range, build, custom, T, F, all, one, G, BF, W };
+  return { game, range, build, mine, custom, T, F, all, one, G, BF, NOTOWN, INB, W };
 }
 
 /* Integer median of `col` over `from` (a FROM ... WHERE clause), inside D1. */
@@ -252,7 +265,8 @@ const PAGES = {
     const inter = await eventSum(c, ["interstitial_shown"], "");
     const revenue = await c.all(`SELECT CAST((purchase_time - ${DAY0}) / 86400000 AS INTEGER) AS day, sku, currency,
                                    SUM(price_micros) AS micros, COUNT(*) AS n, verified
-                                 FROM va_purchase WHERE game = ${c.G} AND purchase_time >= ${DAY0 + c.F * 86400000}
+                                 FROM va_purchase WHERE game = ${c.G} AND ${c.INB("install")}
+                                   AND purchase_time >= ${DAY0 + c.F * 86400000}
                                    AND purchase_time < ${DAY0 + (c.T + 1) * 86400000}
                                  GROUP BY day, sku, currency, verified ORDER BY day`);
     const k = await c.one(`WITH ${c.W}
@@ -285,8 +299,13 @@ const PAGES = {
     const nightly = await c.one(`SELECT v FROM va_meta WHERE k = 'nightly_last'`);
     const logins = await c.one(`SELECT SUM(ok = 0) AS failed, SUM(ok = 1) AS ok FROM va_login`);
     const deleted = await c.one(`SELECT SUM(n) AS n FROM va_deleted WHERE game = ${c.G} AND day BETWEEN ${c.F} AND ${c.T}`);
+    /* Known phones: Sr. Orra's own (left out of Players unless My phones is on) and those
+       tagged by hand, such as a friend's, which stay players. */
+    const known = await c.all(`SELECT SUBSTR(install, 1, 8) AS id, dev_model AS model, country, own, tag, vc_last AS vc,
+                                 first_seen AS first, last_seen AS last FROM va_install
+                               WHERE game = ${c.G} AND (own = 1 OR tag IS NOT NULL) ORDER BY last_seen DESC LIMIT 20`);
     return { errors, delay, consent, versions, intake, nightly: nightly.v ? JSON.parse(nightly.v) : null,
-             logins, deleted: deleted.n || 0, since: from, allToday: allToday.batches || 0 };
+             logins, deleted: deleted.n || 0, since: from, allToday: allToday.batches || 0, known };
   },
 
   /* Today, every game at once: the page the phone opens on. Live where it can be (the raw
@@ -298,13 +317,16 @@ const PAGES = {
     const T = vaDay(), now = Date.now();
     const start = DAY0 + T * 86400000;
     const REL = `COALESCE(json_extract(e.value, '$.x.build'), 'release') = 'release'`;
-    const players = `va_install i WHERE COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT}`;
+    /* Sr. Orra's own phones: out unless My phones is on (va_install.own; the summaries' 'own'). */
+    const OWN = c.mine ? "" : " AND COALESCE(i.own, 0) = 0";
+    const DU = c.mine ? "build IN ('release', 'own')" : "build = 'release'";
+    const players = `va_install i WHERE COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT}${OWN}`;
     const live = await c.all(`
       SELECT b.game,
              COUNT(DISTINCT CASE WHEN b.day = ${T} THEN b.install END) AS today,
              COUNT(DISTINCT CASE WHEN b.day = ${T - 1} THEN b.install END) AS yesterday
       FROM va_batch b JOIN va_install i ON i.game = b.game AND i.install = b.install
-      WHERE b.day BETWEEN ${T - 1} AND ${T} AND COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT}
+      WHERE b.day BETWEEN ${T - 1} AND ${T} AND COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT}${OWN}
         AND EXISTS (SELECT 1 FROM json_each(b.events) e WHERE ${REL})
       GROUP BY b.game`);
     const last = await c.all(`SELECT game, MAX(received) AS at FROM va_batch WHERE day >= ${T - 7} GROUP BY game`);
@@ -319,7 +341,7 @@ const PAGES = {
     const ads = await c.all(`
       SELECT b.game, json_extract(e.value, '$.x.currency') AS currency, SUM(json_extract(e.value, '$.x.value')) AS value
       FROM va_batch b JOIN va_install i ON i.game = b.game AND i.install = b.install, json_each(b.events) e
-      WHERE b.day = ${T} AND COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT} AND json_extract(e.value, '$.n') = 'ad_paid' AND ${REL}
+      WHERE b.day = ${T} AND COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT}${OWN} AND json_extract(e.value, '$.n') = 'ad_paid' AND ${REL}
       GROUP BY b.game, currency`);
     const bought = await c.all(`
       SELECT game, currency, COUNT(*) AS n, SUM(COALESCE(price_micros, 0)) AS micros FROM va_purchase
@@ -328,7 +350,7 @@ const PAGES = {
     const d1 = await c.all(`
       WITH inst AS (SELECT game, install, COALESCE(first_day, CAST((first_seen - ${DAY0}) / 86400000 AS INTEGER)) AS fd
                     FROM va_install),
-           du AS (SELECT game, install, day FROM va_daily_user WHERE build = 'release'),
+           du AS (SELECT game, install, day FROM va_daily_user WHERE ${DU}),
            coh AS (SELECT i.game, i.install, i.fd FROM inst i JOIN du d ON d.game = i.game AND d.install = i.install AND d.day = i.fd
                    WHERE i.fd BETWEEN ${T - 8} AND ${T - 2})
       SELECT game, COUNT(*) AS n,
@@ -364,10 +386,10 @@ const PAGES = {
                       WHERE b.game = i.game AND b.install = i.install AND b.day >= ${S} AND ${REL})
         GROUP BY i.game, camp`);
       const ret = await c.all(`
-        WITH du AS (SELECT game, install, day FROM va_daily_user WHERE build = 'release'),
+        WITH du AS (SELECT game, install, day FROM va_daily_user WHERE ${DU}),
              coh AS (SELECT i.game, i.install, i.country,
                             COALESCE(i.first_day, CAST((i.first_seen - ${DAY0}) / 86400000 AS INTEGER)) AS fd
-                     FROM va_install i WHERE i.game IN (${gl}) AND COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT})
+                     FROM va_install i WHERE i.game IN (${gl}) AND COALESCE(i.tester, 0) = 0 AND NOT ${ROBOT}${OWN})
         SELECT coh.game, (coh.country IN (${inList(k)})) AS camp, COUNT(*) AS n,
                SUM(EXISTS (SELECT 1 FROM du x WHERE x.game = coh.game AND x.install = coh.install AND x.day = coh.fd + 1)) AS r
         FROM coh JOIN du d ON d.game = coh.game AND d.install = coh.install AND d.day = coh.fd
@@ -424,7 +446,7 @@ async function foundryProgress(c) {
   const from = Math.max(c.F, c.T - 89);
   const X = (k) => `json_extract(e.value, '$.x.${k}')`;
   const E = `va_batch b, json_each(b.events) e WHERE b.game = ${c.G} AND b.day BETWEEN ${from} AND ${c.T}
-             AND ${c.BF(X("build"))}`;
+             AND ${c.BF(X("build"))} AND ${c.NOTOWN("b.install")}`;
   const N = `json_extract(e.value, '$.n')`;
   const orders = await c.all(`SELECT ${X("level_name")} AS level, MAX(${X("kind")}) AS kind,
       COUNT(DISTINCT CASE WHEN ${N} = 'level_start' THEN b.install END) AS opened,
@@ -461,7 +483,7 @@ async function squadronProgress(c) {
   const from = Math.max(c.F, c.T - 89);
   const X = (k) => `json_extract(e.value, '$.x.${k}')`;
   const E = `va_batch b, json_each(b.events) e WHERE b.game = ${c.G} AND b.day BETWEEN ${from} AND ${c.T}
-             AND ${c.BF(`COALESCE(${X("build")}, 'release')`)}`;
+             AND ${c.BF(`COALESCE(${X("build")}, 'release')`)} AND ${c.NOTOWN("b.install")}`;
   const N = `json_extract(e.value, '$.n')`;
   const ends = await c.all(`SELECT ${X("end_reason")} AS reason, COUNT(*) AS n FROM ${E} AND ${N} = 'run_end'
     GROUP BY reason ORDER BY n DESC`);
@@ -505,10 +527,11 @@ async function loomGates(c) {
                                                  WHERE i.fd <= ${c.T - 7} GROUP BY i.fd HAVING COUNT(*) >= 100),
     coh AS (SELECT i.install, i.fd FROM inst i JOIN du d ON d.install = i.install AND d.day = i.fd WHERE i.fd IN (SELECT fd FROM sizes))
     SELECT COUNT(*) AS n, SUM(EXISTS (SELECT 1 FROM du x WHERE x.install = coh.install AND x.day = coh.fd + 7)) AS r FROM coh`);
-  const payers = await c.one(`SELECT COUNT(DISTINCT install) AS n FROM va_purchase WHERE game = ${c.G} AND verified = 1`);
+  const payers = await c.one(`SELECT COUNT(DISTINCT install) AS n FROM va_purchase WHERE game = ${c.G} AND verified = 1
+                                AND ${c.INB("install")}`);
   const week = await c.all(`SELECT (puzzle + 3) % 7 AS dow, SUM(result = 'solved') AS s, SUM(result IN ('solved', 'failed')) AS n
                             FROM va_day_result WHERE game = ${c.G} AND played BETWEEN ${c.F} AND ${c.T} AND COALESCE(archive, 0) = 0
-                            GROUP BY dow`);
+                              AND ${c.INB("install")} GROUP BY dow`);
   const quilt = await ev("quilt_opened"), stats = await ev("stats_opened");
   return [
     { n: 1, name: "It teaches itself", num: helpFirst.p, den: firstDays.n || 0, kind: "low",
@@ -538,7 +561,7 @@ export async function onRequestGet({ request, env, params }) {
   try {
     const data = await page(c);
     const last = await c.one(`SELECT v FROM va_meta WHERE k = 'nightly_last'`);
-    return json({ game: c.game, range: c.range, build: c.build, custom: c.custom, today: c.T, from: c.F,
+    return json({ game: c.game, range: c.range, build: c.build, mine: c.mine, custom: c.custom, today: c.T, from: c.F,
                   summary: last.v ? JSON.parse(last.v) : null, ...data });
   } catch (e) {
     return json({ error: "query", detail: String(e && e.message || e).slice(0, 200) }, 500);

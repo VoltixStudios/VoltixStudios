@@ -128,7 +128,7 @@ Push the site (with your word, as always). Then, in a private browser window:
 bash functions/va/test.sh
 ```
 
-79 checks against a local D1 with made-up secrets and a made-up licence key: the
+The checks run against a local D1 with made-up secrets and a made-up licence key: the
 collector's rules, purchase signatures, the daily cap, deletion, and the login (wrong
 password, wrong code, a code used twice, forged and expired cookies, the lockout,
 headers), and that two games under one install id stay apart. Nothing touches the account.
@@ -146,3 +146,33 @@ counts. A game without a profile shows the first-day steps it actually sent and 
 from another game. Pocket Foundry's lab playtests are a build of their own (`lab`), beside
 release and debug. `test.sh`, "Games kept apart", checks all of this against one install id
 seeded in two games.
+
+## Sr. Orra's own phones (6 November 2026)
+
+Sr. Orra plays every title on his own Galaxy S21 Ultra (SM-G998B) and Galaxy A33 (SM-A336B),
+and those installs used to count as players: in the first week of Loom's climb, every result
+above level 2 was his. The nightly Worker's `OWN_RULE` now marks any install in Spain with one
+of those two models as his (`va_install.own = 1`), the first time it sees it, so a reinstall or
+a new title needs no list of install ids. His release builds then count under a build of their
+own, `own`, in every summary table, and a change in the set of marked phones makes that run
+rebuild every day the raw batches still hold, so old days move too. His debug builds stay
+under Tests.
+
+The dashboard's **My phones** button (beside Refresh now) decides whether Players includes
+them: out by default, in when it is lit, remembered in the browser. It also governs the Today
+page. Every build always includes them; Tests never includes his release builds. A stranger in
+Spain with either phone would be caught by the rule too: set `own = 0` on that install by hand
+and the rule leaves it alone for good, as with `tester`.
+
+A phone that is known but is a player all the same, such as a friend's, gets a name by hand in
+`va_install.tag` (the Galaxy S25 in Spain that has played Loom since 2 November is a friend's,
+Sr. Orra said on 6 November 2026, and is tagged `friend`). A tag changes no figure. Health lists
+every phone of his and every tagged one under **Known phones**. A tag belongs to one install, so
+a reinstall on the friend's phone arrives untagged.
+
+A database made before this date needs the column once, **before** the code that reads it is
+deployed:
+
+```
+npx wrangler d1 execute va --remote --command "ALTER TABLE va_install ADD COLUMN own INTEGER; ALTER TABLE va_install ADD COLUMN tag TEXT"
+```

@@ -339,6 +339,25 @@ is "the adverts paid today are added up, in their currency" "$(tj "g['papersquad
 is "the campaign is followed, Loom and Paper Squadron"      "$(tj "d['campaigns'][0]['name'] + ': ' + ','.join(x['game'] for x in d['campaigns'][0]['games'])")" "Google Ads test: loom,papersquadron"
 is "with Paper Squadron's campaign player counted"          "$(tj "[x for x in d['campaigns'][0]['games'] if x['game']=='papersquadron'][0]['campaign']['n']")" "1"
 
+echo "Sr. Orra's own phones: out of Players unless My phones is on"
+MID=78787878-9090-1212-3434-565656565656
+post /collect "{\"v\":1,\"g\":\"loom\",\"i\":\"$MID\",\"p\":\"app\",\"e\":[$(rung 1 solved 1),
+  {\"n\":\"shop_opened\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"payer\":0}}]}" >/dev/null
+sqlw "UPDATE va_install SET country = 'ES', dev_model = 'samsung SM-G998B' WHERE install = '$MID'"   # his S21; the dev server has no country
+sqlw "DELETE FROM va_meta WHERE k = 'nightly_last'"                                                 # so Refresh now may run again at once
+is "Refresh now marks his phone and rebuilds"               "$(curl -s -X POST -H "Cookie: $FRESH" "$U/va/api/refresh" | grep -o '"ok":true')|$(sql "SELECT own || build FROM va_install JOIN va_daily_user USING (game, install) WHERE install = '$MID'")" '"ok":true|1own'
+apif () { curl -s -H "Cookie: $FRESH" "$U/va/api/$1"; }
+lv1 () { python3 -c 'import json,sys; d=json.load(sys.stdin); print([r["players"] for r in d["reach"] if r["lv"]==1][0], [r["events"] for r in d["climb"] if r["name"]=="shop_opened"][0], d["mine"])'; }
+is "Players leave his phone out of the climb and the events" "$(apif "progress?game=loom&build=release" | lv1)" "1 1 False"
+is "My phones on counts it in"                              "$(apif "progress?game=loom&build=release&mine=1" | lv1)" "2 2 True"
+is "Every build always has it"                              "$(apif "progress?game=loom&build=all" | lv1)" "2 2 False"
+is "and Tests never do: his release build is not a test"    "$(apif "progress?game=loom&build=debug" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(len(d["reach"]))')" "0"
+tl () { python3 -c 'import json,sys; d=json.load(sys.stdin); print([x["today"] for x in d["games"] if x["game"]=="loom"][0])'; }
+is "Today leaves him out too, unless My phones is on"       "$(( $(apif "today?mine=1" | tl) - $(apif "today" | tl) ))" "1"
+sqlw "UPDATE va_install SET tag = 'friend' WHERE game = 'loom' AND install = '$SAME'"
+is "a friend's phone tagged by hand is still a player"      "$(apif "progress?game=loom&build=release" | lv1)" "1 1 False"
+is "Health lists his phone and the friend's"                "$(apif "health?game=loom" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(sorted((k["id"], k["own"], k["tag"]) for k in d["known"]))')" "[('12121212', None, 'friend'), ('78787878', 1, None)]"
+
 echo "Google Ads figures from the script in the account"
 AK="test-ads-key-0123456789"
 apost () { curl -s -X POST "$U/collect/ads" -H 'Content-Type: application/json' ${2:+-H "X-VA-Key: $2"} --data-binary "$1"; }

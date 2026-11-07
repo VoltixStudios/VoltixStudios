@@ -114,13 +114,13 @@
       </p>
 
       <dl class="doc-meta" data-lang="en">
-        <div><dt>Effective date</dt><dd>5 November 2026</dd></div>
+        <div><dt>Effective date</dt><dd>7 November 2026</dd></div>
         <div><dt>App</dt><dd>Loom <code>com.voltixstudios.loom</code></dd></div>
         <div><dt>Developer</dt><dd>Voltix Studios
           <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
       </dl>
       <dl class="doc-meta" data-lang="es" lang="es">
-        <div><dt>Fecha de entrada en vigor</dt><dd>5 de noviembre de 2026</dd></div>
+        <div><dt>Fecha de entrada en vigor</dt><dd>7 de noviembre de 2026</dd></div>
         <div><dt>Aplicación</dt><dd>Loom <code>com.voltixstudios.loom</code></dd></div>
         <div><dt>Desarrollador</dt><dd>Voltix Studios
           <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
@@ -303,6 +303,18 @@
           phone and needs no network at all.
         </p>
         <p>
+          <strong>The daily climb, and your country.</strong> For the daily climb the app sends the
+          level reached after each level you solve, not only when the climb ends, so that a climb you
+          stop part-way is counted at the level it reached. Each climb is also counted a second time
+          under your country, so that the end screen can compare you with players in your country if
+          you choose to: the country is the two-letter code (for example ES) that Cloudflare works out
+          from the IP address of the request; the address itself is never stored. To move your one
+          count up as you climb instead of adding a second, the server keeps, beside the one-way hash
+          described above and for the same week, the level last counted and that country code, and
+          nothing else. The end screen shows how many players reached each level that day, and the
+          day before if you played it.
+        </p>
+        <p>
           <strong>Counting players.</strong> Once a day, when you open that day&rsquo;s cloth, the app
           also tells the same server that the day was opened, with three day numbers: today&rsquo;s,
           the day on which you first opened Loom, and the last day before today on which you opened
@@ -318,9 +330,11 @@
 
         <h2 id="reminder">The daily reminder</h2>
         <p>
-          The reminder is off unless you turn it on in <span class="ui">Settings</span> or accept
-          the one offer made after your first solve. Android asks your permission at that moment,
-          never at launch. It is a single alarm on your phone that fires once a day at the time you
+          The reminder switches itself on at 20:00 when you solve your first cloth, and the end
+          screen says so, with the time to change and a button to turn it off; it can also be turned
+          on or off at any time in <span class="ui">Settings</span>. On Android 13 and later, Android
+          asks your permission at that moment, never at launch; if you refuse, the reminder stays
+          off. It is a single alarm on your phone that fires once a day at the time you
           chose; no server is involved and no token is registered anywhere. The text of the
           notification (the day number, and your streak while it is still true) is composed on the
           phone. Turning the switch off cancels the alarm at once.
@@ -598,6 +612,18 @@
           telas pasadas se calcula por completo en tu teléfono y no necesita red alguna.
         </p>
         <p>
+          <strong>La subida diaria y tu país.</strong> En la subida diaria, la aplicación envía el
+          nivel alcanzado tras cada nivel que resuelves, no solo cuando la subida termina, para que
+          una subida que dejas a medias cuente con el nivel al que llegó. Cada subida se cuenta además
+          una segunda vez bajo tu país, para que la pantalla final pueda compararte con los jugadores
+          de tu país si así lo eliges: el país es el código de dos letras (por ejemplo, ES) que
+          Cloudflare deduce de la dirección IP de la petición; la dirección en sí nunca se guarda. Para
+          subir tu único recuento a medida que avanzas, en lugar de añadir otro, el servidor guarda,
+          junto al hash irreversible descrito arriba y durante la misma semana, el último nivel
+          contado y ese código de país, y nada más. La pantalla final muestra cuántos jugadores
+          llegaron a cada nivel ese día, y el día anterior si jugaste.
+        </p>
+        <p>
           <strong>Contar jugadores.</strong> Una vez al día, cuando abres la tela de ese día, la
           aplicación avisa también al mismo servidor de que se abrió, con tres números de día: el de
           hoy, el día en que abriste Loom por primera vez y el último día antes de hoy en que lo
@@ -613,9 +639,11 @@
 
         <h2 id="reminder-es">El recordatorio diario</h2>
         <p>
-          El recordatorio está desactivado salvo que lo actives en <span class="ui">Ajustes</span>
-          o aceptes la única propuesta que se hace tras tu primera solución. Android te pide
-          permiso en ese momento, nunca al abrir la aplicación. Es una sola alarma en tu teléfono
+          El recordatorio se activa solo, a las 20:00, cuando resuelves tu primera tela, y la
+          pantalla final te lo dice, con la hora para cambiarla y un botón para desactivarlo; también
+          puedes activarlo o desactivarlo cuando quieras en <span class="ui">Ajustes</span>. En
+          Android 13 y posteriores, Android te pide permiso en ese momento, nunca al abrir la
+          aplicación; si lo rechazas, el recordatorio sigue desactivado. Es una sola alarma en tu teléfono
           que suena una vez al día a la hora que elegiste; no interviene ningún servidor y no se
           registra ningún token en ninguna parte. El texto de la notificación (el número del día y
           tu racha mientras siga siendo cierta) se compone en el teléfono. Desactivar el

@@ -36,7 +36,24 @@
  * holds one histogram of levels per day with no new table, and a phone is
  * compared with the people who climbed the same ladder.
  *
- * Needs a D1 binding called LOOM. The schema is in schema.sql beside this file.
+ * THE CLIMB AS IT GOES, AND BY COUNTRY (Loom's GDD 22.1, 7 November 2026).
+ * From the build after 1.2.2 a phone sends its climb after every rung solved, not
+ * only when the climb ends, so a player who stops at level 5 without losing is
+ * counted at level 5 rather than not at all. A later, higher level from the
+ * same phone on the same day moves its one count up a column; nothing is
+ * counted twice. To do that, the climb's row in loom_seen also keeps the level
+ * last counted and the country it was counted in, for the same week as the
+ * hash and with nothing else beside them.
+ *
+ * Each climb is also counted under its country, as the tier "L:ES", the
+ * country being the two letters Cloudflare already attaches to every request
+ * (request.cf.country). The address itself is never read or kept. A reply
+ * about the ladder carries the day's histogram for everybody and, as `here`,
+ * the one for the country the request came from, so the game can offer
+ * "everybody / your country" without being told where the phone is.
+ *
+ * Needs a D1 binding called LOOM. The schema is in schema.sql beside this file;
+ * an existing database takes migrate-2026-11-07.sql once, before this file.
  */
 
 const DAY0 = Date.UTC(2026, 0, 1);              // Loom counts days from here
@@ -109,10 +126,67 @@ async function readDay(db, day, loom) {
   return row || { day, ...(loom ? { tier: loom, c7: 0, c8: 0 } : {}), total: 0, lost: 0,
                   c1: 0, c2: 0, c3: 0, c4: 0, c5: 0, c6: 0, t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0 };
 }
+/* The country Cloudflare says the request came from, or null. XX is unknown
+   and T1 is Tor: neither is a country anybody could be compared within. */
+function countryOf(request) {
+  const c = request && request.cf && request.cf.country;
+  return typeof c === "string" && /^[A-Z]{2}$/.test(c) && c !== "XX" && c !== "T1" ? c : null;
+}
+/* A country's histogram, as small as the game needs it. */
+const here = (row, cc) => ({ cc, n: row.total, solved: [row.c1, row.c2, row.c3, row.c4, row.c5, row.c6, row.c7, row.c8],
+                             lost: row.lost });
+/* The ladder's reply: everybody's day, and the country's beside it. */
+async function ladderReply(db, day, cc, base) {
+  const out = base || shape(await readDay(db, day, "L"));
+  if (cc) out.here = here(await readDay(db, day, "L:" + cc), cc);
+  return out;
+}
 /* The loom a request names, or null for none; undefined for one that is not a loom. */
 function loomOf(v) {
   if (v === undefined || v === null || v === "") return null;
   return LOOMS.indexOf(v) >= 0 ? v : undefined;
+}
+
+/* A climb, counted once per phone per day and moved up as it goes.
+
+   The first word from a phone on a day inserts its seen row - with the level
+   and the country - and counts it in "L" and in "L:<country>". A later word
+   with a higher level moves that one count from the old column to the new in
+   both rows, the country being the one it was first counted in. The same
+   level again, or a lower one, changes nothing: a retry is a retry, and a
+   climb never goes down. A seen row written before 7 November 2026 has no
+   level and is left as it was counted, by a build that only ever sent once. */
+async function climb(db, day, id, level, seconds, fresh, cc) {
+  const col = (lv) => (lv === 0 ? "lost" : "c" + lv);
+  const seen = await db.prepare("INSERT OR IGNORE INTO loom_seen (day, id, lv, cc) VALUES (?, ?, ?, ?)")
+    .bind(day, id, level, cc).run();
+  const tiers = (c) => (c ? ["L", "L:" + c] : ["L"]);
+  if (seen.meta && seen.meta.changes) {
+    const good = level > 0 && Number.isFinite(seconds) && seconds >= 3 && seconds <= 7200;
+    const tcol = good ? "t" + band(seconds) : null;
+    const f = fresh ? 1 : 0, fl = fresh && level === 0 ? 1 : 0;
+    const sets = ["total = total + 1", col(level) + " = " + col(level) + " + 1",
+                  "fresh = fresh + " + f, "flost = flost + " + fl];
+    if (tcol) sets.push(tcol + " = " + tcol + " + 1");
+    await db.batch(tiers(cc).map((tier) => db.prepare(
+      "INSERT INTO loom_result (day, tier, total, fresh, flost, " + col(level) + (tcol ? ", " + tcol : "") + ") " +
+      "VALUES (?, ?, 1, ?, ?, 1" + (tcol ? ", 1" : "") + ") " +
+      "ON CONFLICT(day, tier) DO UPDATE SET " + sets.join(", ")
+    ).bind(day, tier, f, fl)).concat([db.prepare("DELETE FROM loom_seen WHERE day < ?").bind(day - 7)]));
+  } else {
+    const was = await db.prepare("SELECT lv, cc FROM loom_seen WHERE day = ? AND id = ?").bind(day, id).first();
+    if (was && Number.isInteger(was.lv) && level > was.lv) {
+      /* A climb that had lost nothing yet cannot have been "lost"; one that was
+         counted as lost (a level 0 sent at its end) and now says more is a phone
+         an hour either side of midnight, and is moved like any other. */
+      const fl = fresh && was.lv === 0 ? ", flost = flost - 1" : "";
+      await db.batch(tiers(was.cc).map((tier) => db.prepare(
+        "UPDATE loom_result SET " + col(was.lv) + " = " + col(was.lv) + " - 1, " +
+        col(level) + " = " + col(level) + " + 1" + fl + " WHERE day = ? AND tier = ?"
+      ).bind(day, tier)).concat([db.prepare("UPDATE loom_seen SET lv = ? WHERE day = ? AND id = ?").bind(level, day, id)]));
+    }
+  }
+  return ladderReply(db, day, cc);
 }
 
 export async function onRequest({ request, env }) {
@@ -132,6 +206,7 @@ export async function onRequest({ request, env }) {
     const loom = loomOf(url.searchParams.get("l"));
     if (!Number.isFinite(day) || day < 0 || day > now) return json({ error: "day" }, 400);
     if (loom === undefined) return json({ error: "loom" }, 400);
+    if (loom === "L") return json(await ladderReply(env.LOOM, day, countryOf(request)));
     return json(shape(await readDay(env.LOOM, day, loom)));
   }
 
@@ -162,6 +237,8 @@ export async function onRequest({ request, env }) {
      Hard from one phone on one day are two results, and a retry of either is
      still one. A result with no loom hashes exactly as it always did. */
   const id = await seenId(loom ? day + loom : day, key);
+
+  if (loom === "L") return json(await climb(db, day, id, attempts, seconds, firstDay === day, countryOf(request)));
 
   /* INSERT OR IGNORE is the whole of the double-count guard: the first result
      for a phone on a day inserts a row and counts; a retry inserts nothing and

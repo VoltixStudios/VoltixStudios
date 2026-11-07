@@ -14,7 +14,7 @@
   const DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const LOOMS = { e: "Easy", n: "Normal", h: "Hard", "": "Before the looms" };
   /* Loom's ladder (GDD 19.2): a rung's day result names it "r1", "r2", ... */
-  const RUNGS = ["", "Super easy", "Easy", "Not so easy", "Normal", "Tricky", "Hard", "Very hard", "Expert", "Master"];
+  const RUNGS = ["", "Cotton", "Linen", "Wool", "Velvet", "Silk", "Satin", "Silver", "Gold", "Diamond"];
   const rungName = (lv) => "Level " + lv + (RUNGS[lv] ? " · " + RUNGS[lv] : "");
   const tierName = (l) => LOOMS[l] || (/^r\d+$/.test(l) ? "Ladder, " + rungName(+l.slice(1)) : l);
   const TITLES = { today: "Today", overview: "Overview", acquisition: "Acquisition", retention: "Retention", engagement: "Engagement",
@@ -685,8 +685,10 @@
     } finally { btn.disabled = false; btn.textContent = "Refresh now"; }
   }
 
-  /* A phone: pull the page down from the top to load it again (the figures, not the
-     summaries; Refresh now rebuilds those). */
+  /* A phone: pull the page down from the top to load it again, the page itself as well as
+     the figures (not the summaries; Refresh now rebuilds those). The whole page, so that the
+     VA app, which can keep one page open for days, picks up a new dashboard the same way:
+     nothing under /va/ is cached, and the choices are kept in this browser's storage. */
   function pullToReload() {
     const tip = document.getElementById("pull");
     if (!tip || !("ontouchstart" in window)) return;
@@ -701,7 +703,7 @@
       tip.classList.add("on"); tip.classList.toggle("go", ready);
     }, { passive: true });
     addEventListener("touchend", () => {
-      if (y0 !== null && ready) { tip.textContent = "Reloading…"; show().finally(() => tip.classList.remove("on", "go")); }
+      if (y0 !== null && ready) { tip.textContent = "Reloading…"; location.reload(); }
       else tip.classList.remove("on", "go");
       y0 = null; ready = false;
     }, { passive: true });

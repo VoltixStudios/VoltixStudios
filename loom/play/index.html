@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Loom — today's cloth</title>
-<!-- Copied from the Loom repository (game/index.html at f6b7200) by
+<!-- Copied from the Loom repository (game/index.html at 4e39572) by
      tools/sync-loom.sh. Edit the game there and run the script again; an edit
      made here is lost on the next copy. -->
 <meta name="description" content="Loom, the daily pattern puzzle by Voltix Studios. Today's cloth, free in the browser: the same one for everyone.">
@@ -250,6 +250,20 @@ button.act[disabled]{background:var(--none);color:#C9B7A6;box-shadow:none;cursor
 .msg b{display:block;font-size:19px;margin-bottom:5px;color:var(--accent)}
 .msg .cmp{font-size:13px;font-weight:800;color:var(--ink);opacity:.8;margin:6px 0 0}
 .msg .glob{font-size:13px;font-weight:800;color:var(--accent2);margin:2px 0 0}
+.vs{margin-top:12px;padding:10px 12px 8px;border-radius:16px;background:#FFF6EA;text-align:left}
+.vs__head{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:12px;font-weight:800;color:var(--ink)}
+.vs__seg{display:flex;gap:4px;flex-shrink:0}
+.vs__seg button{border:0;border-radius:999px;padding:5px 9px;font:inherit;font-size:11px;font-weight:800;
+  background:var(--card);color:var(--muted);cursor:pointer;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis}
+.vs__seg button.on{background:var(--accent2);color:#fff}
+.vs__bars{display:flex;align-items:flex-end;gap:5px;height:66px;margin:8px 0 4px}
+.vs__col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.vs__col i{display:block;width:100%;border-radius:5px 5px 2px 2px;background:var(--frame)}
+.vs__col.me i{background:var(--accent)}
+.vs__n,.vs__lv{font-size:10px;font-weight:800;color:var(--muted);line-height:1.25}
+.vs__col.me .vs__n,.vs__col.me .vs__lv{color:var(--accent)}
+.vs__line{font-size:12.5px;font-weight:800;color:var(--ink);margin-top:2px;line-height:1.35}
+.vs__line.y{color:var(--muted);font-weight:700}
 .msg .mile{font-size:14px;font-weight:800;color:var(--accent2);margin:6px 0 2px}
 .msg .next{font-size:15px;font-weight:800;margin-top:10px}
 .msg .fact{font-size:12px;color:var(--muted);font-weight:700;margin-top:2px}
@@ -278,9 +292,48 @@ a.link{box-sizing:border-box;text-align:center;text-decoration:none}
 .replay__foot button{flex:1;border:0;border-radius:14px;padding:11px;font:inherit;font-size:13px;
   font-weight:800;cursor:pointer;background:var(--paper);color:var(--accent2);min-height:44px}
 .slot.now{outline:3px solid var(--accent);outline-offset:-1px}
-.hintbar{display:flex;justify-content:center}
+.hintbar{display:flex;justify-content:center;position:relative}
 button.tiny{border:0;background:transparent;color:var(--accent2);font:inherit;font-size:12px;
   font-weight:800;padding:6px 12px;min-height:36px;cursor:pointer}
+/* §11, amended 4 November 2026: most players never saw the hint as a small
+   word under the coaching line, so it is a button now, in the gold of a
+   pinned slot, with a needle and thread in front. It pulses once after a
+   failed try and turns to the accent on the last one. */
+button.help{display:inline-flex;align-items:center;justify-content:center;gap:8px;max-width:100%;
+  box-sizing:border-box;margin-top:4px;padding:7px 16px 7px 12px;min-height:40px;border:2px solid #F2CF6B;
+  border-radius:999px;background:#FFF6DC;color:var(--ink);font:inherit;font-size:13px;font-weight:800;
+  line-height:1.25;cursor:pointer;box-shadow:0 2px 0 #EBD9A8;transition:transform .1s}
+button.help:active{transform:translateY(1px)}
+button.help::before{content:'';flex:0 0 auto;width:18px;height:18px;background:#E0A93A;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-linecap='round'%3E%3Cpath d='M20.5 3.5 8 16' stroke-width='2.6'/%3E%3Cpath d='M8 16c-3.2.6-5 2.6-3.6 4.4 1.5 1.9 4.3-.4 2.6-2.4' stroke-width='1.9'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-linecap='round'%3E%3Cpath d='M20.5 3.5 8 16' stroke-width='2.6'/%3E%3Cpath d='M8 16c-3.2.6-5 2.6-3.6 4.4 1.5 1.9 4.3-.4 2.6-2.4' stroke-width='1.9'/%3E%3C/svg%3E") center/contain no-repeat}
+button.help.nudge{animation:helpNudge .6s ease-in-out 3}
+button.help.hot{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 3px 0 #E97B7B}
+button.help.hot::before{background:#fff}
+@keyframes helpNudge{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+body.still button.help{animation:none;transition:none}
+/* What the hint does, said once to every player, the first time it is wanted. */
+.helptip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);z-index:20;
+  width:max-content;max-width:min(300px,86vw);box-sizing:border-box;padding:9px 14px;border-radius:14px;
+  background:var(--ink);color:#fff;font-size:12px;font-weight:700;line-height:1.45;text-align:center;
+  box-shadow:0 6px 16px rgba(90,74,66,.3)}
+.helptip::after{content:'';position:absolute;top:100%;left:50%;margin-left:-7px;border:7px solid transparent;border-top-color:var(--ink)}
+.helptip[hidden]{display:none}
+/* After an interstitial: one line, never modal, gone by itself. */
+.adtoast{position:fixed;left:50%;bottom:calc(14px + var(--sab));transform:translateX(-50%);z-index:60;
+  display:flex;align-items:center;gap:10px;width:max-content;max-width:calc(100vw - 24px);box-sizing:border-box;
+  padding:10px 10px 10px 16px;border-radius:18px;background:var(--card);box-shadow:0 10px 28px rgba(90,74,66,.32);
+  font-size:13px;font-weight:800;color:var(--ink)}
+.adtoast[hidden]{display:none}
+.adtoast button{border:0;border-radius:14px;padding:9px 13px;min-height:40px;font:inherit;font-weight:800;cursor:pointer;
+  background:var(--accent);color:#fff;white-space:nowrap}
+.adtoast button.x{background:transparent;color:var(--muted);padding:9px 8px;font-size:16px}
+/* Live weave, where it is offered on a sheet or the end screen: a row that reads as a product. */
+button.link.live{background:#FFF6DC;color:var(--ink);border:2px solid #F2CF6B}
+/* Something in the shop the player has not looked at yet. */
+.iconbtn.dot{position:relative}
+.iconbtn.dot::after{content:'';position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 0 2px var(--paper)}
 .slot.locked{border:2px solid transparent;background:#FFF6DC;color:var(--ink);box-shadow:var(--shadow);cursor:default}
 .slot.locked .glyph{color:#E0A93A}
 .slot.locked .pin{color:#E0A93A}
@@ -323,6 +376,44 @@ button.tiny{border:0;background:transparent;color:var(--accent2);font:inherit;fo
 .pulse{animation:vpulse 1.3s ease-in-out infinite;
   box-shadow:0 0 0 4px rgba(255,140,140,.45), var(--shadow) !important;z-index:2;position:relative}
 @media (prefers-reduced-motion:reduce){ .pulse{animation:none} }
+/* §17.4: the hand. Its fingertip is the point placed on the target; it taps
+   by moving, never by resizing anything under it. */
+.hand{position:absolute;z-index:60;pointer-events:none;width:44px;height:44px;margin:0 0 0 -16px;
+  font-size:40px;line-height:44px;text-align:center;filter:drop-shadow(0 3px 3px rgba(90,74,66,.35));
+  animation:handTap 1.1s ease-in-out infinite}
+@keyframes handTap{0%,100%{transform:translateY(12px)}45%,60%{transform:translateY(0) scale(.92)}}
+.handto{box-shadow:0 0 0 3px var(--accent2), var(--shadow) !important;position:relative;z-index:2}
+.see.handto{position:absolute;border-radius:50%}   /* the mark keeps its corner when the hand rings it */
+@media (prefers-reduced-motion:reduce){ .hand{animation:none} }
+body.still .hand{animation:none}
+/* §17.6: the tour of the buttons along the top. */
+.tour{position:fixed;inset:0;z-index:58}
+.tour__tip{position:absolute;left:12px;top:120px;box-sizing:border-box;width:min(300px,calc(100vw - 24px));
+  padding:14px 16px 12px;border-radius:18px;background:var(--card);box-shadow:var(--shadow)}
+.tour__n{font-size:12px;letter-spacing:.08em;opacity:.6;margin-bottom:4px}
+.tour__text{margin:0 0 10px;font-size:15px;line-height:1.4}
+.tour__row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tour__row .act{margin:0;width:auto;padding:8px 22px}
+/* §8.6a: a solved cloth is a party - two poppers, a burst, one word. */
+.party{position:fixed;inset:0;z-index:70;pointer-events:none;overflow:hidden}
+.party canvas{position:absolute;inset:0;width:100%;height:100%}
+.party__pop{position:absolute;bottom:calc(10px + var(--sab));font-size:46px;line-height:1;opacity:0}
+.party__pop.l{left:calc(6px + var(--sal))}
+.party__pop.r{right:calc(6px + var(--sar));transform:scaleX(-1)}
+.party.go .party__pop.l{animation:popL 1.6s ease-out both}
+.party.go .party__pop.r{animation:popR 1.6s ease-out both}
+@keyframes popL{0%{opacity:0;transform:scale(.4) rotate(20deg)}12%{opacity:1;transform:scale(1.25) rotate(-8deg)}
+  24%{transform:scale(1) rotate(0)}80%{opacity:1}100%{opacity:0;transform:scale(1)}}
+@keyframes popR{0%{opacity:0;transform:scaleX(-1) scale(.4) rotate(20deg)}12%{opacity:1;transform:scaleX(-1) scale(1.25) rotate(-8deg)}
+  24%{transform:scaleX(-1) scale(1) rotate(0)}80%{opacity:1}100%{opacity:0;transform:scaleX(-1) scale(1)}}
+.party__word{position:absolute;left:0;right:0;top:34%;text-align:center;font-size:34px;font-weight:900;
+  color:var(--accent);text-shadow:0 2px 0 #fff,0 4px 14px rgba(90,74,66,.25);opacity:0}
+.party.go .party__word{animation:partyWord 1.7s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes partyWord{0%{opacity:0;transform:scale(.5)}18%{opacity:1;transform:scale(1.12)}30%{transform:scale(1)}
+  78%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.04) translateY(-10px)}}
+body.still .party .party__pop{display:none}
+body.still .party.go .party__word{animation:partyStill 1.6s linear both}
+@keyframes partyStill{0%,85%{opacity:1}100%{opacity:0}}
 /* The setting, which is the same thing said by hand rather than by the phone. */
 body.still .pulse{animation:none}
 body.still .tile,body.still .slot,body.still button.act,body.still .sw,body.still .sw::after{transition:none}
@@ -550,6 +641,8 @@ body.marks .sym{display:block}
       <button class="sw" id="swLive" role="switch" hidden></button><span class="price" id="livePrice" hidden></span></div>
     <div class="row buy" id="fullRow" hidden><div><span id="fullRowName">Loom Full</span><div class="why" id="fullRowWhy"></div></div>
       <span class="price" id="fullRowPrice"></span></div>
+    <div class="row buy" id="noAdsRow" hidden><div><span data-t="Remove adverts">Remove adverts</span><div class="why" data-t="No advertising of any kind, for good. Once, not a subscription.">No advertising of any kind, for good. Once, not a subscription.</div></div>
+      <span class="price" id="noAdsPrice"></span></div>
     <div class="row buy" id="packRow" hidden><div><span data-t="Ten threads to unpick">Ten threads to unpick</span><div class="why" id="packWhy"></div></div>
       <span class="price" id="packPrice"></span></div>
     <div class="row buy" id="weaveRow" hidden><div><span data-t="Five more weaves">Five more weaves</span><div class="why" id="weaveWhy"></div></div>
@@ -664,7 +757,8 @@ body.marks .sym{display:block}
        coaching sentence fell off the bottom of a 16:9 screen and the player was
        told nothing while the log recorded that they had been. -->
   <div class="hint" id="hint"></div>
-  <div class="hintbar"><button class="tiny" id="hintBtn" hidden></button></div>
+  <div class="hintbar"><button class="help" id="hintBtn" hidden></button>
+    <div class="helptip" id="hintTip" hidden role="status"></div></div>
   <!-- §11: what a bought pack still holds. The button says it while a hint can
        be taken from the pack; on a day whose two are spent the button is gone,
        and without this line the ten threads a player paid for say nothing. -->
@@ -680,18 +774,27 @@ body.marks .sym{display:block}
     <div id="msgBody"></div>
     <div class="cmp" id="cmp" hidden></div>
     <div class="glob" id="glob" hidden></div>
+    <!-- §22.1: a finished climb against the day's other climbs, and yesterday's. -->
+    <div class="vs" id="vs" hidden>
+      <div class="vs__head"><span id="vsTitle"></span>
+        <span class="vs__seg" id="vsSeg" hidden><button id="vsAll" data-t="Everybody">Everybody</button><button id="vsHere"></button></span></div>
+      <div class="vs__bars" id="vsBars"></div>
+      <div class="vs__line" id="vsLine"></div>
+      <div class="vs__line y" id="vsYest" hidden></div>
+    </div>
     <div class="mile" id="mile" hidden></div>
     <button class="link" id="loomNext" hidden></button>
+    <button class="link live" id="liveEnd" hidden></button>
     <div class="next" id="next"></div>
     <div class="fact" id="fact"></div>
     <div class="share" id="shareText"></div>
     <button class="act" id="copyBtn" style="margin-top:12px">Share result</button>
     <div class="offer" id="remOffer" hidden>
-      <div class="ask" data-t="Want a nudge tomorrow?">Want a nudge tomorrow?</div>
+      <div class="ask" data-t="Daily reminder on. Tomorrow at:">Daily reminder on. Tomorrow at:</div>
       <div class="btns">
         <input class="timein" type="time" id="remOfferTime" value="20:00">
-        <button id="remYes" data-t="Yes">Yes</button>
-        <button class="no" id="remNo" data-t="No thanks">No thanks</button>
+        <button id="remYes" data-t="OK">OK</button>
+        <button class="no" id="remNo" data-t="Turn off">Turn off</button>
       </div>
     </div>
     <div class="note" id="remNote" hidden></div>
@@ -713,10 +816,42 @@ body.marks .sym{display:block}
       <button class="act" id="moreSheetPack" hidden></button>
       <button class="act" id="moreSheetBuy" hidden></button>
       <button class="link" id="moreSheetAd" hidden></button>
-      <button class="link" id="moreSheetLive" hidden></button>
+      <button class="link live" id="moreSheetLive" hidden></button>
       <button class="link" id="moreSheetNo" data-t="Not now">Not now</button>
       <div class="note" id="moreSheetNote" data-t="Two extra weaves per cloth at most. The shared result shows them.">Two extra weaves per cloth at most. The shared result shows them.</div>
     </div>
+  </div>
+
+  <!-- Stuck on a rung (the President, 4 November 2026): help, every way there is
+       to have it, once a day, after the second failed try from rung 4. -->
+  <div class="sheet" id="stuckSheet" hidden role="dialog" aria-modal="true" aria-labelledby="stuckSheetTitle">
+    <div class="sheet__card">
+      <b id="stuckSheetTitle" data-t="Stuck?">Stuck?</b>
+      <div class="lines" id="stuckSheetLine"></div>
+      <button class="act" id="stuckHint" hidden></button>
+      <button class="link live" id="stuckTrial" hidden></button>
+      <button class="link live" id="stuckLive" hidden></button>
+      <button class="link" id="stuckNo" data-t="Not now">Not now</button>
+      <div class="note" id="stuckNote"></div>
+    </div>
+  </div>
+
+  <!-- After the one rung Live weave was tried on: keep it. -->
+  <div class="sheet" id="liveSheet" hidden role="dialog" aria-modal="true" aria-labelledby="liveSheetTitle">
+    <div class="sheet__card">
+      <b id="liveSheetTitle" data-t="Keep Live weave?">Keep Live weave?</b>
+      <div class="lines" data-t="The cloth moved with every tile you placed. Keep it for every level, every day.">The cloth moved with every tile you placed. Keep it for every level, every day.</div>
+      <button class="act" id="liveSheetBuy"></button>
+      <button class="link" id="liveSheetNo" data-t="Not now">Not now</button>
+      <div class="note" id="liveSheetNote" data-t="Once. Not a subscription.">Once. Not a subscription.</div>
+    </div>
+  </div>
+
+  <!-- After an interstitial: what ends them, for a moment, never in the way. -->
+  <div class="adtoast" id="noAdsToast" hidden role="status">
+    <span data-t="Tired of adverts?">Tired of adverts?</span>
+    <button id="noAdsBuy"></button>
+    <button class="x" id="noAdsX" aria-label="Close" data-t-label="Close">&#215;</button>
   </div>
 
   <!-- A loom that is not open today: an advertisement for it, or any purchase for all three. -->
@@ -747,6 +882,21 @@ body.marks .sym{display:block}
     <span>Loom — Voltix Studios.</span><br>
     <span data-t="One puzzle a day, the same for everyone.">One puzzle a day, the same for everyone.</span>
   </div>
+</div>
+<!-- §17.4: the hand over a first cloth, and §8.6a: the party over a solved one.
+     Both lie over the page and never take a tap. -->
+<div class="hand" id="hand" hidden aria-hidden="true">👆</div>
+<div class="tour" id="tour" hidden>
+  <div class="tour__tip" id="tourTip" role="dialog" aria-live="polite">
+    <div class="tour__n" id="tourN"></div>
+    <p class="tour__text" id="tourText"></p>
+    <div class="tour__row"><button class="link" id="tourSkip" type="button" data-t="Skip">Skip</button><button class="act" id="tourNext" type="button" data-t="Next">Next</button></div>
+  </div>
+</div>
+<div class="party" id="party" hidden aria-hidden="true">
+  <canvas id="partyCv"></canvas>
+  <div class="party__pop l">🎉</div><div class="party__pop r">🎉</div>
+  <div class="party__word" id="partyWord"></div>
 </div>
 
 <script>
@@ -792,6 +942,7 @@ ca:{
  'Any month of cloths ends all advertising, for good.':'Qualsevol mes de teles acaba amb tots els anuncis, per sempre.',
  'One climb a day, the same for every player in the world. Each cloth solved opens the next level; a cloth lost ends the climb.':'Una escalada al dia, la mateixa per a tothom al món. Cada tela resolta obre el nivell següent; una tela perduda acaba l’escalada.',
  'One climb a day, the same for everyone.':'Una escalada al dia, la mateixa per a tothom.',
+ /* the rungs' names, 7 November 2026 */ 'Cotton':'Cotó', 'Linen':'Lli', 'Wool':'Llana', 'Velvet':'Vellut', 'Silk':'Seda', 'Satin':'Setí', 'Silver':'Plata', 'Gold':'Or', 'Diamond':'Diamant',
  'Super easy':'Molt fàcil','Not so easy':'No tan fàcil','Tricky':'Enrevessat','Very hard':'Molt difícil','Expert':'Expert','Master':'Mestre',
  'Level {n} · {name}':'Nivell {n} · {name}','Level {n}':'Nivell {n}','Next level':'Següent nivell',
  'Level {n} woven.':'Nivell {n} teixit.','Level {n} reached.':'Has arribat al nivell {n}.','Next: {r}.':'Següent: {r}.',
@@ -871,11 +1022,13 @@ ca:{
  'Streak {n} day  ·  played {p}  ·  solved {s}':'Ratxa {n} dia  ·  jugades {p}  ·  resoltes {s}','Streak {n} days  ·  played {p}  ·  solved {s}':'Ratxa {n} dies  ·  jugades {p}  ·  resoltes {s}',
  'One earlier cloth is free. Play it now.':'Una tela anterior és gratis. Juga-la ara.','{n} earlier cloths are free. Play one now.':'{n} teles anteriors són gratis. Juga’n una ara.',
  'Place all {n} operations first.':'Posa primer les {n} operacions.',
+ 'You already tried this order. Swap two operations.':'Ja has provat aquest ordre. Intercanvia dues operacions.',
+ 'Here is another cloth. Change the order on every try.':'Aquí tens una altra tela. Canvia l’ordre a cada intent.',
  'The reminder is one notification a day and nothing else. Turning it off stops it at once.':'El recordatori és una notificació al dia i res més. Si el desactives, s’atura de seguida.',
  'The reminder needs the Android app; in a browser the choice is remembered and nothing is scheduled.':'El recordatori necessita l’app d’Android; en un navegador es recorda la tria i no es programa res.',
  'Notifications are switched off for Loom in the phone’s settings, so no reminder can be sent.':'Les notificacions de Loom estan desactivades a la configuració del telèfon, així que no es pot enviar cap recordatori.',
- 'Unpick a thread · one free':'Desfés un fil · un de franc',
- '{n} left in your pack.':'Et queden {n} fils al paquet.','Your pack':'El teu paquet','Threads to unpick, one per cloth at most.':'Fils per desfer, com a molt un per tela.','Unpick a thread · {n} in your pack':'Desfés un fil · {n} al teu paquet','Unpick a thread · watch an advert':'Desfés un fil · mira un anunci',
+ 'Help · unpick a thread · one free':'Ajuda · desfés un fil · un de franc',
+ '{n} left in your pack.':'Et queden {n} fils al paquet.','Your pack':'El teu paquet','Threads to unpick, one per cloth at most.':'Fils per desfer, com a molt un per tela.','Help · unpick a thread · {n} in your pack':'Ajuda · desfés un fil · {n} al teu paquet','Help · unpick a thread · watch an advert':'Ajuda · desfés un fil · mira un anunci',
  'Loom · {m} · {n} cloth woven, {w} solved':'Loom · {m} · {n} tela teixida, {w} resolta','Loom · {m} · {n} cloths woven, {w} solved':'Loom · {m} · {n} teles teixides, {w} resoltes',
  '{m} {y}':'{m} de {y}','M,T,W,T,F,S,S':'dl,dt,dc,dj,dv,ds,dg',
  'Loom Full':'Loom Full',
@@ -919,7 +1072,17 @@ ca:{
  'Five more weaves · {p}':'Cinc teixits més · {p}',
  'Watch an advert for one more':'Mira un anunci per tenir-ne un més',
  'Two extra weaves per cloth at most. The shared result shows them.':'Com a molt dos teixits addicionals per tela. El resultat compartit els mostra.',
- 'Unpick a thread · ten for {p}':'Desfés un fil · deu per {p}',
+ 'Help · unpick a thread · ten for {p}':'Ajuda · desfés un fil · deu per {p}',
+ 'Stuck? This pins one operation in its right place.':'T’has encallat? Això fixa una operació al seu lloc correcte.',
+ 'Close':'Tanca','Stuck?':'T’has encallat?','One attempt left. A thread unpicked pins one operation in its right place.':'Et queda un intent. Un fil desfet fixa una operació al seu lloc correcte.',
+ '{n} attempts left. A thread unpicked pins one operation in its right place.':'Queden {n} intents. Un fil desfet fixa una operació al seu lloc correcte.',
+ 'Watch an advert for a thread':'Mira un anunci per un fil','Unpick one, free':'Desfés-ne un, de franc','Use one of your {n} threads':'Fes servir un dels teus {n} fils',
+ 'Ten threads · {p}':'Deu fils · {p}','Try Live weave on this level, free':'Prova el Teixit en directe en aquest nivell, de franc',
+ 'Keep Live weave?':'Et quedes el Teixit en directe?','The cloth moved with every tile you placed. Keep it for every level, every day.':'La tela s’ha mogut amb cada fitxa que hi has posat. Queda-te’l per a tots els nivells, cada dia.',
+ 'Keep it · {p}':'Queda-te’l · {p}','Climb further tomorrow · Live weave {p}':'Puja més amunt demà · Teixit en directe {p}',
+ 'Tired of adverts?':'Massa anuncis?','Remove them · {p}':'Treu-los · {p}','Remove adverts':'Treu els anuncis',
+ 'No advertising of any kind, for good. Once, not a subscription.':'Cap anunci de cap mena, per sempre. Un sol cop, no és cap subscripció.',
+ 'No advertising: you removed it.':'Sense anuncis: els has tret.','Remove adverts, or any month of cloths, and advertising ends for good.':'Treu els anuncis, o compra qualsevol mes de teles, i els anuncis s’acaben per sempre.',
  'yours':'teu',
  'buy':'compra',
  'Earlier':'Anteriors',
@@ -928,9 +1091,83 @@ ca:{
  'See how it was woven':'Mira com es va teixir','Step {n} of {t}':'Pas {n} de {t}','The starting cloth':'La tela de sortida',
  'Play it through':'Reprodueix-ho','Pause':'Pausa','Again':'Una altra vegada','Done':'Fet',
  'Previous step':'Pas anterior','Next step':'Pas següent','nothing moves, this early':'encara no es mou res',
- 'January':'gener','February':'febrer','March':'març','April':'abril','May':'maig','June':'juny','July':'juliol','August':'agost','September':'setembre','October':'octubre','November':'novembre','December':'desembre'
+ 'January':'gener','February':'febrer','March':'març','April':'abril','May':'maig','June':'juny','July':'juliol','August':'agost','September':'setembre','October':'octubre','November':'novembre','December':'desembre',
+ /* 7 November 2026: the hand (§17.4), the party (§8.6a), the reminder on (§8.3), the players (§22.1) */
+ 'Tap the operation the hand points to.':'Toca l’operació que assenyala la mà.',
+ 'Tap this slot to take that operation back.':'Toca aquesta casella per treure’n l’operació.',
+ 'Now press Weave.':'Ara prem Teixeix.',
+ 'Tap ▶ to watch what this move does to your cloth.':'Toca ▶ per veure què fa aquest moviment a la teva tela.',
+ 'Quilt: every cloth you weave is sewn into this month’s quilt, solved or not.':'Vànova: cada tela que teixeixes es cus a la vànova del mes, resolta o no.',
+ 'Your record: your streak, your best levels and every day you have played.':'El teu registre: la ratxa, els teus millors nivells i cada dia que has jugat.',
+ 'Archive: missed a day? The last seven cloths are free to play.':'Arxiu: t’has perdut un dia? Les set últimes teles són gratis.',
+ 'Shop: live weave, extra weaves, threads to unpick and quilt colours.':'Botiga: teixit en directe, teixits addicionals, fils per desfer i colors per a la vànova.',
+ 'Settings: how to play, sound, the daily reminder and more.':'Configuració: com es juga, el so, el recordatori diari i més.',
+ '{i} of {n}':'{i} de {n}','Next':'Següent','Got it':'Entesos','Skip':'Omet',
+ 'Nice!':'Molt bé!',
+ 'Great!':'Genial!',
+ 'Brilliant!':'Brillant!',
+ 'Superb!':'Magnífic!',
+ 'Amazing!':'Al·lucinant!',
+ 'Fantastic!':'Fantàstic!',
+ 'Incredible!':'Increïble!',
+ 'Masterful!':'De mestre!',
+ 'Legendary!':'Llegendari!',
+ 'Daily reminder on. Tomorrow at:':'Recordatori diari activat. Demà a les:',
+ 'OK':'D’acord',
+ 'Turn off':'Desactiva',
+ 'No reminder. Switch it on in Settings whenever you like.':'Sense recordatori. Activa’l a Configuració quan vulguis.',
+ 'Everybody':'Tothom',
+ 'Nobody else has climbed today yet.':'Avui encara no ha pujat ningú més.',
+ 'The highest climb today so far.':'La pujada més alta d’avui, de moment.',
+ 'Higher than {b} of {o} players today.':'Més amunt que {b} de {o} jugadors d’avui.',
+ 'Level with {s}.':'Al mateix nivell que {s}.',
+ '1 other player today.':'Avui hi ha 1 jugador més.',
+ '{o} other players today.':'Avui hi ha {o} jugadors més.',
+ 'Yesterday: level {lv}.':'Ahir: nivell {lv}.',
+ 'Yesterday: level {lv}, the highest of {n} players.':'Ahir: nivell {lv}, el més alt de {n} jugadors.',
+ 'Yesterday: level {lv}, higher than {b} of {o} players.':'Ahir: nivell {lv}, més amunt que {b} de {o} jugadors.',
+ 'Yesterday: level {lv}, with {n} players.':'Ahir: nivell {lv}, amb {n} jugadors.',
+ 'Today, so far: 1 player':'Avui, de moment: 1 jugador',
+ 'Today, so far: {n} players':'Avui, de moment: {n} jugadors',
 },
 es:{
+ /* 7 November 2026: the hand (§17.4), the party (§8.6a), the reminder on (§8.3), the players (§22.1) */
+ 'Tap the operation the hand points to.':'Toca la operación que señala la mano.',
+ 'Tap this slot to take that operation back.':'Toca esta casilla para quitar esa operación.',
+ 'Now press Weave.':'Ahora pulsa Tejer.',
+ 'Tap ▶ to watch what this move does to your cloth.':'Toca ▶ para ver qué hace este movimiento a tu tela.',
+ 'Quilt: every cloth you weave is sewn into this month’s quilt, solved or not.':'Colcha: cada tela que tejes se cose en la colcha del mes, resuelta o no.',
+ 'Your record: your streak, your best levels and every day you have played.':'Tu registro: tu racha, tus mejores niveles y cada día que has jugado.',
+ 'Archive: missed a day? The last seven cloths are free to play.':'Archivo: ¿te perdiste un día? Las siete últimas telas son gratis.',
+ 'Shop: live weave, extra weaves, threads to unpick and quilt colours.':'Tienda: tejido en directo, tejidos extra, hilos para deshacer y colores para la colcha.',
+ 'Settings: how to play, sound, the daily reminder and more.':'Ajustes: cómo se juega, el sonido, el recordatorio diario y más.',
+ '{i} of {n}':'{i} de {n}','Next':'Siguiente','Got it':'Entendido','Skip':'Saltar',
+ 'Nice!':'¡Muy bien!',
+ 'Great!':'¡Genial!',
+ 'Brilliant!':'¡Brillante!',
+ 'Superb!':'¡Magnífico!',
+ 'Amazing!':'¡Alucinante!',
+ 'Fantastic!':'¡Fantástico!',
+ 'Incredible!':'¡Increíble!',
+ 'Masterful!':'¡De maestro!',
+ 'Legendary!':'¡Legendario!',
+ 'Daily reminder on. Tomorrow at:':'Recordatorio diario activado. Mañana a las:',
+ 'OK':'Vale',
+ 'Turn off':'Desactivar',
+ 'No reminder. Switch it on in Settings whenever you like.':'Sin recordatorio. Actívalo en Ajustes cuando quieras.',
+ 'Everybody':'Todos',
+ 'Nobody else has climbed today yet.':'Hoy todavía no ha subido nadie más.',
+ 'The highest climb today so far.':'La subida más alta de hoy, por ahora.',
+ 'Higher than {b} of {o} players today.':'Más arriba que {b} de {o} jugadores de hoy.',
+ 'Level with {s}.':'Al mismo nivel que {s}.',
+ '1 other player today.':'Hoy hay 1 jugador más.',
+ '{o} other players today.':'Hoy hay {o} jugadores más.',
+ 'Yesterday: level {lv}.':'Ayer: nivel {lv}.',
+ 'Yesterday: level {lv}, the highest of {n} players.':'Ayer: nivel {lv}, el más alto de {n} jugadores.',
+ 'Yesterday: level {lv}, higher than {b} of {o} players.':'Ayer: nivel {lv}, más arriba que {b} de {o} jugadores.',
+ 'Yesterday: level {lv}, with {n} players.':'Ayer: nivel {lv}, con {n} jugadores.',
+ 'Today, so far: 1 player':'Hoy, por ahora: 1 jugador',
+ 'Today, so far: {n} players':'Hoy, por ahora: {n} jugadores',
  'Shop':'Tienda','Ten threads to unpick':'Diez hilos para deshacer','Five more weaves':'Cinco tejidos más','Quilt threads':'Hilos para la colcha',
  'Four palettes for your quilt, tried on and bought on the Quilt.':'Cuatro paletas para tu colcha, que se prueban y se compran en la Colcha.',
  '{n} in your pack. Two per cloth at most.':'{n} en tu paquete. Como mucho dos por tela.',
@@ -941,6 +1178,7 @@ es:{
  'Any month of cloths ends all advertising, for good.':'Cualquier mes de telas acaba con todos los anuncios, para siempre.',
  'One climb a day, the same for every player in the world. Each cloth solved opens the next level; a cloth lost ends the climb.':'Una escalada al día, la misma para todo el mundo. Cada tela resuelta abre el nivel siguiente; una tela perdida termina la escalada.',
  'One climb a day, the same for everyone.':'Una escalada al día, la misma para todos.',
+ /* the rungs' names, 7 November 2026 */ 'Cotton':'Algodón', 'Linen':'Lino', 'Wool':'Lana', 'Velvet':'Terciopelo', 'Silk':'Seda', 'Satin':'Satén', 'Silver':'Plata', 'Gold':'Oro', 'Diamond':'Diamante',
  'Super easy':'Muy fácil','Not so easy':'No tan fácil','Tricky':'Enrevesado','Very hard':'Muy difícil','Expert':'Experto','Master':'Maestro',
  'Level {n} · {name}':'Nivel {n} · {name}','Level {n}':'Nivel {n}','Next level':'Siguiente nivel',
  'Level {n} woven.':'Nivel {n} tejido.','Level {n} reached.':'Has llegado al nivel {n}.','Next: {r}.':'Siguiente: {r}.',
@@ -1020,11 +1258,13 @@ es:{
  'Streak {n} day  ·  played {p}  ·  solved {s}':'Racha {n} día  ·  jugadas {p}  ·  resueltas {s}','Streak {n} days  ·  played {p}  ·  solved {s}':'Racha {n} días  ·  jugadas {p}  ·  resueltas {s}',
  'One earlier cloth is free. Play it now.':'Una tela anterior es gratis. Juégala ahora.','{n} earlier cloths are free. Play one now.':'{n} telas anteriores son gratis. Juega una ahora.',
  'Place all {n} operations first.':'Pon primero las {n} operaciones.',
+ 'You already tried this order. Swap two operations.':'Ya has probado este orden. Intercambia dos operaciones.',
+ 'Here is another cloth. Change the order on every try.':'Aquí tienes otra tela. Cambia el orden en cada intento.',
  'The reminder is one notification a day and nothing else. Turning it off stops it at once.':'El recordatorio es una notificación al día y nada más. Si lo desactivas, se detiene al momento.',
  'The reminder needs the Android app; in a browser the choice is remembered and nothing is scheduled.':'El recordatorio necesita la app de Android; en un navegador se recuerda la elección y no se programa nada.',
  'Notifications are switched off for Loom in the phone’s settings, so no reminder can be sent.':'Las notificaciones de Loom están desactivadas en los ajustes del teléfono, así que no se puede enviar ningún recordatorio.',
- 'Unpick a thread · one free':'Deshaz un hilo · uno gratis',
- '{n} left in your pack.':'Te quedan {n} hilos en el paquete.','Your pack':'Tu paquete','Threads to unpick, one per cloth at most.':'Hilos para deshacer, como mucho uno por tela.','Unpick a thread · {n} in your pack':'Deshaz un hilo · {n} en tu paquete','Unpick a thread · watch an advert':'Deshaz un hilo · ver un anuncio',
+ 'Help · unpick a thread · one free':'Ayuda · deshaz un hilo · uno gratis',
+ '{n} left in your pack.':'Te quedan {n} hilos en el paquete.','Your pack':'Tu paquete','Threads to unpick, one per cloth at most.':'Hilos para deshacer, como mucho uno por tela.','Help · unpick a thread · {n} in your pack':'Ayuda · deshaz un hilo · {n} en tu paquete','Help · unpick a thread · watch an advert':'Ayuda · deshaz un hilo · ver un anuncio',
  'Loom · {m} · {n} cloth woven, {w} solved':'Loom · {m} · {n} tela tejida, {w} resuelta','Loom · {m} · {n} cloths woven, {w} solved':'Loom · {m} · {n} telas tejidas, {w} resueltas',
  '{m} {y}':'{m} de {y}','M,T,W,T,F,S,S':'L,M,X,J,V,S,D',
  'Loom Full':'Loom Full',
@@ -1068,7 +1308,17 @@ es:{
  'Five more weaves · {p}':'Cinco tejidos más · {p}',
  'Watch an advert for one more':'Mira un anuncio para tener uno más',
  'Two extra weaves per cloth at most. The shared result shows them.':'Como mucho dos tejidos adicionales por tela. El resultado compartido los muestra.',
- 'Unpick a thread · ten for {p}':'Deshaz un hilo · diez por {p}',
+ 'Help · unpick a thread · ten for {p}':'Ayuda · deshaz un hilo · diez por {p}',
+ 'Stuck? This pins one operation in its right place.':'¿Te has atascado? Esto fija una operación en su sitio correcto.',
+ 'Close':'Cerrar','Stuck?':'¿Te has atascado?','One attempt left. A thread unpicked pins one operation in its right place.':'Te queda un intento. Un hilo deshecho fija una operación en su sitio correcto.',
+ '{n} attempts left. A thread unpicked pins one operation in its right place.':'Quedan {n} intentos. Un hilo deshecho fija una operación en su sitio correcto.',
+ 'Watch an advert for a thread':'Mira un anuncio por un hilo','Unpick one, free':'Deshaz uno, gratis','Use one of your {n} threads':'Usa uno de tus {n} hilos',
+ 'Ten threads · {p}':'Diez hilos · {p}','Try Live weave on this level, free':'Prueba el Tejido en directo en este nivel, gratis',
+ 'Keep Live weave?':'¿Te quedas el Tejido en directo?','The cloth moved with every tile you placed. Keep it for every level, every day.':'La tela se ha movido con cada ficha que has puesto. Quédatelo para todos los niveles, cada día.',
+ 'Keep it · {p}':'Quédatelo · {p}','Climb further tomorrow · Live weave {p}':'Sube más alto mañana · Tejido en directo {p}',
+ 'Tired of adverts?':'¿Demasiados anuncios?','Remove them · {p}':'Quítalos · {p}','Remove adverts':'Quitar los anuncios',
+ 'No advertising of any kind, for good. Once, not a subscription.':'Ningún anuncio de ningún tipo, para siempre. Una sola vez, no es una suscripción.',
+ 'No advertising: you removed it.':'Sin anuncios: los has quitado.','Remove adverts, or any month of cloths, and advertising ends for good.':'Quita los anuncios, o compra cualquier mes de telas, y los anuncios se acaban para siempre.',
  'yours':'tuyo',
  'buy':'comprar',
  'Earlier':'Anteriores',
@@ -1228,7 +1478,7 @@ const A = (function(){
     const put=(k,f)=>{ try{ const v=f(); if(v!==undefined&&v!==null&&v!==''&&(typeof v!=='number'||isFinite(v))) u[k]={value:v}; }catch(e){} };
     if(b){ u.app_version={value:b.name}; u.version_code={value:b.code}; }
     put('first_day',()=>isFinite(PROF.firstDay)?PROF.firstDay:null);
-    put('payer',()=>PAID()?1:0);
+    put('payer',()=>ADFREE()?1:0);
     put('days_played',()=>stats().played);
     put('streak',()=>PROF.streak||0);
     put('best_streak',()=>PROF.best||0);
@@ -1341,7 +1591,11 @@ const A = (function(){
   }
   /* Where this install came from: Play's install referrer, which the shell
      reads once in the background ("none" when there is no answer to have).
-     Asked on each send until it has answered; sent once. */
+     Asked on each send until it has answered; sent once. A Google Ads click
+     leaves a click id (gclid, gbraid or wbraid) and usually no utm_source, so
+     such an install is named google-ads / cpc; the id itself is never kept.
+     ref_keys lists the referrer's field names, never their values, so the
+     dashboard can see what Play actually passes. */
   function srcCheck(){
     try{
       const s=vstate(); if(s.utm||s.srcNone) return;
@@ -1353,10 +1607,13 @@ const A = (function(){
         let k=kv.slice(0,i), v=kv.slice(i+1);
         try{ k=decodeURIComponent(k); v=decodeURIComponent(v.replace(/\+/g,' ')); }catch(e){}
         f[k]=v; });
-      const utm={source:String(f.utm_source||'unknown').slice(0,64),medium:String(f.utm_medium||'').slice(0,64),
+      const ad=!!(f.gclid||f.gbraid||f.wbraid);
+      const utm={source:String(ad?'google-ads':(f.utm_source||'unknown')).slice(0,64),
+                 medium:String(ad?'cpc':(f.utm_medium||'')).slice(0,64),
                  campaign:String(f.utm_campaign||'').slice(0,100)};
       s.utm=utm; vsave(s);
-      ev('install_source',{utm_source:utm.source,utm_medium:utm.medium,utm_campaign:utm.campaign});
+      ev('install_source',{utm_source:utm.source,utm_medium:utm.medium,utm_campaign:utm.campaign,
+                           ref_keys:Object.keys(f).sort().join(',').slice(0,100)});
     }catch(e){}
   }
   /* One batch at a time, oldest first. 200, 400 and 429 are final answers and
@@ -1515,6 +1772,13 @@ const A = (function(){
         .catch(()=>{ busy=false; writeQ([item].concat(readQ())); });
     }catch(e){ busy=false; }
   }
+  /* The shell's Firebase Analytics, which sends GA4 the first_open Google Ads
+     counts installs by (ANALYTICS.md §1), obeys the same switch. It is told at
+     every start, so a player who turned analytics off before it existed is
+     kept off, and on every change. */
+  function fbSay(){ try{ const N=window.VoltixNative;
+    if(N&&N.setAnalytics) N.setAnalytics(get(OFFKEY)!=='off'&&navigator.globalPrivacyControl!==true); }catch(e){} }
+  fbSay();
   let hiddenAt=0;
   try{
     setTimeout(()=>{ drain(false); vaDrain();   /* anything left over from a previous, offline session */
@@ -1533,7 +1797,7 @@ const A = (function(){
            configured:()=>!!(ANALYTICS_MEASUREMENT_ID&&ANALYTICS_API_SECRET),
            queued:()=>readQ().length,
            vaLive:vaLive, vaDrain:vaDrain, vaQueued:()=>vreadQ().length, appOpen:appOpen, receipt:receipt,
-           off:v=>{ set(OFFKEY,v?'off':'on'); if(v) forget(); }, isOff:()=>get(OFFKEY)==='off' };
+           off:v=>{ set(OFFKEY,v?'off':'on'); if(v) forget(); fbSay(); }, isOff:()=>get(OFFKEY)==='off' };
 })();
 
 /* Events the design document names that this build has no trigger for.
@@ -1650,7 +1914,8 @@ function showLog(){
        they all look identical: no line. This says which. */
     '<br>day counters: '+rankLine()+
     '<br>profile: first day '+PROF.firstDay+', today '+dayNum+', stored '+(function(){ try{ const raw=localStorage.getItem(PKEY); const o=raw?JSON.parse(raw):null; return o?o.firstDay:'nothing'; }catch(e){ return 'unreadable'; } })()+
-    (isFinite(PROF.firstDay)&&dayNum-PROF.firstDay<INTERSTITIAL_FIRST_DAYS?'<br><br>no advertising on a first day, no interstitial in the first two &nbsp; <a href="#" id="logFirst">pretend these are not my first days</a>':'')+
+    '<br>interstitials today: '+interToday().n+' of '+interCap()+
+    (isFinite(PROF.firstDay)&&dayNum===PROF.firstDay?'<br><br>a first day: two interstitials at most &nbsp; <a href="#" id="logFirst">pretend this is not my first day</a>':'')+
     /* Every offer and advertisement is spent once a day - the extra weaves, the
        sheet, the interstitial, the hints - so a tester gets one go at each per
        day. This hands today back with all of them fresh. */
@@ -1667,7 +1932,7 @@ function showLog(){
     '<br><br><a href="#" id="logCopy">copy</a> &nbsp; <a href="#" id="logReset">reset for next tester</a>'+
     ' &nbsp; <a href="#" id="logClose">close</a>';
   if(document.getElementById('logFirst')) document.getElementById('logFirst').onclick=e=>{
-    e.preventDefault(); PROF.firstDay=dayNum-INTERSTITIAL_FIRST_DAYS; STORE.setJSON(PKEY,PROF); render(); showLog(); };
+    e.preventDefault(); PROF.firstDay=dayNum-1; STORE.setJSON(PKEY,PROF); render(); showLog(); };
   if(document.getElementById('logUnbuy')) document.getElementById('logUnbuy').onclick=e=>{
     e.preventDefault();
     try{ window.VoltixNative.remove('loom.preview.owned'); }catch(err){}
@@ -1675,7 +1940,8 @@ function showLog(){
   if(document.getElementById('logFresh')) document.getElementById('logFresh').onclick=e=>{
     e.preventDefault();
     if(!isFinite(PROF.firstDay)||dayNum-PROF.firstDay<INTERSTITIAL_FIRST_DAYS) PROF.firstDay=dayNum-INTERSTITIAL_FIRST_DAYS;
-    delete PROF.interDay;                       // the rest lives in today's record, deleted below
+    delete PROF.interDay; delete PROF.inter; delete PROF.stuckDay; delete PROF.liveTrial; delete PROF.hintTip;
+    lastRewardedAt=0;                           // the rest lives in today's record, deleted below
     STORE.setJSON(PKEY,PROF); STORE.del(DKEY(dayNum));
     openDay(dayNum); showLog(); };
   if(document.getElementById('logAgain')) document.getElementById('logAgain').onclick=e=>{
@@ -1802,7 +2068,7 @@ const SET=(function(){
   /* Marks on by default (D-049): in a game that is pure colour matching on
      teal, salmon and yellow, a colour-blind player who has to find a settings
      screen first has already quit. */
-  const def={v:1,sound:true,motion:sys,marks:true,remind:false,remindAt:'20:00',thread:'',live:true};
+  const def={v:1,sound:true,motion:sys,marks:true,remind:false,remindAt:'20:00',thread:'',live:true,vsHere:false};
   let s=Object.assign({},def,STORE.getJSON(K,{}));
   function apply(){
     document.body.classList.toggle('marks',!!s.marks);
@@ -1852,6 +2118,7 @@ const SFX=(function(){
     pin:   ()=>tone(880,1180,0.08,'sine',0.08),      // a thread landing where it belongs
     win:   ()=>{[392,494,587,784].forEach((f,i)=>tone(f,f,0.75,'sine',0.085,i*0.075));},
     end:   ()=>{tone(300,190,0.42,'sine',0.09);},
+    pop:   ()=>{tone(1500,160,0.08,'square',0.05);tone(1300,150,0.08,'square',0.05,0.06);},  // two poppers (§8.6a)
     turn:  ()=>{tone(330,330,0.06,'triangle',0.08);tone(415,415,0.06,'triangle',0.08,0.06);tone(523,523,0.09,'triangle',0.08,0.12);}
   };
   /* The families that share a motion share a sound. */
@@ -2136,7 +2403,7 @@ function draw(day,dl,own,avoid){
   return {ops,start,target:run(ops,start),secret:ops,dials:dl};
 }
 /* ---------- the ladder: the President, 3 November 2026 (§19.2) --------------
-   Every day is a climb: rung 1 is Super easy, a rung solved moves the player
+   Every day is a climb: rung 1 is Cotton, a rung solved moves the player
    up, a rung lost ends the climb, and the day keeps the highest rung solved.
    "Every day has the same pattern, not harder or easier by design": the
    ladder is the same on every day, so the weekday table above does not reach
@@ -2177,8 +2444,15 @@ function rungsBefore(level){
   return b;
 }
 const rungMemo=new Map();
-function buildRung(day,level){
-  const key=day+':'+level;
+/* `again` is a first day's fresh cloth on rung 1 (§19.2, 6 November 2026): the
+   same dials, a different draw, and never a pattern the day has already shown -
+   neither another rung's nor an earlier fresh cloth's. Again 0 is the day's own
+   cloth, drawn exactly as before. */
+const AGAIN_OWN=15485863;
+function buildRung(day,level,again){
+  again=again>0?Math.floor(again):0;
+  if(level===2) again=0;                          // rung 2 is Easy's cloth, and has no other
+  const key=day+':'+level+(again?':'+again:'');
   if(rungMemo.has(key)) return rungMemo.get(key);
   const dl=rungDials(level);
   let p;
@@ -2186,7 +2460,8 @@ function buildRung(day,level){
   else {
     const avoid=new Set();
     rungsBefore(level).forEach(k=>{ if(rungDials(k).N===dl.N) avoid.add(buildRung(day,k).target.join('')); });
-    p=draw(day,dl,rungOwn(level),avoid);
+    for(let a=0;a<again;a++) avoid.add(buildRung(day,level,a).target.join(''));
+    p=draw(day,dl,rungOwn(level)+again*AGAIN_OWN,avoid);
   }
   rungMemo.set(key,p);
   return p;
@@ -2195,8 +2470,13 @@ function buildRung(day,level){
    already woven on a loom keeps its line and is opened on that loom as it
    was. The website plays rung 4 alone, with no climb. */
 const LADDER_FROM=306;                   // 3 November 2026, the day the President decided it
-const RUNG_NAME={1:'Super easy',2:'Easy',3:'Not so easy',4:'Normal',5:'Tricky',6:'Hard',7:'Very hard',8:'Expert',9:'Master'};
-const rungTitle=lv=>RUNG_NAME[lv]?T('Level {n} · {name}',{n:lv,name:T(RUNG_NAME[lv])}):T('Level {n}',{n:lv});
+/* The President, 7 November 2026: a player who loses "Super easy" or "Easy" is
+   told by the name that they failed something easy. So the rungs are named by
+   what they are worth, not by how hard they are: a ladder of cloths, each finer
+   than the last, that says how far the player got and never how they did. From
+   rung 10 every rung is a Diamond (§19.2's plateau). */
+const RUNG_NAME={1:'Cotton',2:'Linen',3:'Wool',4:'Velvet',5:'Silk',6:'Satin',7:'Silver',8:'Gold',9:'Diamond'};
+const rungTitle=lv=>T('Level {n} · {name}',{n:lv,name:T(RUNG_NAME[Math.min(lv,9)]||RUNG_NAME[1])});
 /* ---------- the save, versioned (§18) --------------------------------------
    Three kinds of thing are kept apart, because they have different lifetimes:
    the profile, which is the streak and outlives every puzzle; one small
@@ -2298,7 +2578,7 @@ const QUILT=(function(){
    until the app has billing, nothing is for sale and no offer renders.
    Entitlements are also cached in the profile, so a store that is slow to
    answer never locks the archive for a second. */
-const SKU={FULL:'loom_full',HINTS:'loom_hints_10',WEAVES:'loom_weaves_5',MONTH:'loom_month',LIVE:'loom_live',
+const SKU={FULL:'loom_full',HINTS:'loom_hints_10',WEAVES:'loom_weaves_5',MONTH:'loom_month',LIVE:'loom_live',NOADS:'loom_no_ads',
   THREADS:{indigo:'loom_thread_indigo',madder:'loom_thread_madder',wool:'loom_thread_wool',contrast:'loom_thread_contrast'}};
 const SHOP=(function(){
   /* The store may sit on its own object (the debug preview does) or on the main bridge. */
@@ -2360,6 +2640,9 @@ const SHOP=(function(){
     }else if(state==='none'){ offerNote(T('Nothing to restore on this account.')); }
     else{ LOG.mark('buyfail','purchase_failed',{item_id:sku,state:String(state)}); offerNote(T('Nothing was bought. You are where you were.')); }
     moreSheetBought(sku,state,p?p.placement:'');
+    stuckSheetBought(sku,state,p?p.placement:'');
+    liveSheetBought(sku,state,p?p.placement:'');
+    if(ADFREE()) hideNoAdsToast(false);
     afterPurchase();
   };
   return {has,owned,price,buy,restore};
@@ -2410,6 +2693,9 @@ function spendMonthCredit(){
 }
 /* Bought anything that removes advertising: a month, or Loom Full. */
 const PAID=()=>FULL()||openMonths().length>0;
+/* Remove adverts (the President, 4 November 2026): one purchase, kept forever,
+   that ends advertising and nothing else. Any month of cloths still ends it too. */
+const ADFREE=()=>PAID()||SHOP.owned(SKU.NOADS);
 
 /* Old day records are not worth keeping forever on a phone; the quilt keeps
    the one line per day that outlives them. */
@@ -2453,7 +2739,16 @@ function loomOpen(d,l){
    extra weaves, Live weave). A line with no `lv` was woven on a loom before
    the ladder, and that day stays a loom day. */
 const ladderOn=()=>!WEB&&dayNum>=LADDER_FROM;
-const legacyDay=d=>{ const r=QUILT.get(d); return !!r&&r.lv===undefined; };
+/* The first day this phone ran the ladder. Only a day woven on a loom before it
+   stays a loom day: the day the update arrives is a climb even when its loom
+   was played that morning on the old version, or a player who updates after
+   playing would see nothing new until tomorrow (found on the President's S21,
+   3 November 2026, the day 1.1.0 reached it). */
+function ladderFrom(){
+  if(!isFinite(PROF.ladderFrom)){ PROF.ladderFrom=dayNum; STORE.setJSON(PKEY,PROF); }
+  return PROF.ladderFrom;
+}
+const legacyDay=d=>{ const r=QUILT.get(d); return !!r&&r.lv===undefined&&d<ladderFrom(); };
 const ladderDay=d=>ladderOn()&&d>=0&&!legacyDay(d);
 const climbLine=d=>{ const r=QUILT.get(d); return r&&r.lv!==undefined?r:null; };
 function climbRung(d){ const r=climbLine(d); return r?(r.r||1):1; }
@@ -2467,7 +2762,9 @@ const TP=o=>Object.assign(o,LEVEL?{level:LEVEL}:{loom:LOOM});
 function sewClimb(cloth){
   const old=climbLine(viewDay)||{}, rs=(old.rs||[]).slice(0,LEVEL-1);
   while(rs.length<LEVEL-1) rs.push([1,0,0,0,0,0]);     // a rung below, whose record is gone: it was solved
-  rs.push([st.won?1:st.done?-1:0,st.attempts.length,lockedSlots().length,st.secs||0,st.extra||0,st.live?1:0]);
+  const row=[st.won?1:st.done?-1:0,st.attempts.length,lockedSlots().length,st.secs||0,st.extra||0,st.live?1:0];
+  if(st.again) row.push(st.again);                     // a first day's fresh cloths on rung 1
+  rs.push(row);
   let lv=0; while(lv<rs.length&&rs[lv][0]===1) lv++;
   const sum=k=>rs.reduce((a,x)=>a+(+x[k]||0),0);
   const line={lv:lv,r:st.won?LEVEL+1:LEVEL,c:(st.won||!lv||!old.c)?cloth.join(''):old.c,n:st.attempts.length,
@@ -2477,9 +2774,10 @@ function sewClimb(cloth){
   return line;
 }
 /* One letter per rung played, for the share: solved first time and clean,
-   solved otherwise, or where the climb ended. */
+   solved otherwise, or where the climb ended. A rung 1 solved on a fresh cloth
+   after a lost one is not clean, however few tries the fresh one took. */
 function climbCodes(d){ const r=climbLine(d); if(!r) return [];
-  return (r.rs||[]).filter(x=>x[0]!==0).map(x=>x[0]<0?'lost':(x[1]===1&&!x[2]&&!x[4]?'good':'hint')); }
+  return (r.rs||[]).filter(x=>x[0]!==0).map(x=>x[0]<0?'lost':(x[1]===1&&!x[2]&&!x[4]&&!x[6]?'good':'hint')); }
 /* A cloth can be played if it is in the free week, if Loom Full is owned, or
    if an advertisement unlocked that one cloth today (§12.4). */
 const adDays=()=>PROF.adDay===dayNum?(PROF.adDays||[]):[];
@@ -2489,9 +2787,12 @@ const inFreeWeek=d=>d<=dayNum&&d>dayNum-FREE;
 function save(s){ STORE.setJSON(dayKey(viewDay,LEVEL||LOOM),s); }
 function openDay(d,l){
   if(weaving) return;                 // the cloth is still moving: no day or loom changes under it
-  viewDay=d; archive=(d!==dayNum);
+  viewDay=d; archive=(d!==dayNum); dayOpenedAt=Date.now();
   CLIMB=ladderDay(d); climbFree=null;
-  if(CLIMB){ LOOM='n'; LEVEL=(typeof l==='number'&&l>=1)?l:climbRung(d); P=buildRung(d,LEVEL); }
+  /* A first day's rung 1 may be on another cloth than the day's own: the
+     record says which (`again`, §19.2 as amended on 6 November 2026). */
+  if(CLIMB){ LOOM='n'; LEVEL=(typeof l==='number'&&l>=1)?l:climbRung(d);
+    const r1=LEVEL===1?dayRec(d,1):null; P=buildRung(d,LEVEL,(r1&&r1.again)||0); }
   else if(WEB&&dayNum>=LADDER_FROM){ LOOM='n'; LEVEL=4; P=buildRung(d,4); }     // the website: rung 4 alone
   else{
     LEVEL=0;
@@ -2520,10 +2821,12 @@ function openDay(d,l){
   $('msg').classList.remove('show');
   $('cheer').hidden=true; $('cheer').classList.remove('out'); $('cheerConf').innerHTML='';
   $('remOffer').hidden=true; $('remNote').hidden=true;   // the end screen is rebuilt for this day
+  if(remOffer==='open') remOffer='done';                 // said once, on the cloth that switched it on
   $('loomNext').hidden=true; closeLoomSheet(false);
   $('moreBtn').hidden=true; $('moreNote').hidden=true;
   clearTimeout(moreSheetTimer); $('moreSheet').hidden=true;
   clearTimeout(monthSheetTimer); $('monthSheet').hidden=true;
+  closeStuckSheet(false); closeLiveSheet(false); hideHintTip(); $('liveEnd').hidden=true;
   clearInterval(replayTimer); replayTimer=null; replay=null; $('replay').classList.remove('show');
   closeOffer(false);
   stopCountdown();
@@ -2582,6 +2885,7 @@ const COACH={
   arm(){
     this.stop();
     if(coachDone()) return;
+    if(handOn()) return;          // §17.4: the hand is the coach on the first cloth
     /* While the demonstration of §17.3 is running it IS the coaching, and two
        voices at once are neither. It restarts this clock when it finishes. */
     if(DEMO.busy()) return;
@@ -2672,6 +2976,15 @@ function paintMove(el,before,op,done,ms){
   try{ requestAnimationFrame(()=>requestAnimationFrame(go)); }catch(e){ go(); }
   setTimeout(()=>{ kids.forEach(c=>{ c.style.transition=''; c.style.transform=''; }); if(done) done(); },dur+60);
 }
+/* Whether the loom holds an order already woven on this cloth, any try back.
+   Weave refuses it without spending a try (6 November 2026): new players were
+   pressing Weave again on an unchanged order, as fast as once a second, and
+   losing the easiest level without trying a second order. */
+function orderTried(){
+  if(!st||!st.attempts||!st.attempts.length) return false;
+  const o=JSON.stringify(fullOrder());
+  return st.attempts.some(a=>JSON.stringify(a.order||[])===o);
+}
 /* Whether the loom still holds exactly the order of the last try. */
 function orderUnchanged(){
   const last=st.attempts[st.attempts.length-1];
@@ -2695,7 +3008,12 @@ function paintWork(){
    from Weave, so the last operation is always the player's own reasoning and
    a rung can still not be bought outright. It spends no try. */
 const LIVE=()=>SHOP.owned(SKU.LIVE);
-function liveOn(){ return CLIMB&&LIVE()&&!!SET.get('live')&&!!st&&!st.done; }
+function liveOn(){ return CLIMB&&!!st&&!st.done&&((LIVE()&&!!SET.get('live'))||liveTrialOn()); }
+/* One rung of Live weave, free, once per player (the President, 4 November
+   2026): offered on the stuck sheet, it runs for the rung it was taken on and
+   no other, and the rung's record says it was woven live, as a bought one does. */
+function liveTrialOn(){ const t=PROF.liveTrial; return !!t&&t.d===viewDay&&t.l===LEVEL&&!!t.a===archive; }
+function liveTrialLeft(){ return CLIMB&&!LIVE()&&!PROF.liveTrial&&SHOP.has()&&!!SHOP.price(SKU.LIVE); }
 /* The cloth the run of filled slots from the first weaves, stopped short of
    the last slot; null when the first slot is empty. */
 function liveCloth(){
@@ -2896,6 +3214,7 @@ function seeButton(idx){
     endPreview();
     if(again) return;
     previewSticky=true; startPreview(idx); b.classList.add('on'); previewMark=b;
+    if(handOn()&&!st.saw){ st.saw=1; save(st); HAND.paint(); }   // §17.4: the hand moves on to the tile
   };
   return b;
 }
@@ -2988,8 +3307,12 @@ function endPreview(){
    It gives nothing away. It runs on the example cloth of §17.1 and never on the
    day's; the pair is the first one that does not commute, never the solution;
    and it touches no state - `st.order` is not written, nothing is saved, no
-   attempt is spent. The first touch anywhere stops it for good, and the coach's
-   clock does not start until it has finished, so the two never speak at once. */
+   attempt is spent. The first real act stops it for good - a tile, a slot,
+   Weave, a button, a panel - and the coach's clock does not start until it has
+   finished, so the two never speak at once. A touch on empty space or on the
+   cloth is not an act and leaves it running (6 November 2026: 25 of the first
+   26 players from the advertising campaign ended it within eight seconds, most
+   without placing anything, and so never saw a tile fly). */
 /* How long each part of it lasts. The first version of this ran at the speed a
    person who already knows the game would want; the President watched a
    stranger meet it and said it was too fast, which is the only measurement
@@ -2997,7 +3320,9 @@ function endPreview(){
    be for someone who knows what they are looking at. */
 const DEMO_T={
   first:1500,      // after the day opens, before the first demonstration
-  again:20000,     // between demonstrations, while nothing has been touched
+  again:12000,     // between demonstrations, while nothing has been touched: the
+                   // coach points at 4 s and speaks at 10 s, then it shows again
+                   // (20 s until 6 November 2026, long enough for a stranger to leave)
   loops:3,         // and no more than this, so a phone left on a table stops
   fade:350,        // the cloth going out and coming back
   settle:1000,     // the example cloth, arrived and read
@@ -3082,7 +3407,43 @@ function demoClearFliers(){
   try{ document.querySelectorAll('.flier').forEach(e=>{ if(e.parentNode) e.parentNode.removeChild(e); }); }catch(e){}
   try{ document.querySelectorAll('.tile.flying').forEach(e=>e.classList.remove('flying')); }catch(e){}
 }
-function demoInterrupt(){ DEMO.stop(false); }
+/* What a touch landed on, in the few words the first-day analytics use. The
+   order matters: a button inside a panel is the panel, and a slot inside the
+   stage is a slot, not the cloth. Anything the page does not name is empty. */
+function touchKind(t){
+  try{
+    const on=s=>!!(t&&t.closest&&t.closest(s));
+    if(on('.tile')) return 'tile';
+    if(on('.slot')) return 'slot';
+    if(on('#weave')) return 'weave';
+    if(on('#hintBtn,#hintTip')) return 'hint';
+    if(on('#goalAsk')) return 'help';
+    if(on('.panel,.sheet,[id$="Panel"],[id$="Sheet"]')) return 'panel';
+    if(on('button,a,input,select,label,[role="button"]')) return 'button';
+    if(on('#workCloth,#targetCloth,#stage')) return 'cloth';
+  }catch(e){}
+  return 'empty';
+}
+/* §17.3: the demonstration is for a player who is not doing anything. A tap on
+   empty space or on the cloth it is performing on is a player looking, not
+   acting, so it carries on; everything else ends it. */
+function demoInterrupt(e){
+  const k=touchKind(e&&e.target);
+  if(k==='empty'||k==='cloth') return;
+  DEMO.stop(false);
+}
+/* Where a new player's first touch lands, once per install and only on the
+   first day: the measurement for the demonstration above (first_touch). */
+var dayOpenedAt=Date.now();   // var, not let: openDay() sets it and may run before this line
+function firstTouch(e){
+  try{
+    if(PROF.ft||archive||!firstLesson()) return;
+    PROF.ft=1; STORE.setJSON(PKEY,PROF);
+    LOG.mark('firsttouch','first_touch',{day_number:viewDay,target:touchKind(e&&e.target),
+      after_s:Math.max(0,Math.round((Date.now()-dayOpenedAt)/1000)),demo:DEMO.on?1:0});
+  }catch(_){}
+}
+try{ document.addEventListener('pointerdown',firstTouch,true); }catch(e){}
 const DEMO={
   on:false,first:false,over:false,orders:null,shown:[],loop:0,ts:[],
   /* Every timer this thing owns, in one place, so that a touch anywhere can
@@ -3095,6 +3456,7 @@ const DEMO={
   eligible(){
     if(this.over||SET.get('motion')) return false;
     if(archive||st.done||st.attempts.length||placedCount()) return false;
+    if(handOn()) return false;    // §17.4: the first cloth is shown by the hand instead
     return firstLesson();
   },
   /* Held while a demonstration is running, and while the very first one is on
@@ -3196,6 +3558,169 @@ function demoFade(el,g,then){
   });
 }
 
+/* ---------- §17.4: the first cloth is guided by a hand ----------------------
+   The President, 7 November 2026: show a new player a hand that says where to
+   tap, so that almost every player solves the first cloth. In the first week
+   of the advertising test 42 installs had a first day and 5 solved a rung
+   (Voltix Analytics, 1 to 7 November 2026); the demonstration of §17.3 and the
+   coach had not been enough.
+
+   On the install's first day, on rung 1 of today's climb, a hand points at the
+   one thing to touch next, and it points at the answer on purpose: the tile
+   that belongs in the next slot; a slot holding the wrong tile, to take it
+   back; Weave once the order is right. The first cloth teaches the gesture -
+   tray, slots, Weave - and the puzzle begins on rung 2.
+
+   It stays on every rung-1 cloth of that first day until one is solved while
+   it is showing; a lost cloth is replaced by a fresh one (§19.2) and the hand
+   carries on. The player still taps every tile, and the record says how the
+   rung was solved (`guided`). A guided solve is not "taught": the coach, the
+   first-day lines and the demonstration stay for rung 2, the first cloth the
+   player solves by their own reasoning. Under reduced motion the hand is
+   shown still. While it is up, the demonstration and the coach stand aside:
+   one voice at a time, as §17.3 already has it. */
+function taught(){ try{ return !!localStorage.getItem('loom.taught'); }catch(e){ return false; } }
+function handOn(){
+  try{
+    return CLIMB&&LEVEL===1&&!WEB&&!archive&&!replay&&!weaving&&viewDay===dayNum&&PROF.firstDay===dayNum&&
+           !PROF.guided&&!taught()&&!!st&&!st.done&&!!secretIdx;
+  }catch(e){ return false; }
+}
+/* What to touch next. The first slot that is not yet right decides it: empty,
+   the tile that belongs there (or, if that tile sits in a later slot, that
+   slot, to take it back); holding the wrong tile, that slot; none, Weave. */
+function handNext(){
+  /* First, before any tile: the mark that shows what a move does (§17.4,
+     the President, 7 November 2026). Once per cloth, and not on the fresh
+     cloth after a lost one; a tile placed instead moves the hand on. */
+  if(!st.saw&&!st.again&&!st.attempts.length&&placedCount()===0) return {k:'see',i:secretIdx[0]};
+  const full=fullOrder();
+  for(let i=0;i<NOPS;i++){
+    if(full[i]===secretIdx[i]) continue;
+    if(full[i]===null||full[i]===undefined){
+      const at=full.indexOf(secretIdx[i]);
+      return at>=0?{k:'slot',i:at}:{k:'tile',i:secretIdx[i]};
+    }
+    return {k:'slot',i:i};
+  }
+  return {k:'weave'};
+}
+const HAND={
+  at:null,                       // what it points at now, or null: read by the tests
+  target(n){
+    if(n.k==='see'){ const t=$('tray').children[n.i], c=t&&t.children, m=c&&c[c.length-1];
+                     return m&&m.classList&&m.classList.contains('see')?m:t; }
+    return n.k==='tile'?$('tray').children[n.i]:n.k==='slot'?$('slots').children[n.i]:$('weave'); },
+  paint(){
+    const el=$('hand');
+    if(this.lit&&this.lit.classList) this.lit.classList.remove('handto');
+    this.lit=null;
+    if(!handOn()){ this.at=null; if(!tourOn()) el.hidden=true; return; }
+    const n=handNext(); this.at=n;
+    /* Once per cloth, ever: a reopened game does not count it again. */
+    if(!st.hand){ st.hand=1; save(st);
+      LOG.mark('hand','hand_shown',{day_number:viewDay,level:LEVEL,again:st.again||0}); }
+    $('hint').textContent=T(n.k==='see'?'Tap ▶ to watch what this move does to your cloth.'
+                           :n.k==='tile'?'Tap the operation the hand points to.'
+                           :n.k==='slot'?'Tap this slot to take that operation back.':'Now press Weave.');
+    const t=this.target(n);
+    if(t&&t.classList){ t.classList.add('handto'); this.lit=t; }
+    this.place(t);
+  },
+  /* Laid over the page, not inside the target, so the hand never changes a
+     layout that fit() has measured. Without a layout to read it stays hidden. */
+  place(t){
+    const el=$('hand');
+    let r=null; try{ r=t&&t.getBoundingClientRect?t.getBoundingClientRect():null; }catch(e){}
+    if(!r||!r.width){ el.hidden=true; return; }
+    const sx=window.scrollX||window.pageXOffset||0, sy=window.scrollY||window.pageYOffset||0;
+    el.style.left=Math.round(sx+r.left+r.width*0.62)+'px';
+    el.style.top=Math.round(sy+r.top+r.height*0.74)+'px';
+    el.hidden=false;
+  }
+};
+try{ window.addEventListener('resize',()=>{ if(HAND.at) HAND.paint(); if(tourOn()) TOUR.paint(); }); }catch(e){}
+
+/* ---------- §17.5: no screenshot of an unsolved cloth (7 November 2026) ------
+   A cloth photographed into an AI chat is a cloth solved by someone else. While
+   a cloth is in play the Android window is marked secure: no screenshot, no
+   screen recording, no assistant reading the screen, a blank thumbnail in the
+   recent apps. The moment the cloth is over the window opens again, so the
+   result, the statistics and the quilt can be screenshotted and shared as
+   before. A lost cloth that can still have an extra weave is not over: a
+   screenshot of it, solved elsewhere, would be woven with the extra weave
+   (the President's own screenshot, 7 November 2026, showed the gap). The
+   browser copy has no such switch and does nothing. Asked only when the
+   answer changes. */
+const GUARD={ on:null,
+  want(){ try{ return !WEB&&!!st&&(!st.done||moreDue()); }catch(e){ return false; } },
+  apply(){ const w=this.want(); if(w===this.on) return;
+    try{ const N=window.VoltixNative; if(N&&typeof N.secure==='function'){ N.secure(w); this.on=w; } }catch(e){} } };
+
+/* ---------- §17.6: the buttons along the top, once (7 November 2026) ----------
+   The President: the first day's hand shows every button on top, with a line
+   on what it is for. It comes once, on the install's first day, the moment
+   rung 1 is solved and the party is over - after the first success, never
+   before the first move, where §17.2 found that every extra word cost
+   players. The hand points at each button in turn and a card under it says
+   what it opens; a tap anywhere goes on, Skip ends it. A button that is not
+   on the screen (the shop, with no store) is left out. It never opens a
+   panel: it says where things are, and the player goes there when they like. */
+const TOUR_DELAY_MS=2200;   // PARTY_MS (1900, §8.6a) and a breath
+const TOUR_STEPS=[
+  ['quiltBtn','Quilt: every cloth you weave is sewn into this month’s quilt, solved or not.'],
+  ['statsBtn','Your record: your streak, your best levels and every day you have played.'],
+  ['archBtn','Archive: missed a day? The last seven cloths are free to play.'],
+  ['shopBtn','Shop: live weave, extra weaves, threads to unpick and quilt colours.'],
+  ['setBtn','Settings: how to play, sound, the daily reminder and more.']];
+function sheetOpen(){ try{ return Array.prototype.some.call(document.querySelectorAll('.sheet'),x=>!x.hidden); }catch(e){ return false; } }
+function tourOn(){ try{ return TOUR.on; }catch(e){ return false; } }
+const TOUR={ on:false, i:0, steps:[], lit:null,
+  due(){ try{ return CLIMB&&!WEB&&!archive&&viewDay===dayNum&&PROF.firstDay===dayNum&&!PROF.toured&&
+                     !!st&&st.done&&st.won&&LEVEL===1&&!sheetOpen(); }catch(e){ return false; } },
+  start(){
+    if(this.on||!this.due()) return false;
+    this.steps=TOUR_STEPS.filter(x=>{ const b=$(x[0]); return !!b&&!b.hidden; });
+    if(!this.steps.length) return false;
+    this.on=true; this.i=0; PROF.toured=1; STORE.setJSON(PKEY,PROF);   // once, even if the app is closed halfway
+    try{ window.scrollTo(0,0); }catch(e){}
+    $('tour').hidden=false;
+    LOG.mark('tour','tour_shown',{day_number:viewDay,steps:this.steps.length});
+    this.paint(); return true;
+  },
+  paint(){
+    if(!this.on) return;
+    if(this.lit&&this.lit.classList) this.lit.classList.remove('handto');
+    const x=this.steps[this.i], b=$(x[0]), last=this.i===this.steps.length-1;
+    if(b&&b.classList){ b.classList.add('handto'); this.lit=b; }
+    $('tourN').textContent=T('{i} of {n}',{i:this.i+1,n:this.steps.length});
+    $('tourText').textContent=T(x[1]);
+    $('tourNext').textContent=T(last?'Got it':'Next');
+    HAND.place(b);
+    /* The card sits under the hand, inside the screen. */
+    let r=null; try{ r=b&&b.getBoundingClientRect?b.getBoundingClientRect():null; }catch(e){}
+    const tip=$('tourTip');
+    if(r&&r.width){
+      const W=Math.min(300,(window.innerWidth||360)-24);
+      const left=Math.max(12,Math.min(r.left+r.width/2-W/2,(window.innerWidth||360)-W-12));
+      tip.style.left=Math.round(left)+'px'; tip.style.top=Math.round(r.bottom+64)+'px';
+    }
+  },
+  next(){ if(!this.on) return; SFX.play('tap');
+    if(this.i>=this.steps.length-1) this.end(false); else{ this.i++; this.paint(); } },
+  end(skipped){
+    if(!this.on) return;
+    this.on=false;
+    if(this.lit&&this.lit.classList) this.lit.classList.remove('handto');
+    this.lit=null;
+    $('tour').hidden=true; $('hand').hidden=true;
+    LOG.mark('tourend','tour_ended',{day_number:viewDay,seen:this.i+1,steps:this.steps.length,skipped:skipped?1:0});
+  }
+};
+$('tour').onclick=()=>TOUR.next();
+$('tourNext').onclick=e=>{ if(e&&e.stopPropagation) e.stopPropagation(); TOUR.next(); };
+$('tourSkip').onclick=e=>{ if(e&&e.stopPropagation) e.stopPropagation(); SFX.play('tap'); TOUR.end(true); };
+
 function render(){
   paintShopBtn();
   $('meta').innerHTML=T('No. {n}',{n:viewDay})+'<br>'+T('streak {s}',{s:PROF.streak||0});
@@ -3224,7 +3749,7 @@ function render(){
                   (locked||known?'<div class="pin">✓</div>':''); }
     /* A pinned slot stays pinned; any other filled slot gives its tile back. */
     d.onclick=()=>{ DEMO.stop(false);
-      if(st.done||locked||showing)return;
+      if(st.done||locked||showing||weaving)return;
       if(justHeld){ justHeld=false; return; }       // the tap that ends a long press
       if(idx!==undefined&&idx!==null){ st.order=st.order.map(x=>x===idx?null:x); tidyOrder(); SFX.play('tap');
         LOG.mark('unplace');save(st);render();} };
@@ -3253,7 +3778,7 @@ function render(){
     d.onclick=()=>{
       DEMO.stop(false);                             // §17.3: a player who acts needs no demonstration
       if(justHeld){ justHeld=false; return; }       // the tap that ends a long press
-      if(st.done||fullOrder().includes(idx)||placedCount()>=freeSlots())return;
+      if(st.done||weaving||fullOrder().includes(idx)||placedCount()>=freeSlots())return;
       const before=liveOn()?liveCloth():null;
       st.order[firstEmptySlot()]=idx;
       SFX.op(op.t);
@@ -3290,7 +3815,7 @@ function render(){
   /* A rung solved: the biggest button on the screen climbs to the next. */
   const climbOn=CLIMB&&st.done&&st.won;
   $('weave').disabled=st.done&&!climbOn;
-  $('weave').classList.toggle('idle',!st.done&&placedCount()!==freeSlots());
+  $('weave').classList.toggle('idle',!st.done&&(placedCount()!==freeSlots()||orderTried()));
   $('weave').classList.toggle('next',climbOn);
   $('weave').textContent=T(climbOn?'Next level':st.done?'Done for today':'Weave');
   paintHint(); paintHintBtn(); paintPackNote();
@@ -3311,6 +3836,8 @@ function render(){
      at the end of every redraw. fit() is cheap and does nothing when the
      layout already fits. */
   fit();
+  HAND.paint();        // §17.4: after fit(), so it points where things finally are
+  GUARD.apply();       // §17.5: secure while the cloth is unsolved
 }
 /* ---------- §9: what a finished day sends out --------------------------------
    The same three facts - the day, the score, the streak - in two shapes: a
@@ -3752,10 +4279,27 @@ const RANK=(function(){
     });
   }
   function hist(day,l){ const h=read(HK,{}); return h[slot(day,l)]||null; }
-  function keep(day,l,data){ const h=read(HK,{}); h[slot(day,l)]=data;
-    /* Only the day on the screen can use one of these, so two is generous. */
+  function keep(day,l,data){ const h=read(HK,{}); data.at=Date.now(); h[slot(day,l)]=data;
+    /* Only the day on the screen and the one before it use these, so two is generous. */
     Object.keys(h).forEach(k=>{ if(parseInt(k,10)<day-2) delete h[k]; });
     set(HK,JSON.stringify(h)); }
+  /* A day's numbers read again, for the end of a climb (§22.1): today's grow
+     while the day lasts, and yesterday's until the last time zone has
+     finished it. Asked at most once per `age` per day, never on the screen's
+     time, and not at all with analytics off. */
+  function fetchDay(day,l,age,then){
+    if(WEB||!SCORES.url||!online()||A.isOff()) return;
+    const old=hist(day,l); if(old&&old.at&&Date.now()-old.at<age) return;
+    const k=slot(day,l), busy=fetching[k]; if(busy&&Date.now()-busy<15000) return;
+    fetching[k]=Date.now();
+    try{
+      fetch(SCORES.url+'?d='+day+(l?'&l='+l:''))
+        .then(r=>(r&&r.ok)?r.json():null)
+        .then(j=>{ delete fetching[k]; if(j&&j.solved){ keep(day,l,j); if(then) then(day); } })
+        .catch(()=>{ delete fetching[k]; });
+    }catch(e){ delete fetching[k]; }
+  }
+  const fetching={};
   const online=()=>{ try{ return navigator.onLine!==false; }catch(e){ return true; } };
   function send(then){
     /* The one privacy switch governs everything that leaves the phone. A player
@@ -3766,7 +4310,10 @@ const RANK=(function(){
     const q=read(QK,{});
     /* The newest first, and no more than a day's three looms and one more. */
     Object.keys(q).filter(k=>isFinite(parseInt(k,10))).sort((a,b)=>parseInt(b,10)-parseInt(a,10)).slice(0,4).forEach(k=>{
-      const d=parseInt(k,10), l=q[k].l||null;
+      const d=parseInt(k,10), l=q[k].l||null, sentA=q[k].a;
+      /* A climb is queued again at every rung, so a newer level can be waiting
+         while an older one is in the air. Only the level that was sent is let go. */
+      const letGo=()=>{ const left=read(QK,{}); if(left[k]&&left[k].a===sentA){ delete left[k]; set(QK,JSON.stringify(left)); } };
       let ctl=null, stop=null;
       try{ ctl=new AbortController(); stop=setTimeout(()=>{ try{ ctl.abort(); }catch(e){} },5000); }catch(e){}
       const done=()=>{ if(stop) clearTimeout(stop); };
@@ -3774,18 +4321,18 @@ const RANK=(function(){
         fetch(SCORES.url,{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify(Object.assign({d:d,a:q[k].a,s:q[k].s,k:key(),f:first(d)},l?{l:l}:{})),signal:ctl?ctl.signal:undefined})
           /* A result the server refused will be refused again: it is let go. */
-          .then(r=>{ if(r&&r.status===400){ const left=read(QK,{}); delete left[k]; set(QK,JSON.stringify(left)); }
+          .then(r=>{ if(r&&r.status===400) letGo();
                      return (r&&r.ok)?r.json():null; })
           .then(j=>{ done();
             if(!j||!j.solved) return;
             keep(d,l,j);
-            const left=read(QK,{}); delete left[k]; set(QK,JSON.stringify(left));
+            letGo();
             if(then) then(d,j,l); })
           .catch(done);
       }catch(e){ done(); }
     });
   }
-  return {queue:queue,pending:pending,hist:hist,send:send,key:key,
+  return {queue:queue,pending:pending,hist:hist,send:send,key:key,fetchDay:fetchDay,
           opened:opened,openings:openings,first:first,prev:prev};
 })();
 /* What the day's numbers say about this result, once they have arrived. Never a
@@ -3846,8 +4393,109 @@ function globalLine(){
    have been. */
 function paintGlobal(){
   const g=globalLine();
-  $('glob').hidden=!g; $('glob').textContent=g;
+  $('glob').hidden=!g||!$('vs').hidden; $('glob').textContent=g;
 }
+/* ---------- §22.1: a finished climb against the day's other climbs ----------
+   The President, 7 November 2026: when the climb is over, compare it with the
+   other players of the same day; if the player climbed yesterday, show that
+   too; and by country, if the player asks for it.
+
+   The day's climbs by the level they reached, as bars, with the player's own
+   in colour, and one line in counts rather than shares: "higher than 3 of 4
+   players" is true at any size, where a percentage of four people is noise
+   (§22.1's rule against shares of a handful still holds for the percentage
+   line, which this card replaces while it is shown). "So far": the day is
+   still being played, and a climb is counted as it goes, not when it ends.
+
+   By country: the server counts every climb under the country Cloudflare saw
+   it come from, and answers with that country's numbers beside everybody's,
+   so the game never has to know or ask where the phone is. The choice between
+   the two is the player's and is remembered (vsHere). Nothing here exists
+   with analytics off, on the website, or on an archive day. */
+const VS_TODAY_MS=5*60000, VS_YESTERDAY_MS=30*60000;
+let vsSeenDay=null;
+function vsDue(){
+  return CLIMB&&!WEB&&!archive&&!!st&&st.done&&!st.won&&climbEnded(viewDay)&&!!SCORES.url&&!A.isOff();
+}
+/* The day's numbers seen from one level. The player is in them once the
+   result has reached the server, and is then taken out, so "others" means
+   other people; until then they are added to the bars, so the picture always
+   has them in it. */
+function vsCount(h,lv,day){
+  const cols=[+h.lost||0].concat([0,1,2,3,4,5,6,7].map(i=>+((h.solved||[])[i])||0));
+  const L=Math.max(0,Math.min(8,lv|0));
+  const counted=!(String(day)+'L' in RANK.pending());
+  if(counted&&cols[L]>0) cols[L]--;
+  let o=0, below=0, above=0;
+  cols.forEach((c,i)=>{ o+=c; if(i<L) below+=c; else if(i>L) above+=c; });
+  const bars=cols.slice(); bars[L]++;
+  return {o:o,below:below,above:above,same:cols[L],bars:bars,L:L};
+}
+function vsScope(h){ return SET.get('vsHere')&&h&&h.here&&h.here.n>0?h.here:h; }
+function flagOf(cc){ try{ return String.fromCodePoint.apply(null,cc.split('').map(c=>0x1F1E6+c.charCodeAt(0)-65)); }catch(e){ return ''; } }
+function countryName(cc){
+  try{ const n=new Intl.DisplayNames([LANG==='en'?'en-GB':LANG],{type:'region'}).of(cc); if(n&&n!==cc) return n; }catch(e){}
+  return cc;
+}
+function vsTodayLine(c){
+  if(!c.o) return T('Nobody else has climbed today yet.');
+  if(!c.above&&!c.same) return T('The highest climb today so far.');
+  if(c.below) return T('Higher than {b} of {o} players today.',{b:c.below,o:c.o})+(c.same?' '+T('Level with {s}.',{s:c.same}):'');
+  return T(c.o===1?'1 other player today.':'{o} other players today.',{o:c.o});
+}
+function vsYesterdayLine(c,lv){
+  if(!c.o) return T('Yesterday: level {lv}.',{lv:lv});
+  if(!c.above&&!c.same) return T('Yesterday: level {lv}, the highest of {n} players.',{lv:lv,n:c.o+1});
+  if(c.below) return T('Yesterday: level {lv}, higher than {b} of {o} players.',{lv:lv,b:c.below,o:c.o});
+  return T('Yesterday: level {lv}, with {n} players.',{lv:lv,n:c.o+1});
+}
+function paintVs(){
+  const box=$('vs');
+  if(!vsDue()){ box.hidden=true; return; }
+  const d=viewDay, y=d-1, ly=climbLine(y);
+  /* Fresh numbers, at most every few minutes, painted when they land. */
+  const again=()=>{ if(viewDay===d&&$('msg').classList.contains('show')){ paintVs(); paintGlobal(); } };
+  RANK.fetchDay(d,'L',VS_TODAY_MS,again);
+  if(ly&&ladderDay(y)) RANK.fetchDay(y,'L',VS_YESTERDAY_MS,again);
+  const H=RANK.hist(d,'L');
+  if(!H||!H.solved){ box.hidden=true; return; }
+  const h=vsScope(H), c=vsCount(h,climbLevel(d),d), n=c.o+1;
+  $('vsTitle').textContent=T(n===1?'Today, so far: 1 player':'Today, so far: {n} players',{n:n});
+  /* Everybody, or the player's country: offered only when the server said
+     which country that is. */
+  const hc=H.here&&H.here.cc, seg=$('vsSeg');
+  seg.hidden=!hc;
+  if(hc){
+    $('vsHere').textContent=flagOf(hc)+' '+countryName(hc);
+    $('vsAll').classList.toggle('on',h===H); $('vsHere').classList.toggle('on',h!==H);
+  }
+  /* Levels 1 to 8+, and 0 only when somebody, or the player, ended there. */
+  const from=(c.bars[0]||c.L===0)?0:1, max=Math.max.apply(null,c.bars.slice(from)), bars=$('vsBars');
+  bars.innerHTML='';
+  for(let i=from;i<=8;i++){
+    const v=c.bars[i], col=document.createElement('div');
+    col.className='vs__col'+(i===c.L?' me':'');
+    col.innerHTML='<span class="vs__n">'+(v||'')+'</span><i style="height:'+(v?Math.max(4,Math.round(40*v/max)):2)+'px"></i>'+
+                  '<span class="vs__lv">'+(i===8?'8+':i)+'</span>';
+    bars.appendChild(col);
+  }
+  $('vsLine').textContent=vsTodayLine(c);
+  /* Yesterday, when it was climbed and its numbers have come. */
+  const Y=ly?RANK.hist(y,'L'):null, yl=$('vsYest');
+  /* In the country's view, yesterday is the country's too, or not said:
+     climbs from before 7 November 2026 were never counted by country. */
+  const yh=!Y||!Y.solved?null:h===H?Y:(Y.here&&Y.here.cc===hc&&Y.here.n>0?Y.here:null);
+  if(yh){ const lvy=ly.lv||0; yl.textContent=vsYesterdayLine(vsCount(yh,lvy,y),lvy); yl.hidden=false; }
+  else yl.hidden=true;
+  box.hidden=false;
+  if(vsSeenDay!==d&&PROF.vsSeen!==d){ vsSeenDay=d; PROF.vsSeen=d; STORE.setJSON(PKEY,PROF);
+    LOG.mark('vs','players_shown',{day_number:d,n:n,here_n:H.here?H.here.n:0,yesterday:yh?1:0,
+      scope:h===H?'world':'country'}); }
+}
+$('vsAll').onclick=()=>{ if(!SET.get('vsHere')) return; SFX.play('tap'); SET.set('vsHere',false); paintVs();
+  LOG.mark('vsscope','players_scope',{day_number:viewDay,scope:'world'}); };
+$('vsHere').onclick=()=>{ if(SET.get('vsHere')) return; SFX.play('tap'); SET.set('vsHere',true); paintVs();
+  LOG.mark('vsscope','players_scope',{day_number:viewDay,scope:'country'}); };
 /* ---------- 8.1b: the day, crowned ------------------------------------------
    When a day is over, the best true thing about it is said once, over its own
    cloth, with a wreath around it. "Best" is an order, not a mood: being first
@@ -3983,12 +4631,90 @@ function showCheer(best){
 }
 $('cheer').onclick=()=>{ SFX.play('tap'); hideCheer(); };
 
+/* ---------- §8.6a: every cloth solved is a party ----------------------------
+   The President, 7 November 2026: congratulate the player on every cloth
+   solved, with effects, party poppers. Two poppers go off in the bottom
+   corners, a burst in the thread colours rises from them and falls, and one
+   word says it - warmer the higher the climb has gone. It takes no tap and
+   covers nothing that matters: Next level can be pressed straight through it.
+
+   Under two seconds, on one canvas, moved by transforms only: a DOM element
+   per piece repainted every frame is what starved AshenRise's GPU on the A33.
+   Under reduced motion it is the word alone, held still. A climb that ends
+   keeps its wreath (§8.1b); this is for the cloth, not the day. Measured by
+   rung_solved and puzzle_solved, which fire exactly once per party. */
+const CHEERS=['Nice!','Great!','Brilliant!','Superb!','Amazing!','Fantastic!','Incredible!','Masterful!','Legendary!'];
+function cheerWord(level){ const i=Math.max(1,Math.min(CHEERS.length,level||1))-1; return T(CHEERS[i]); }
+const PARTY_MS=1900;
+let partyRaf=null, partyTimer=null, partyShown=0;
+function party(level){
+  const box=$('party');
+  $('partyWord').textContent=cheerWord(level);
+  stopParty();
+  box.hidden=false;
+  try{ void box.offsetWidth; }catch(e){}      // so the animations start again on a second party
+  box.classList.add('go');
+  partyShown++;
+  partyTimer=setTimeout(stopParty,PARTY_MS);
+  if(SET.get('motion')) return;
+  SFX.play('pop');
+  burst($('partyCv'));
+}
+function stopParty(){
+  clearTimeout(partyTimer); partyTimer=null;
+  try{ if(partyRaf!==null&&window.cancelAnimationFrame) window.cancelAnimationFrame(partyRaf); }catch(e){}
+  partyRaf=null;
+  const box=$('party'); box.classList.remove('go'); box.hidden=true;
+  try{ const cv=$('partyCv'), x=cv.getContext&&cv.getContext('2d'); if(x) x.clearRect(0,0,cv.width,cv.height); }catch(e){}
+}
+/* The burst: two fans of paper, one from each popper, thrown up and inwards,
+   slowed by the air and pulled down, turning over as they fall. */
+function burst(cv){
+  const raf=window.requestAnimationFrame;
+  let ctx=null; try{ ctx=raf&&cv&&cv.getContext?cv.getContext('2d'):null; }catch(e){}
+  if(!ctx) return;
+  const W=window.innerWidth||360, H=window.innerHeight||640, dpr=Math.min(2,window.devicePixelRatio||1);
+  cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+  const c=threadColours(), cols=[c.t0,c.t1,c.t2,'#E0A93A','#FFFFFF'];
+  const G=0.0017, DRAG=0.9988, bits=[];
+  const reach=Math.sqrt(2*G*H*0.62)*1.25;      // high enough to cross most of the screen
+  [[0.06,1],[0.94,-1]].forEach(([fx,dir])=>{
+    for(let i=0;i<70;i++){
+      const a=(-90+dir*(12+Math.random()*40))*Math.PI/180, v=reach*(0.6+Math.random()*0.5);
+      bits.push({x:fx*W,y:H-56,vx:Math.cos(a)*v,vy:Math.sin(a)*v,r:Math.random()*6.3,
+        spin:(Math.random()-0.5)*0.02,ph:Math.random()*6.3,flip:0.008+Math.random()*0.012,
+        w:8+Math.random()*5,h:4+Math.random()*3,c:cols[(i+(dir>0?0:2))%cols.length],
+        round:Math.random()<0.2,delay:Math.random()*120});
+    }
+  });
+  let t0=null, last=0;
+  const step=now=>{
+    if(t0===null){ t0=now; last=now; }
+    const dt=Math.min(40,now-last), age=now-t0; last=now;
+    ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height);
+    const fade=age>PARTY_MS-500?Math.max(0,(PARTY_MS-age)/500):1, k=Math.pow(DRAG,dt);
+    ctx.globalAlpha=fade;
+    for(const b of bits){
+      if(age<b.delay) continue;
+      b.vy+=G*dt; b.vx*=k; b.vy*=k;
+      b.x+=b.vx*dt; b.y+=b.vy*dt; b.r+=b.spin*dt; b.ph+=b.flip*dt;
+      const cr=Math.cos(b.r), sr=Math.sin(b.r), f=Math.cos(b.ph);
+      ctx.setTransform(dpr*cr,dpr*sr,-dpr*sr*f,dpr*cr*f,dpr*b.x,dpr*b.y);
+      ctx.fillStyle=b.c;
+      if(b.round){ ctx.beginPath(); ctx.arc(0,0,b.h,0,6.283); ctx.fill(); }
+      else ctx.fillRect(-b.w/2,-b.h/2,b.w,b.h);
+    }
+    if(age<PARTY_MS) partyRaf=raf(step); else partyRaf=null;
+  };
+  partyRaf=raf(step);
+}
+
 /* Sending is attempted at three moments and no others: a day just finished, the
    game just opened, the network just came back. Nobody is waiting at any of
    them. */
 function scoresGo(){ RANK.send((d,j,l)=>{
   if(d!==viewDay||(CLIMB?l!=='L':(l||'n')!==LOOM)||!$('msg').classList.contains('show')) return;
-  paintGlobal();
+  paintVs(); paintGlobal();
   /* The answer can land a moment after the wreath went up on a local fact. */
   if(!$('cheer').hidden){ const b=bestStat(); if(b) showCheer(b); }
   else maybeCheer();
@@ -4078,19 +4804,31 @@ function milestoneLine(){
   return mileText;
 }
 
-/* ---------- §8.3: the reminder, offered once, after the first solve ------- */
+/* ---------- §8.3: the reminder, on from the first solve --------------------
+   It used to be offered once, after the first solve, as a question; in the
+   advertising test four players were asked and none said yes. The President,
+   7 November 2026: on by default. So at the first solve it is switched on at
+   20:00 and the box says so, with the time to change and a button to turn it
+   off. Still after a solve and never at launch: on Android 13 and later the
+   phone's own permission question appears at that moment, as it did after a
+   yes; on older phones no question is needed. Refusing the permission turns
+   the switch back off (VoltixReminderDenied), so it never claims a reminder
+   that cannot come. `reminder_offered` (auto 1) counts the switch-on,
+   `reminder_accepted` an OK, `reminder_declined` a Turn off. */
 const canRemind=()=>{ const NB=window.VoltixNative; return !!(NB&&NB.setReminder); };
-let remOffer=null;    // null, 'open' while the question is on screen, 'done' after
+let remOffer=null;    // null, 'open' while the box is on screen, 'done' after
 function paintOffer(){
   const box=$('remOffer');
-  if(remOffer==='open'){ box.hidden=archive; return; }   // it waits for today, not for an archive day
+  if(remOffer==='open'){ box.hidden=archive; return; }
   const due = remOffer===null && st.won && !archive && canRemind() && !SET.get('remind') && !PROF.remOffered;
   if(!due){ box.hidden=true; return; }
   remOffer='open'; PROF.remOffered=1; STORE.setJSON(PKEY,PROF);
+  SET.set('remind',true); pushReminder();
   $('remOfferTime').value=SET.get('remindAt');
   box.hidden=false;
-  LOG.mark('remoffer','reminder_offered',{day_number:viewDay});
+  LOG.mark('remoffer','reminder_offered',{day_number:viewDay,auto:1});
 }
+$('remOfferTime').onchange=e=>{ SET.set('remindAt',e.target.value||'20:00'); if(SET.get('remind')) pushReminder(); };
 $('remYes').onclick=()=>{
   const at=$('remOfferTime').value||'20:00';
   SET.set('remindAt',at); SET.set('remind',true); pushReminder();
@@ -4100,7 +4838,9 @@ $('remYes').onclick=()=>{
   LOG.mark('remyes','reminder_accepted',{day_number:viewDay});
 };
 $('remNo').onclick=()=>{
+  SET.set('remind',false); pushReminder();
   remOffer='done'; $('remOffer').hidden=true; SFX.play('tap');
+  $('remNote').hidden=false; $('remNote').textContent=T('No reminder. Switch it on in Settings whenever you like.');
   LOG.mark('remno','reminder_declined',{day_number:viewDay});
 };
 
@@ -4122,10 +4862,10 @@ function showResult(){
   }
   const c=compareLine();
   $('cmp').hidden=!c; $('cmp').textContent=c;
-  paintGlobal();
+  paintVs(); paintGlobal();
   const m=milestoneLine();
   $('mile').hidden=!m; $('mile').textContent=m;
-  paintLoomNext();
+  paintLoomNext(); paintLiveEnd();
   if(archive){
     stopCountdown();
     $('next').textContent=T('Back to today when you like.'); $('next').onclick=null;
@@ -4172,7 +4912,7 @@ const ADS={
      only when the app has a bridge and the remote switch says the placement is on. */
   available(p){
     try{
-      if(PAID()) return false;                  // a month bought, or Loom Full: no advertising of any kind
+      if(ADFREE()) return false;                // a month bought, Loom Full or Remove adverts: no advertising of any kind
       /* The first day is no longer spared: the President, 3 November 2026. */
       const V=window.VoltixAds; return !!(V&&V.available&&V.available(p));
     }catch(e){ return false; }
@@ -4200,6 +4940,14 @@ window.VoltixAdPaid=function(p,micros,currency,precision,unit){
    advert" - and a button that offers one thing and does another is worse than
    either. Only the day's own screen is repainted here; a panel paints itself
    when it opens. */
+/* Play answers with the products a moment after the page is drawn, so the
+   shell says when it has: the bag in the header, the prices on the buttons and
+   an open shop are painted again then, not at the next tap (the President's
+   S21, 3 November 2026: no bag on 1.1.0 until something redrew the page). */
+window.VoltixStoreReady=function(){
+  try{ if(!weaving) render(); else paintShopBtn();
+       if($('shopPanel').classList.contains('show')) paintShop(); }catch(e){}
+};
 window.VoltixAdReady=function(p){
   try{ if(p==='unpick'&&!st.done){ paintHintBtn(); paintPackNote(); }
        if(p==='more'&&st.done) paintMore(); }catch(e){}
@@ -4208,6 +4956,7 @@ window.VoltixAdDone=function(p,rewarded){
   const a=pendingAd; pendingAd=null;
   if(!a||a.p!==p) return;
   if(rewarded&&p!=='interstitial') LOG.mark('adok','rewarded_ad_completed',{placement:p});
+  if(p!=='interstitial') lastRewardedAt=Date.now();      // no interstitial straight after a video the player chose
   adEarned=rewarded&&p!=='interstitial'?p:null;
   try{ a.done(!!rewarded); } finally { adEarned=null; }
 };
@@ -4226,12 +4975,39 @@ window.VoltixAdDone=function(p,rewarded){
 /* A little more advertising for a player who has bought nothing (the
    President, 3 November 2026): no first days spared, once a day rather than
    once every two, and on a climb a second moment it may come at - between two
-   rungs, from the climb onto rung 4, past the warm-up. Still one a day at most. */
-const INTERSTITIAL_AFTER={3:[2],4:[3],5:[3,4],6:[4,5]}, INTERSTITIAL_FIRST_DAYS=0, INTERSTITIAL_GAP_DAYS=1, INTERSTITIAL_DELAY_MS=900;
-const INTERSTITIAL_RUNG_FROM=4;
+   rungs, from the climb onto rung 4, past the warm-up. */
+/* More again (the President, 4 November 2026): up to three a day, at least
+   three minutes apart and never within a minute of a rewarded advertisement;
+   between two rungs on every third rung from 4 (4, 7, 10, ...), on an archive
+   climb too; one at most on a player's very first day, which is where D1 is
+   decided. Every number is a constant. The remote configuration may lower the
+   day's ceiling (VoltixAds.cap('interstitial')) or switch it off, never raise it. */
+/* Every level (the President, same day: "yes, but from level 2"): between two
+   rungs on every rung from 2, up to eight a day, a minute apart, two on a
+   first day. Rung 1 is never preceded by one: the day opens on a win. */
+const INTERSTITIAL_AFTER={3:[2],4:[3],5:[3,4],6:[4,5]}, INTERSTITIAL_FIRST_DAYS=0, INTERSTITIAL_DELAY_MS=900;
+const INTERSTITIAL_MAX_PER_DAY=8, INTERSTITIAL_FIRST_DAY_MAX=2, INTERSTITIAL_MIN_GAP_MS=60000, INTERSTITIAL_AFTER_REWARDED_MS=60000;
+const INTERSTITIAL_RUNG_FROM=2, INTERSTITIAL_RUNG_EVERY=1;
+let lastRewardedAt=0;
+/* Today's count and the moment of the last one. A build before 1.2 kept only
+   the day (interDay): that is one shown today. */
+function interToday(){
+  const i=PROF.inter;
+  if(i&&i.d===dayNum) return i;
+  return {d:dayNum,n:PROF.interDay===dayNum?1:0,t:0};
+}
+function interCap(){
+  let cap=isFinite(PROF.firstDay)&&dayNum===PROF.firstDay?INTERSTITIAL_FIRST_DAY_MAX:INTERSTITIAL_MAX_PER_DAY;
+  try{ const V=window.VoltixAds, c=V&&V.cap?Number(V.cap('interstitial')):-1;
+       if(isFinite(c)&&c>=0) cap=Math.min(cap,Math.floor(c)); }catch(e){}
+  return cap;
+}
 function interstitialOk(){
   if(isFinite(PROF.firstDay)&&dayNum-PROF.firstDay<INTERSTITIAL_FIRST_DAYS) return false;
-  if(isFinite(PROF.interDay)&&dayNum-PROF.interDay<INTERSTITIAL_GAP_DAYS) return false;
+  const t=interToday(), now=Date.now();
+  if(t.n>=interCap()) return false;
+  if(t.t&&now-t.t<INTERSTITIAL_MIN_GAP_MS) return false;
+  if(lastRewardedAt&&now-lastRewardedAt<INTERSTITIAL_AFTER_REWARDED_MS) return false;
   return ADS.available('interstitial');                    // also: never to a purchaser
 }
 function interstitialDue(){
@@ -4239,24 +5015,55 @@ function interstitialDue(){
   if((INTERSTITIAL_AFTER[TRIES]||[3,4]).indexOf(st.attempts.length)<0) return false;
   return interstitialOk();
 }
-/* Between two rungs: a rung just reached from the one below, nothing on it yet,
-   today's climb and not the Archive's. */
+/* Between two rungs: a rung just reached from the one below, on every
+   INTERSTITIAL_RUNG_EVERY-th rung from INTERSTITIAL_RUNG_FROM, nothing on it yet. */
 function interstitialBetweenDue(){
-  return CLIMB&&!archive&&LEVEL>=INTERSTITIAL_RUNG_FROM&&!!st&&!st.done&&!st.attempts.length&&interstitialOk();
+  return CLIMB&&LEVEL>=INTERSTITIAL_RUNG_FROM&&(LEVEL-INTERSTITIAL_RUNG_FROM)%INTERSTITIAL_RUNG_EVERY===0&&
+         !!st&&!st.done&&!st.attempts.length&&interstitialOk();
 }
-/* After the try has been seen: the ticks land first, then the advertisement. */
-function maybeInterstitial(between){
-  if(!(between?interstitialBetweenDue():interstitialDue())) return false;
+/* After the try has been seen: the ticks land first, then the advertisement.
+   `then` runs once the advertisement is closed, or at once when none is shown,
+   so what comes after a try (the stuck sheet) never lands under it. */
+function maybeInterstitial(between,then){
+  const after=()=>{ if(then){ const f=then; then=null; try{ f(); }catch(e){} } };
+  if(!(between?interstitialBetweenDue():interstitialDue())){ after(); return false; }
   const n=st.attempts.length, d=viewDay, lv=LEVEL;
   const V=window.VoltixAds;
   pendingAd={p:'interstitial',done:shown=>{
-    if(!shown) return;                                       // not shown: the fourth try may have one
-    PROF.interDay=dayNum; STORE.setJSON(PKEY,PROF);
-    LOG.mark('inter','interstitial_shown',Object.assign({day_number:d,attempt_number:n},lv?{level:lv,between:between?1:0}:{}));
+    if(shown){
+      const t=interToday();
+      PROF.inter={d:dayNum,n:t.n+1,t:Date.now()}; PROF.interDay=dayNum; STORE.setJSON(PKEY,PROF);
+      LOG.mark('inter','interstitial_shown',Object.assign({day_number:d,attempt_number:n,count:t.n+1},lv?{level:lv,between:between?1:0}:{}));
+      showNoAdsToast();
+    }
+    after();
   }};
-  try{ V.show('interstitial'); }catch(e){ pendingAd=null; return false; }
+  try{ V.show('interstitial'); }catch(e){ pendingAd=null; after(); return false; }
   return true;
 }
+/* ---------- Remove adverts, said once an interstitial has closed -----------
+   One line at the foot of the screen, never modal and gone by itself, and only
+   when Play has priced the product. */
+const NOADS_TOAST_MS=8000;
+let noAdsTimer=null;
+function showNoAdsToast(){
+  if(WEB||ADFREE()||!SHOP.has()) return false;
+  const p=SHOP.price(SKU.NOADS); if(!p) return false;
+  $('noAdsBuy').textContent=T('Remove them · {p}',{p:p});
+  $('noAdsToast').hidden=false;
+  LOG.mark('offer','offer_shown',{placement:'after_ad'});
+  clearTimeout(noAdsTimer); noAdsTimer=setTimeout(()=>hideNoAdsToast(false),NOADS_TOAST_MS);
+  return true;
+}
+function hideNoAdsToast(dismissed){
+  clearTimeout(noAdsTimer); noAdsTimer=null;
+  if($('noAdsToast').hidden) return;
+  $('noAdsToast').hidden=true;
+  if(dismissed) LOG.mark('offerno','offer_dismissed',{placement:'after_ad'});
+}
+$('noAdsBuy').onclick=()=>{ SFX.play('tap'); clearTimeout(noAdsTimer); noAdsTimer=null;
+  if(!SHOP.buy(SKU.NOADS,'after_ad')) hideNoAdsToast(false); };
+$('noAdsX').onclick=()=>{ SFX.play('tap'); hideNoAdsToast(true); };
 
 /* ---------- §12.2: the offer, where the player has just wanted the thing --------
    Three placements and nowhere else: a locked archive tile, once on the end
@@ -4397,6 +5204,8 @@ $('rateRow').onclick=()=>{ SFX.play('tap'); LOG.mark('rate','rate_opened',{from:
   try{ window.VoltixNative.openStorePage(); }catch(e){} };
 $('fullRow').onclick=()=>{ if(FULL()||monthOnSale()===null) return; SFX.play('tap'); showOffer('shop'); };
 $('restoreRow').onclick=()=>{ SFX.play('tap'); if(SHOP.restore()) $('shopNote').textContent=T('Asking the store…'); };
+$('noAdsRow').onclick=()=>{ if(ADFREE()) return; SFX.play('tap');
+  if(!SHOP.buy(SKU.NOADS,'shop')) $('shopNote').textContent=T('The store is not available right now.'); };
 $('packRow').onclick=()=>{ SFX.play('tap');
   if(!SHOP.buy(SKU.HINTS,'shop')) $('shopNote').textContent=T('The store is not available right now.'); };
 $('weaveRow').onclick=()=>{ SFX.play('tap');
@@ -4538,6 +5347,128 @@ $('moreSheetAd').onclick=()=>{ SFX.play('tap');
 $('moreSheetNo').onclick=()=>{ SFX.play('tap'); closeMoreSheet(true); };
 $('moreSheetLive').onclick=()=>{ SFX.play('tap');
   if(!SHOP.buy(SKU.LIVE,'more_sheet')) $('moreSheetNote').textContent=T('The store is not available right now.'); };
+
+/* ---------- stuck on a rung: the President, 4 November 2026 ------------------
+   "Be more aggressive selling products during play." After the second failed
+   try on a rung from 4, while a try is still left, a sheet comes up - once the
+   interstitial, if one was due, has closed - with every kind of help there is:
+   the hint (for an advertisement, free, from the pack, or the pack for money),
+   one free rung of Live weave once per player, and Live weave itself. Once a
+   day; "Not now" costs nothing and asks nothing again that day. */
+const STUCK_AFTER=2, STUCK_FROM=4, STUCK_DELAY_MS=500;
+let stuckTimer=null;
+function stuckHintOffer(){ const src=hintSource(); if(src) return src;
+  return hintCanBuy()&&SHOP.price(SKU.HINTS)?'buy':null; }
+function stuckLivePrice(){ return CLIMB&&!LIVE()&&SHOP.has()?SHOP.price(SKU.LIVE):''; }
+function stuckDue(){
+  if(WEB||!CLIMB||!st||st.done||LEVEL<STUCK_FROM) return false;
+  if(st.attempts.length!==STUCK_AFTER||PROF.stuckDay===dayNum) return false;
+  return !!(stuckHintOffer()||liveTrialLeft()||stuckLivePrice());
+}
+function paintStuckSheet(){
+  const src=stuckHintOffer(), left=tries()-st.attempts.length;
+  $('stuckSheetLine').textContent=T(left===1?'One attempt left. A thread unpicked pins one operation in its right place.'
+                                            :'{n} attempts left. A thread unpicked pins one operation in its right place.',{n:left});
+  const h=$('stuckHint'); h.hidden=!src;
+  h.textContent= src==='ad'?T('Watch an advert for a thread')
+               : src==='free'?T('Unpick one, free')
+               : src==='pack'?T('Use one of your {n} threads',{n:hintBank()})
+               : src==='buy'?T('Ten threads · {p}',{p:SHOP.price(SKU.HINTS)}):'';
+  const tr=liveTrialLeft(), lp=tr?'':stuckLivePrice();
+  $('stuckTrial').hidden=!tr; $('stuckTrial').textContent=tr?T('Try Live weave on this level, free'):'';
+  $('stuckLive').hidden=!lp; $('stuckLive').textContent=lp?T('Live weave · {p}: watch each step as you fill the loom',{p:lp}):'';
+  if(src==='ad'&&adOfferedFor!==viewDay){ adOfferedFor=viewDay; LOG.mark('adoffer','rewarded_ad_offered',{placement:'unpick',day_number:viewDay}); }
+}
+function openStuckSheet(){
+  stuckTimer=null;
+  if(!stuckDue()) return false;
+  PROF.stuckDay=dayNum; STORE.setJSON(PKEY,PROF);
+  hideHintTip();
+  $('stuckNote').textContent='';
+  paintStuckSheet();
+  $('stuckSheet').hidden=false;
+  LOG.mark('offer','offer_shown',TP({placement:'stuck',day_number:viewDay}));
+  return true;
+}
+function closeStuckSheet(dismissed){
+  clearTimeout(stuckTimer); stuckTimer=null;
+  if($('stuckSheet').hidden) return;
+  $('stuckSheet').hidden=true;
+  if(dismissed) LOG.mark('offerno','offer_dismissed',TP({placement:'stuck',day_number:viewDay}));
+}
+function startLiveTrial(){
+  if(!liveTrialLeft()||!st||st.done) return false;
+  PROF.liveTrial=archive?{d:viewDay,l:LEVEL,a:1}:{d:viewDay,l:LEVEL};
+  STORE.setJSON(PKEY,PROF);
+  LOG.mark('livetrial','live_trial_started',{day_number:viewDay,level:LEVEL,archive:archive?1:0});
+  render();
+  return true;
+}
+/* What Play said about a purchase made from the stuck sheet: the press that
+   bought ten threads was a press for one, so one is taken at once. */
+function stuckSheetBought(sku,state,placement){
+  if(placement!=='stuck_sheet'||$('stuckSheet').hidden) return;
+  if(state==='consumed'&&sku===SKU.HINTS){ closeStuckSheet(false); if(!st.done) takeHint('pack'); return; }
+  if(state==='owned'&&sku===SKU.LIVE){ closeStuckSheet(false); render(); return; }
+  if(state!=='owned'&&state!=='consumed'){ $('stuckNote').textContent=T('Nothing was bought. You are where you were.'); paintStuckSheet(); }
+}
+$('stuckHint').onclick=()=>{ const src=stuckHintOffer(); SFX.play('tap');
+  LOG.mark('hintpress','hint_pressed',TP({day_number:viewDay,source:src||'none',attempt_number:st.attempts.length+1,from:'stuck'}));
+  if(src==='ad'){ ADS.show('unpick',ok=>{ if(!ok) return; closeStuckSheet(false); takeHint('ad'); }); return; }
+  if(src==='free'||src==='pack'){ closeStuckSheet(false); takeHint(src); return; }
+  if(src==='buy'&&!SHOP.buy(SKU.HINTS,'stuck_sheet')) $('stuckNote').textContent=T('The store is not available right now.'); };
+$('stuckTrial').onclick=()=>{ SFX.play('tap'); closeStuckSheet(false); startLiveTrial(); };
+$('stuckLive').onclick=()=>{ SFX.play('tap');
+  if(!SHOP.buy(SKU.LIVE,'stuck_sheet')) $('stuckNote').textContent=T('The store is not available right now.'); };
+$('stuckNo').onclick=()=>{ SFX.play('tap'); closeStuckSheet(true); };
+
+/* After the rung Live weave was tried on, solved: keep it, once. A rung lost
+   brings the lost-rung sheet instead, which offers it too. */
+const LIVE_SHEET_DELAY_MS=700;
+let liveSheetTimer=null;
+function liveSheetDue(){
+  const t=PROF.liveTrial;
+  return !!t&&!t.asked&&liveTrialOn()&&!!st&&st.done&&st.won&&!LIVE()&&SHOP.has()&&!!SHOP.price(SKU.LIVE);
+}
+function openLiveSheet(){
+  liveSheetTimer=null;
+  if(tourOn()){ liveSheetTimer=setTimeout(openLiveSheet,1000); return false; }   // §17.6 first
+  if(!liveSheetDue()) return false;
+  PROF.liveTrial.asked=1; STORE.setJSON(PKEY,PROF);
+  $('liveSheetBuy').textContent=T('Keep it · {p}',{p:SHOP.price(SKU.LIVE)});
+  $('liveSheetNote').textContent=T('Once. Not a subscription.');
+  $('liveSheet').hidden=false;
+  LOG.mark('offer','offer_shown',{placement:'live_keep',level:LEVEL});
+  return true;
+}
+function closeLiveSheet(dismissed){
+  clearTimeout(liveSheetTimer); liveSheetTimer=null;
+  if($('liveSheet').hidden) return;
+  $('liveSheet').hidden=true;
+  if(dismissed) LOG.mark('offerno','offer_dismissed',{placement:'live_keep'});
+}
+$('liveSheetBuy').onclick=()=>{ SFX.play('tap');
+  if(!SHOP.buy(SKU.LIVE,'live_keep')) $('liveSheetNote').textContent=T('The store is not available right now.'); };
+$('liveSheetNo').onclick=()=>{ SFX.play('tap'); closeLiveSheet(true); };
+function liveSheetBought(sku,state,placement){
+  if(placement!=='live_keep'||$('liveSheet').hidden) return;
+  if(state==='owned'&&sku===SKU.LIVE){ closeLiveSheet(false); render(); return; }
+  if(state!=='owned'&&state!=='consumed') $('liveSheetNote').textContent=T('Nothing was bought. You are where you were.');
+}
+
+/* The end of a climb: Live weave, one row, where a player who has just run out
+   of rungs is thinking about the next climb. */
+let liveEndShown=null;
+function paintLiveEnd(){
+  const b=$('liveEnd');
+  const lp=CLIMB&&st.done&&!st.won&&!LIVE()&&SHOP.has()?SHOP.price(SKU.LIVE):'';
+  b.hidden=!lp;
+  if(!lp) return;
+  b.textContent=T('Climb further tomorrow · Live weave {p}',{p:lp});
+  const k=viewDay+(archive?'.a':'');
+  if(liveEndShown!==k){ liveEndShown=k; LOG.mark('offer','offer_shown',{placement:'end_live',level:LEVEL}); }
+}
+$('liveEnd').onclick=()=>{ SFX.play('tap'); SHOP.buy(SKU.LIVE,'end'); };
 
 /* ---------- the three looms, on the screen: the President, 13 October 2026 ---------
    Three buttons in the cloth heading. Before the day's first weave any of them
@@ -4772,18 +5703,62 @@ function paintPackNote(){
   packSaid=null;
   el.hidden=!t; el.textContent=t;
 }
+/* §11, amended by the President on 4 November 2026: "the majority of players
+   do not see Desfés un fil". The hint is no longer a small word the player has
+   to find. It is a button in a pinned slot's gold, named for what it is (help),
+   kept out of the warm-up where nobody needs it and learns to look past it -
+   on a climb it appears from rung 4, or on any rung after a failed try - and
+   it pulses once after every failed try. The first time it is wanted a line
+   says what it does, once per player. What it gives and the ceilings are
+   unchanged. */
+const HINT_SHOW_FROM=4, HINT_TIP_MS=6000, HINT_NUDGE_MS=2000;
+function hintWanted(){ return !CLIMB||LEVEL>=HINT_SHOW_FROM||(!!st&&st.attempts.length>0); }
+let hintSeenFor=null;
+/* hint_button_shown: once per cloth, when the button is drawn on the screen and
+   the screen says it is in view - the number §11's question needed, "shown"
+   against "pressed" against "taken". */
+function hintSeen(src){
+  const k=viewDay+'.'+(LEVEL||LOOM)+(archive?'.a':'');
+  if(hintSeenFor===k||!onScreen($('hintBtn'))) return;
+  hintSeenFor=k;
+  LOG.mark('hintseen','hint_button_shown',TP({day_number:viewDay,source:src,attempt_number:st.attempts.length+1,archive:archive?1:0}));
+}
 function paintHintBtn(){
   const b=$('hintBtn'); const src=st.done?null:hintSource();
-  if(!src&&hintCanBuy()){ b.hidden=false; b.textContent=T('Unpick a thread · ten for {p}',{p:SHOP.price(SKU.HINTS)||'…'}); return; }
-  b.hidden=!src;
-  if(!src) return;
-  b.textContent= src==='free' ? T('Unpick a thread · one free')
-               : src==='pack' ? T('Unpick a thread · {n} in your pack',{n:hintBank()})
-               : T('Unpick a thread · watch an advert');
+  const buy=!src&&hintCanBuy();
+  b.hidden=!(src||buy)||!hintWanted();
+  b.classList.toggle('hot',!b.hidden&&st.attempts.length>0&&tries()-st.attempts.length===1);
+  if(b.hidden){ hideHintTip(); b.classList.remove('nudge'); return; }
+  b.textContent= buy ? T('Help · unpick a thread · ten for {p}',{p:SHOP.price(SKU.HINTS)||'…'})
+               : src==='free' ? T('Help · unpick a thread · one free')
+               : src==='pack' ? T('Help · unpick a thread · {n} in your pack',{n:hintBank()})
+               : T('Help · unpick a thread · watch an advert');
   if(src==='ad'&&adOfferedFor!==viewDay){ adOfferedFor=viewDay; LOG.mark('adoffer','rewarded_ad_offered',{placement:'unpick',day_number:viewDay}); }
+  hintSeen(src||'buy');
 }
+/* After a failed try that leaves one: the button moves, and the first time
+   ever, a line over it says what it does. */
+let nudgeTimer=null, tipTimer=null;
+function nudgeHint(){
+  const b=$('hintBtn');
+  if(!st||st.done||b.hidden) return false;
+  b.classList.remove('nudge'); void b.offsetWidth; b.classList.add('nudge');
+  clearTimeout(nudgeTimer); nudgeTimer=setTimeout(()=>b.classList.remove('nudge'),HINT_NUDGE_MS);
+  if(!PROF.hintTip){
+    PROF.hintTip=1; STORE.setJSON(PKEY,PROF);
+    $('hintTip').textContent=T('Stuck? This pins one operation in its right place.');
+    $('hintTip').hidden=false;
+    LOG.mark('hinttip','hint_tip_shown',TP({day_number:viewDay,attempt_number:st.attempts.length+1}));
+    clearTimeout(tipTimer); tipTimer=setTimeout(hideHintTip,HINT_TIP_MS);
+  }
+  return true;
+}
+function hideHintTip(){ clearTimeout(tipTimer); tipTimer=null; $('hintTip').hidden=true; }
+$('hintTip').onclick=()=>hideHintTip();
 $('hintBtn').onclick=()=>{
   const src=hintSource();
+  hideHintTip();
+  LOG.mark('hintpress','hint_pressed',TP({day_number:viewDay,source:src||(hintCanBuy()?'buy':'none'),attempt_number:st.attempts.length+1}));
   if(!src){ if(hintCanBuy()){ SFX.play('tap'); SHOP.buy(SKU.HINTS,'hint'); } return; }
   SFX.play('tap');
   if(src==='ad'){ ADS.show('unpick',ok=>{ if(ok) takeHint('ad'); }); return; }
@@ -4794,6 +5769,50 @@ $('statsPrompt').onclick=()=>{ SFX.play('tap'); openPanel('statsPanel',true); };
 /* True from the press of Weave until the attempt is recorded: the cloth is
    animating, and the day on the screen must not change under it. */
 let weaving=false;
+/* ---------- a first day does not end on rung 1 (§19.2, 6 November 2026) -----
+   The ladder promised every new player a first day that opens with a win, and
+   rung 1 was meant to be solved by almost everyone. The first players from the
+   advertising campaign solved it 3 times in 9: a lost rung ends the climb, so
+   their first visit ended within a minute and a half on the easiest cloth. The
+   President: give a new player more opportunities, on the first day only.
+
+   So on the install's first day, and only on today's cloth, losing rung 1 is
+   not the end of the climb. The lost cloth is recorded as lost (puzzle_failed
+   and rung_failed, with `again`), and after a beat a fresh rung-1 cloth takes
+   its place - the same dials, a pattern the day has not shown - with all its
+   tries. As many times as it takes: rung 1 cannot be bought, and nothing about
+   it is scarce. From rung 2, and from the second day, a lost rung ends the
+   climb exactly as before. The share marks a rung 1 solved this way as not
+   clean, and the climb is counted for the scores only when it really ends. */
+const AGAIN_MS=1800;      // the lost cloth stays on the screen this long
+function againDue(){
+  try{ return CLIMB&&LEVEL===1&&!WEB&&!archive&&viewDay===dayNum&&PROF.firstDay===dayNum; }
+  catch(e){ return false; }
+}
+function againRung(g){
+  const k=(st.again||0)+1, secs=CLOCK.secs(), d=viewDay;
+  SFX.play('end');
+  LOG.mark('failed','puzzle_failed',TP({day_number:d,attempts:st.attempts.length,seconds:secs,
+    streak:PROF.streak||0,archive:0,again:k}));
+  LOG.mark('runglost','rung_failed',{day_number:d,level:1,attempts:st.attempts.length,seconds:secs,
+    hints:lockedSlots().length,extra:st.extra||0,live:st.live?1:0,archive:0,again:k});
+  LOG.mark('again','rung_again',{day_number:d,level:1,again:k});
+  /* The lost cloth is painted with its last try's marks, and only then is the
+     fresh record put in its place and written, so a game closed during the
+     beat opens on the fresh cloth. Nothing can be placed or woven meanwhile. */
+  render();
+  st={v:4,order:[],attempts:[],done:false,won:false,started:false,seen:1,again:k,secs:secs};
+  save(st); sewClimb(g);
+  const note=T('Here is another cloth. Change the order on every try.');
+  $('hint').textContent=note;
+  weaving=true;
+  setTimeout(()=>{
+    weaving=false;
+    if(viewDay!==d||LEVEL!==1) return;
+    openDay(d,1);
+    $('hint').textContent=note;
+  },AGAIN_MS);
+}
 $('weave').onclick=()=>{
   /* A rung solved: the same button climbs to the next one (§19.2). */
   if(CLIMB&&st.done&&st.won&&!weaving){ nextRung(); return; }
@@ -4803,8 +5822,20 @@ $('weave').onclick=()=>{
     $('hint').textContent=T('Place all {n} operations first.',{n:T(WORD[NOPS])});
     SFX.play('tap'); LOG.mark('earlyweave'); return;
   }
+  /* An order already woven on this cloth would only weave the same cloth again,
+     so it costs nothing and says what to do instead. weave_repeat counts how
+     often it happens, at most three times a cloth. */
+  if(orderTried()){
+    $('hint').textContent=T('You already tried this order. Swap two operations.');
+    SFX.play('tap'); st.rep=(st.rep||0)+1; save(st);
+    if(st.rep<=3) LOG.mark('repeatweave','weave_repeat',TP({day_number:viewDay,attempt_number:st.attempts.length+1,
+      n:st.rep,archive:archive?1:0}));
+    else LOG.mark('repeatweave');
+    return;
+  }
   endPreview(); DEMO.stop(false); COACH.restart();
-  weaving=true;
+  const guided=handOn();               // §17.4: woven with the hand showing
+  weaving=true; HAND.paint();          // the hand goes while the cloth moves
   if(liveOn()) st.live=1;              // woven with Live weave on: the record says so
   LOG.mark('weave','weave_submitted',TP({day_number:viewDay,attempt_number:st.attempts.length+1,
     archive:archive?1:0}));
@@ -4824,12 +5855,19 @@ $('weave').onclick=()=>{
     st.attempts.push({order:full,pins,cloth:g,locked:lockedSlots()});
     st.won=same(g,P.target);
     if(pins.some(Boolean)&&!st.won) SFX.play('pin');
+    /* A first day does not end on rung 1: a fresh cloth instead (§19.2). */
+    if(!st.won&&st.attempts.length>=tries()&&againDue()){ againRung(g); return; }
     if(st.won||st.attempts.length>=tries()){
       st.done=true;
       SFX.play(st.won?'win':'end');
+      if(st.won) party(CLIMB?LEVEL:3);   // §8.6a: every cloth solved is a party
+      if(st.won&&CLIMB&&LEVEL===1) setTimeout(()=>TOUR.start(),TOUR_DELAY_MS);   // §17.6, after the party
       /* Taught means solved, not attempted: a player who pressed Weave and
          failed still needs the coach tomorrow. */
-      if(st.won){ try{localStorage.setItem('loom.taught','1');}catch(e){} }
+      /* A cloth solved with the hand showing is the gesture learnt, not the
+         game: it ends the hand for good and leaves the coach for rung 2. */
+      if(st.won&&guided){ st.guided=1; PROF.guided=1; STORE.setJSON(PKEY,PROF); }
+      else if(st.won){ try{localStorage.setItem('loom.taught','1');}catch(e){} }
       /* The streak is not touched here. §7 is explicit that it counts days
          played and that a player who fails keeps it, so it is settled when
          the day opens and never by the result. */
@@ -4842,6 +5880,7 @@ $('weave').onclick=()=>{
       if(CLIMB){
         const rp={day_number:viewDay,level:LEVEL,attempts:st.attempts.length,seconds:CLOCK.secs(),
                   hints:lockedSlots().length,extra:st.extra||0,live:st.live?1:0,archive:archive?1:0};
+        if(st.won&&guided){ rp.guided=1; if(st.saw) rp.saw=1; }
         LOG.mark(st.won?'rungwon':'runglost',st.won?'rung_solved':'rung_failed',rp);
         /* Rungs are climbed in order, so a climb lost on rung k reached k - 1. */
         if(!st.won) LOG.mark('climb','climb_ended',{day_number:viewDay,level_reached:LEVEL-1,ended_on:LEVEL,
@@ -4867,16 +5906,21 @@ $('weave').onclick=()=>{
     /* A climb's sheets wait for its end: a rung solved goes straight on. */
     const sheets=()=>{ clearTimeout(monthSheetTimer); monthSheetTimer=setTimeout(openMonthSheet,MONTH_SHEET_DELAY_MS);
                        clearTimeout(reviewTimer); reviewTimer=setTimeout(maybeAskReview,REVIEW_DELAY_MS); };
-    if(!st.done) setTimeout(()=>maybeInterstitial(false),INTERSTITIAL_DELAY_MS);
+    if(!st.done){ nudgeHint();
+      setTimeout(()=>maybeInterstitial(false,()=>{ clearTimeout(stuckTimer); stuckTimer=setTimeout(openStuckSheet,STUCK_DELAY_MS); }),INTERSTITIAL_DELAY_MS); }
+    else if(st.won&&liveSheetDue()){ clearTimeout(liveSheetTimer); liveSheetTimer=setTimeout(openLiveSheet,LIVE_SHEET_DELAY_MS); }
     else if(!st.won){ clearTimeout(moreSheetTimer); moreSheetTimer=setTimeout(openMoreSheet,MORE_SHEET_DELAY_MS);
                       if(CLIMB&&!moreSheetDue()) sheets(); }
     else if(!CLIMB) sheets();
     /* Last, and never in the way: the screen above is already complete. The
        analytics switch is the off switch for this too (§22.1). A climb is
-       counted when it ends, by the level it reached ("L"), eight and over in one. */
+       counted by the level it has reached ("L"), eight and over in one. */
     if(!WEB&&SCORES.url&&st.done&&!archive&&!A.isOff()){
       if(!CLIMB){ RANK.queue(viewDay,st.won?st.attempts.length:0,st.secs||0,looms(viewDay)?LOOM:null); scoresGo(); }
-      else if(!st.won){ const c=climbLine(viewDay)||{}; RANK.queue(viewDay,Math.min(c.lv||0,8),c.s||0,'L'); scoresGo(); }
+      /* After every rung solved, and at the end: the server moves this phone's
+         one count up as the climb goes (§22.1, 7 November 2026), so a player
+         who stops at level 5 without losing is counted at level 5. */
+      else{ const c=climbLine(viewDay)||{}; RANK.queue(viewDay,Math.min(c.lv||0,8),c.s||0,'L'); scoresGo(); }
     }
   }
 
@@ -4943,6 +5987,9 @@ function paintShopBtn(){
   const on=!WEB&&SHOP.has();
   $('shopBtn').hidden=!on;
   $('hbtns').classList.toggle('five',on);
+  /* A dot on the bag until the shop has been opened once, while it holds
+     something this player has not got: Live weave, or Remove adverts. */
+  $('shopBtn').classList.toggle('dot',on&&!PROF.shopSeen&&((ladderOn()&&!LIVE()&&!!SHOP.price(SKU.LIVE))||(!ADFREE()&&!!SHOP.price(SKU.NOADS))));
 }
 let shopSaid=null;
 function paintShop(){
@@ -4971,8 +6018,14 @@ function paintShop(){
     $('liveRow').classList.toggle('buy',!own);
     $('swLive').hidden=!own; $('swLive').classList.toggle('on',own&&!!SET.get('live'));
     $('livePrice').hidden=own; $('livePrice').textContent=lp; }
+  /* Remove adverts: its price until it is owned, or anything else ends advertising. */
+  { const np=ADFREE()?'':SHOP.price(SKU.NOADS);
+    $('noAdsRow').hidden=!np||!!WEB; $('noAdsPrice').textContent=np; }
   /* What a purchase made here just did, once; otherwise what ends advertising. */
-  $('shopNote').textContent=shopSaid||(PAID()?T('No advertising: you have a month of cloths.'):T('Any month of cloths ends all advertising, for good.'));
+  $('shopNote').textContent=shopSaid||(PAID()?T('No advertising: you have a month of cloths.')
+    :SHOP.owned(SKU.NOADS)?T('No advertising: you removed it.')
+    :SHOP.price(SKU.NOADS)?T('Remove adverts, or any month of cloths, and advertising ends for good.')
+    :T('Any month of cloths ends all advertising, for good.'));
   shopSaid=null;
 }
 /* §8.4: the notification is built from what only this player has. The app
@@ -4987,6 +6040,7 @@ function pushReminder(){
    so the switch never lies about what will happen tomorrow. */
 window.VoltixReminderDenied=function(){
   SET.set('remind',false); pushReminder(); paintSettings();
+  if(remOffer==='open'){ remOffer='done'; $('remOffer').hidden=true; }   // it was switched on by default: it is off now
   const t=T('Notifications are switched off for Loom in the phone’s settings, so no reminder can be sent.');
   $('setNote').textContent=t;
   $('remNote').hidden=false; $('remNote').textContent=t;
@@ -5033,7 +6087,8 @@ function openPanel(id,bring){
   $(id).classList.toggle('show',open);
   if(!open) return;
   if(id==='setPanel') paintSettings();
-  if(id==='shopPanel'){ paintShop(); LOG.mark('shop','shop_opened',{day_number:viewDay,payer:PAID()?1:0}); }
+  if(id==='shopPanel'){ paintShop(); LOG.mark('shop','shop_opened',{day_number:viewDay,payer:ADFREE()?1:0,dot:$('shopBtn').classList.contains('dot')?1:0});
+    if(!PROF.shopSeen){ PROF.shopSeen=1; STORE.setJSON(PKEY,PROF); paintShopBtn(); } }
   if(id==='archPanel') paintArchive();
   if(id==='statsPanel'){ paintStats(); LOG.mark('stats','stats_opened',{day_number:viewDay,played:stats().played}); }
   if(id==='quiltPanel'){ paintQuilt(); paintThreads(); LOG.mark('quilt','quilt_opened',{day_number:viewDay,days:QUILT.days().length}); }
@@ -5254,6 +6309,9 @@ $('quiltShare').onclick=()=>{ SFX.play('tap'); shareQuilt(); };
    something was closed, false to let back mean leave. */
 window.VoltixBack=function(){
   if(!$('moreSheet').hidden){ closeMoreSheet(true); return true; }
+  if(!$('stuckSheet').hidden){ closeStuckSheet(true); return true; }
+  if(!$('liveSheet').hidden){ closeLiveSheet(true); return true; }
+  if(!$('noAdsToast').hidden){ hideNoAdsToast(true); return true; }
   if(!$('monthSheet').hidden){ closeMonthSheet(true); return true; }
   if(!$('loomSheet').hidden){ closeLoomSheet(true); return true; }
   for(const p of PANELS){ if($(p).classList.contains('show')){ $(p).classList.remove('show'); return true; } }

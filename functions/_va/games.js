@@ -42,6 +42,9 @@ const LOOM_EVENTS = [
   // a first day's more chances (Loom 1.2.2, 6 November 2026): an order woven twice
   // refused, the first touch, and a fresh rung-1 cloth after a lost one
   "weave_repeat", "first_touch", "rung_again",
+  // the hand on a first cloth and the day's players at a climb's end (Loom's GDD 17.4
+  // and 22.1, 7 November 2026)
+  "hand_shown", "players_shown", "players_scope", "tour_shown", "tour_ended",
 ];
 
 // AshenRise (codename sombra): ~/voltix_studios/Sombra/docs/ANALYTICS.md §3

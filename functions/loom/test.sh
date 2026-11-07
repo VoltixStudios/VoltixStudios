@@ -111,6 +111,26 @@ is "a loom reads back by its letter"                  "$(curl -s "localhost:$POR
 is "a climb is counted as the ladder, by its level"   "$(post "{\"d\":$DAY,\"a\":5,\"s\":300,\"k\":\"pppppppppppppppp\",\"l\":\"L\"}" | grep -o '"l":"L","n":1,"solved":\[0,0,0,0,1,0,0,0\]')" '"l":"L","n":1,"solved":[0,0,0,0,1,0,0,0]'
 is "and reads back by its letter"                      "$(curl -s "localhost:$PORT/loom/scores?d=$DAY&l=L" | grep -o '"l":"L","n":1')" '"l":"L","n":1'
 is "a loom that does not exist is refused"            "$(post "{\"d\":$DAY,\"a\":1,\"k\":\"nnnnnnnnnnnnnnnn\",\"l\":\"x\"}")" '{"error":"loom"}'
+
+# The climb as it goes (7 November 2026): one phone, several words, one count
+# that moves up with it and never down.
+c1=$(post "{\"d\":$DAY,\"a\":1,\"s\":20,\"k\":\"qqqqqqqqqqqqqqqq\",\"l\":\"L\"}")
+is "a climb's first rung is counted"                 "$(echo "$c1" | grep -o '"l":"L","n":2,"solved":\[1,0,0,0,1,0,0,0\]')" '"l":"L","n":2,"solved":[1,0,0,0,1,0,0,0]'
+c3=$(post "{\"d\":$DAY,\"a\":3,\"s\":80,\"k\":\"qqqqqqqqqqqqqqqq\",\"l\":\"L\"}")
+is "a higher level moves the same count up"          "$(echo "$c3" | grep -o '"l":"L","n":2,"solved":\[0,0,1,0,1,0,0,0\]')" '"l":"L","n":2,"solved":[0,0,1,0,1,0,0,0]'
+c2=$(post "{\"d\":$DAY,\"a\":2,\"s\":90,\"k\":\"qqqqqqqqqqqqqqqq\",\"l\":\"L\"}")
+is "a lower level changes nothing"                   "$(echo "$c2" | grep -o '"l":"L","n":2,"solved":\[0,0,1,0,1,0,0,0\]')" '"l":"L","n":2,"solved":[0,0,1,0,1,0,0,0]'
+cc=$(echo "$c3" | grep -o '"here":{"cc":"[A-Z][A-Z]"' | grep -o '"[A-Z][A-Z]"' | tr -d '"')
+if [ -n "$cc" ]; then
+  is "the country's count moves with it"             "$(echo "$c3" | grep -o '"here":{[^}]*}' | grep -o '"n":2,"solved":\[0,0,1,0,1,0,0,0\]')" '"n":2,"solved":[0,0,1,0,1,0,0,0]'
+  is "and reads back with the day"                   "$(curl -s "localhost:$PORT/loom/scores?d=$DAY&l=L" | grep -o '"here":{"cc":"'"$cc"'","n":2')" '"here":{"cc":"'"$cc"'","n":2'
+else
+  printf '  note  wrangler gave this request no country, so the country split is not exercised\n'
+fi
+# A climb counted by a build that only sent once has no level kept: left as it was.
+post "{\"d\":$DAY,\"a\":4,\"k\":\"rrrrrrrrrrrrrrrr\",\"l\":\"L\"}" >/dev/null
+npx --yes wrangler d1 execute loom --local --command "UPDATE loom_seen SET lv = NULL WHERE lv = 4" >/dev/null 2>&1
+is "an older climb is not moved"                     "$(post "{\"d\":$DAY,\"a\":6,\"k\":\"rrrrrrrrrrrrrrrr\",\"l\":\"L\"}" | grep -o '"l":"L","n":3,"solved":\[0,0,1,1,1,0,0,0\]')" '"l":"L","n":3,"solved":[0,0,1,1,1,0,0,0]'
 fr=$(npx --yes wrangler d1 execute loom --local --json --command "SELECT fresh, flost FROM loom_result WHERE day=$DAY AND tier='h'" 2>/dev/null | tr -d ' \n')
 is "a first day is marked on the loom too"            "$(echo "$fr" | grep -o '"fresh":1,"flost":0')" '"fresh":1,"flost":0'
 is "a build older than the looms with seven attempts still counts" "$(post "{\"d\":$DAY,\"a\":7,\"k\":\"oooooooooooooooo\"}" | grep -o '"solved":\[[0-9,]*\]')" '"solved":[2,3,1,0,0,1]'

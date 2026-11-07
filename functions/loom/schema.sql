@@ -25,11 +25,16 @@ CREATE TABLE IF NOT EXISTS loom_day (
   t6    INTEGER NOT NULL DEFAULT 0
 );
 
--- One row per phone per day, holding a hash and nothing else, so that a network
--- retry cannot count the same day twice. Deleted after a week.
+-- One row per phone per day, holding a hash, so that a network retry cannot
+-- count the same day twice. Deleted after a week. A climb's row (Loom's ladder,
+-- from 7 November 2026) also keeps the level it was last counted at and the
+-- country it was counted in, so a higher level later that day moves the one
+-- count instead of adding a second; nothing else is kept beside the hash.
 CREATE TABLE IF NOT EXISTS loom_seen (
   day INTEGER NOT NULL,
   id  TEXT NOT NULL,
+  lv  INTEGER,
+  cc  TEXT,
   PRIMARY KEY (day, id)
 );
 

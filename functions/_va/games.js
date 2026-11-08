@@ -64,6 +64,8 @@ const SOMBRA_EVENTS = [
 const SOMBRA_PROPS = [
   "app_version", "version_code", "first_day", "days_played", "furthest_level", "heroes",
   "main_hero", "power", "payer", "pass_active", "no_ads", "blood_on", "language", "ads_consent",
+  // days in a row with a game open (8 November 2026), for Retention's "streak at the last day"
+  "streak",
 ];
 
 // Pocket Foundry: ~/voltix_studios/PocketFoundry/docs/ANALYTICS.md, "The events"
@@ -135,17 +137,21 @@ export const GAMES = {
     licence:
       "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtpCam7HAnh/uwttyaIStWPdyHI3jB+lVtXm6kUZwvJdE3oRKpBGxevn6dK2tolZ35FtxNmRukT24qQk1JrPZCGrMW2iZBCOANhXvzg2qgmuZ+gQ73MZf3aqDQzkFK0MutolUzFsdVY9HUt2pjnzf55EFrWm+qiPEE5iXb/iG/u3h1bwyq9malrN41bpQuafcPuLsFMk/UBJ6gSw06hOItzXqYAPVtNEbNEKk9NxJNL9Zggyev7DE+MUbvINHZqe4R+abQvE1FOQgFWg1MaP7+JBBHnMsytCGcScQHkgK55QjfBxJnCIVZ5WNArgblZ3g5mNFcNsIxXVLk0aiCbNKQwIDAQAB",
   },
+  // The licence keys of AshenRise and Pocket Foundry are each repository's PLAY_LICENCE_KEY,
+  // the same key its Android build compiles into Receipt.java (added 8 November 2026).
   sombra: {
     pkg: "com.voltixstudios.ashenrise",
     events: new Set(SOMBRA_EVENTS),
     props: new Set(SOMBRA_PROPS),
-    licence: null,
+    licence:
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvDXkpZQQdv70k8+8M3R9OF/ADy4bX9IMaqDVVQOG7Ji1NcQ80/yEP7l8RrWEApJ6XBgqXoy3vYhUQ/4t5k/VS8HRaZxS59Y/hWwPM8i53wA1lu/4QqCdFOrM/H2IWMSH5tHJscps9iYHXQ1mQ4ZHCfG9OkZP+NPxd5Goo3KNeEU3aOROS2PwOqKENnfMYzt0U0w7+Fmc1nk+AJc2Sm7ZcmuD3mRXFqDgf95JulgmvNKws/O8CahItP+9URvi9F3aIIIbfgDLnaTMO4F0ZSBTYk440gSJ2b84H2KDmcW626r7LKmqBPd0fw/w20qmkMHWKvca6tX4zbasTiIPvhQhLQIDAQAB",
   },
   pocketfoundry: {
     pkg: "com.voltixstudios.pocketfoundry",
     events: new Set(POCKETFOUNDRY_EVENTS),
     props: new Set(POCKETFOUNDRY_PROPS),
-    licence: null,
+    licence:
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Ll/GAinqI+fxaXFadDMwO2b0X9YQs6C7sRv9edVcryIDpDbiNPkF2OoKH7EfYUuDtNk4mINDJtaFGmbzj8HZgEz9ksEh+eOBw9DvnDA85ygCWFUNWS3ItWKQqKgZaG4+AHLEosyBKXo4YEWfxUL2MrhtvhQMFfzNb6rMgE0SSG7F6DmzTQpvzm9zfU9EWY4TDOpVZJMn7ta6ipqQz0mTxGG1LLRGNm85GeLz2Bg0jxKKKpp3jgeni/rS1mHgCKabNXAG200VMD2OpNjX9iOJJS8eLhils+62lPDL15sX5bVe0DMC9MYk1/qLQQfVC348N24OKmpY8fhnaDrAeXYxQIDAQAB",
   },
   // The licence key is the one built into the game (IapService.LicenseKeyBase64).
   papersquadron: {

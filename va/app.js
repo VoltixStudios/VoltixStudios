@@ -107,6 +107,7 @@
               ["first_weave", "First weave"], ["first_result", "First result"], ["reminder_offered", "Offered the reminder"]],
       headline: ["first_result", "Got a first result"], second: ["loom_chosen", "Chose a first loom"],
       opens: ["launcher", "reminder", "link"],
+      first: "First result",
       reminder: [["Offered", "reminder_offered"], ["Accepted", "reminder_accepted"], ["Declined", "reminder_declined"],
                  ["Refused by Android", "reminder_permission_denied"], ["Opened the game", "reminder_opened"]],
       use: [["Statistics", "stats_opened"], ["Quilt", "quilt_opened"], ["Archive", "archive_opened"], ["Replayed solution", "solution_replayed"],
@@ -117,6 +118,7 @@
               ["first_fill", "Filled a first order"], ["first_island", "Opened an island"], ["first_repair", "Repaired a first place"]],
       headline: ["first_fill", "Filled a first order"], second: ["first_repair", "Repaired a first place"],
       opens: ["launcher", "notification"],
+      first: "Filled an order, day 1",
       reminder: [["Asked, in the game's words", "notify_asked"], ["Said yes", "notify_answer:on"], ["Not now", "notify_answer:not_now"],
                  ["Refused by Android", "notify_answer:denied"], ["Blocked in settings", "notify_answer:blocked"], ["Opened by a notification", "notif_open"]],
       use: [["Collected a workshop", "workshop_collect"], ["Daily reward", "daily_reward"], ["Used a hint", "hint_used"], ["Bought a solution", "solution_used"],
@@ -130,11 +132,25 @@
               ["orders", "Read the orders"], ["complete", "Finished the coached flight"]],
       headline: ["complete", "Finished the coached flight"], second: ["fire", "Fired a first shot"],
       opens: ["launcher", "resume"],
+      first: "Won a world, day 1",
       reminder: [["Asked for permission", "notif_permission"], ["Switched reminders", "notif_toggled"],
                  ["Reminders scheduled", "notif_scheduled"], ["Opened by a reminder", "notif_opened"]],
       use: [["Flew a world", "run_start"], ["Cleared a world", "world_cleared"], ["Weekly survival", "survival_start"],
             ["Bought gear", "gear_bought"], ["Upgraded gear", "gear_upgraded"], ["Picked up a health pack", "health_pack"],
             ["Short at the hangar", "shop_short"], ["Opened the store", "iap_store_open"]],
+    },
+    /* AshenRise: the first session's milestones (AN.step), what players do in the hub. It has no
+       reminders. Sombra/docs/ANALYTICS.md. */
+    sombra: {
+      steps: [["level_1_2_started", "Started level 1-2"], ["level_1_2_won", "Won level 1-2"], ["hub_seen", "Reached the hub"],
+              ["first_upgrade", "First hero upgrade"], ["first_equip", "First item equipped"]],
+      headline: ["level_1_2_won", "Won level 1-2"], second: ["hub_seen", "Reached the hub"],
+      opens: ["launcher"],
+      first: "Won a level, day 1",
+      reminder: [],
+      use: [["Upgraded a hero", "hero_upgrade"], ["Upgraded a skill", "skill_upgrade"], ["Equipped an item", "item_equipped"],
+            ["Enhanced an item", "item_enhanced"], ["Fused in the forge", "forge_fused"], ["Opened a chest", "chest_opened"],
+            ["Daily gift", "daily_gift"], ["Completed a quest", "quest_complete"], ["Opened the shop", "shop_open"]],
     },
   };
   const profile = (g) => PROFILES[g] || null;
@@ -219,7 +235,7 @@
         if (sources.length > 3) parts[2] += sumBy(rows.filter((r) => top.indexOf(r.source) < 0), (r) => r.n);
         return { parts, tip: dayLabel(day) + ": " + parts.reduce((a, b) => a + b, 0) + " new" };
       }), colours), dayAxis(d.from, d.today)));
-    const campHead = h("tr", null, ["Source / campaign", "New", "First result", "D1"].map((t, i) => h("th", { class: i ? null : "left", text: t })));
+    const campHead = h("tr", null, ["Source / campaign", "New", (P && P.first) || "Won a level, day 1", "D1"].map((t, i) => h("th", { class: i ? null : "left", text: t })));
     const campRows = d.campaigns.map((c) => h("tr", null,
       h("td", { class: "left", text: c.campaign ? c.source + ": " + c.campaign : c.source }),
       h("td", { text: int(c.n) }), h("td", { text: share(c.first, c.n) }), h("td", { text: share(c.d1r, c.d1n) })));
@@ -340,7 +356,7 @@
     const causes = P ? P.opens : [...new Set(d.opens.map((r) => r.value))];
     out.push(h("div", { class: "grid3" },
       card("What opened the game", causes.length ? hbars(causes.map((c) => ({ label: c, n: open(c) })), ot || null) : empty()),
-      card("Reminders", P ? hbars(P.reminder.map(([l, n]) => ({ label: l, n: t(n) })), null) : empty("No reminder events defined for this game.")),
+      card("Reminders", P && P.reminder.length ? hbars(P.reminder.map(([l, n]) => ({ label: l, n: t(n) })), null) : empty("No reminder events defined for this game.")),
       card("What they use", h("div", { class: "small", text: "Share of player-days" }),
         P ? hbars(P.use.map(([l, n]) => ({ label: l, n: t(n) })), d.playerDays || null) : empty("No features defined for this game."))));
     return out;
@@ -404,9 +420,57 @@
     return out;
   }
 
+  /* AshenRise: levels, heroes, what kills, bosses, the three balances, finds and the hub
+     (Sombra/docs/ANALYTICS.md, section 6). */
+  const RARITY = ["Common", "Rare", "Epic", "Legendary", "Mythic", "Immortal"];
+  function ashenProgress(d) {
+    const L = d.levels, tot = (name) => (d.places.find((r) => r.name === name) || { n: 0 }).n;
+    const won = sumBy(L, (r) => r.won), runs = sumBy(L, (r) => r.won + r.lost + r.left_);
+    const out = [tiles([
+      ["Levels won", share(won, runs), "of runs finished or left, since " + dayLabel(d.since)],
+      ["Deaths", int(tot("player_died"))],
+      ["Bosses beaten", int(sumBy(d.bosses, (r) => r.won)), "of " + int(sumBy(d.bosses, (r) => r.fights)) + " boss fights"],
+      ["Worlds reached", int(tot("world_reached")), int(tot("career_complete")) + " careers completed"],
+    ])];
+    out.push(card("Levels", h("div", { class: "small", text: "Players count installs that started the level; cleared, those that won it at least once. Won, lost and left count runs; AUTO counts runs started on AUTO." }),
+      L.length ? table(["Level", "Players", "Cleared", "Starts", "Won", "Lost", "Left", "AUTO"],
+        L.map((r) => [r.level, int(r.players), int(r.cleared), int(r.starts), int(r.won), int(r.lost), int(r.left_), int(r.auto)])) : empty()));
+    out.push(h("div", { class: "grid2" },
+      card("By hero", d.heroes.length ? table(["Hero", "Players", "Won", "Lost", "Left"],
+        d.heroes.map((r) => [r.hero || "unknown", int(r.players), int(r.won), int(r.lost), int(r.left_)])) : empty()),
+      card("What killed the hero", d.killers.length ? hbars(d.killers.map((r) => ({ label: String(r.killer || "unknown").replace(/_/g, " "), n: r.n })), sumBy(d.killers, (r) => r.n)) : empty())));
+    out.push(h("div", { class: "grid2" },
+      card("Bosses", d.bosses.length ? table(["Boss", "Players", "Fights", "Won"],
+        d.bosses.map((r) => [String(r.boss || "unknown").replace(/_/g, " "), int(r.players), int(r.fights), int(r.won)])) : empty()),
+      card("Items found, by rarity", d.found.length ? hbars(RARITY.map((name, i) => ({ label: name, n: sumBy(d.found.filter((r) => +r.rarity === i), (r) => r.n) }))
+        .filter((r) => r.n), sumBy(d.found, (r) => r.n)) : empty())));
+    const led = (cur, dir) => d.ledger.filter((r) => r.currency === cur && r.dir === dir);
+    out.push(h("div", { class: "grid3" },
+      ...["gold", "gems", "souls"].map((cur) => card("The " + cur + " ledger",
+        h("div", { class: "small", text: "In " + int(sumBy(led(cur, "earn_virtual_currency"), (r) => r.total)) + ", out " + int(sumBy(led(cur, "spend_virtual_currency"), (r) => r.total)) }),
+        hbars(led(cur, "earn_virtual_currency").slice(0, 8).map((r) => ({ label: "+ " + r.what, n: r.total }))
+          .concat(led(cur, "spend_virtual_currency").slice(0, 8).map((r) => ({ label: "− " + r.what, n: r.total }))), null)))));
+    out.push(h("div", { class: "grid2" },
+      card("Heroes joined", d.joined.length ? hbars(d.joined.map((r) => ({ label: r.hero + (r.how ? ", by " + r.how : ""), n: r.n })), null) : empty()),
+      card("The hub", hbars([["Hero upgrades", "hero_upgrade"], ["Skill upgrades", "skill_upgrade"], ["Skills equipped", "skill_equipped"], ["Items equipped", "item_equipped"],
+        ["Items enhanced", "item_enhanced"], ["Forge fusions", "forge_fused"], ["Redeemed upgrades", "redeemed_upgrade"], ["Chests opened", "chest_opened"],
+        ["Armoury buys", "armoury_bought"], ["Quests completed", "quest_complete"], ["Daily gifts", "daily_gift"], ["Supply crates", "supply_crate"],
+        ["Specials used", "special_used"], ["Commanders joined", "commander_joined"]].map(([l, n]) => ({ label: l, n: tot(n) })), null))));
+    const P = d.players;
+    out.push(card("Players, latest first", h("div", { class: "small", text: "Each install's most recent state, from its user properties." }),
+      P.length ? table(["Install", "Phone", "Last seen", "Furthest level", "Heroes", "Main hero", "Power", "Days played", "Streak", "Events"],
+        P.map((p) => { const f = +p.u.furthest_level || 0;
+          return [p.install, p.model || "unknown", p.t ? new Date(p.t).toISOString().slice(5, 16).replace("T", " ") : "–",
+            /* world × 10 + level, ten levels a world, so 1-10 arrives as 20 */
+            f ? Math.floor((f - 1) / 10) + "-" + ((f - 1) % 10 + 1) : "–", p.u.heroes ?? "–", p.u.main_hero || "–", p.u.power ?? "–",
+            p.u.days_played ?? "–", p.u.streak ?? "–", int(p.events)]; })) : empty()));
+    return out;
+  }
+
   PAGES.progress = (d) => {
     if (d.pf) return foundryProgress(d);
     if (d.ps) return squadronProgress(d);
+    if (d.ash) return ashenProgress(d);
     if (d.note) return [card(null, empty(d.note))];
     const looms = ["e", "n", "h", ""].filter((l) => d.results.some((r) => r.loom === l) || pick(d.opened, "puzzle_started", l).length);
     const climb = climbCards(d);
@@ -480,8 +544,9 @@
       ["Payers", share(k.payers, k.players), "of players in the range"]])];
     const places = [...new Set(d.offers.map((r) => r.value))];
     const s = (name, p) => int(sumBy(pick(d.offers, name, p), (r) => r.events));
-    out.push(card("The offer, by placement", places.length
-      ? table(["Placement", "Shown", "Dismissed", "Purchase started", "Completed"],
+    /* Loom splits by placement; the other games by product or offer card (the API's offerFunnel). */
+    out.push(card("The offer, by placement or product", places.length
+      ? table(["Placement or product", "Shown", "Dismissed", "Purchase started", "Completed"],
               places.map((p) => [p, s("offer_shown", p), s("offer_dismissed", p), s("purchase_started", p), s("purchase_completed", p)]))
       : empty()));
     const rp = [...new Set(d.rewarded.map((r) => r.value))];

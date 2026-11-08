@@ -146,7 +146,7 @@ is "Paper Squadron's events are accepted, its ads under VA's names" "$(post /col
 is "Paper Squadron's install source is accepted"             "$(post /collect '{"v":1,"g":"papersquadron","i":"psqsrc-0123456789ab","p":"app","vc":50,"src":{"source":"google-ads","medium":"cpc","campaign":""},"e":[{"n":"install_source","x":{"build":"release","utm_source":"google-ads","utm_medium":"cpc","ref_keys":"gbraid,gclid"}}]}')" '{"ok":true,"kept":1,"refused":0,"purchases":0}'
 is "and kept on the install, an advert's as google-ads / cpc" "$(sql "SELECT src_source, src_medium FROM va_install WHERE install = 'psqsrc-0123456789ab'")" "google-ads|cpc"
 is "ad_impression, which GA4 reserves, is not a Loom event"  "$(post /collect "{\"v\":1,\"g\":\"loom\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"ad_impression\"},{\"n\":\"ad_paid\"}]}")" '{"ok":true,"kept":1,"refused":1,"purchases":0}'
-is "a game without its licence key yet never verifies a purchase" "$(post /collect "{\"v\":1,\"g\":\"sombra\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[],\"pur\":[{\"data\":$(pj '{"orderId":"GPA.0000-1111-2222-33333","packageName":"com.voltixstudios.ashenrise","productId":"sombra_gems_100","purchaseToken":"t9"}'),\"sig\":\"AAAA\",\"price_micros\":990000,\"currency\":\"EUR\"}]}" >/dev/null; sql "SELECT verified FROM va_purchase WHERE id = 'GPA.0000-1111-2222-33333'")" "0"
+is "a purchase not signed with AshenRise's key is never verified" "$(post /collect "{\"v\":1,\"g\":\"sombra\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[],\"pur\":[{\"data\":$(pj '{"orderId":"GPA.0000-1111-2222-33333","packageName":"com.voltixstudios.ashenrise","productId":"sombra_gems_100","purchaseToken":"t9"}'),\"sig\":\"AAAA\",\"price_micros\":990000,\"currency\":\"EUR\"}]}" >/dev/null; sql "SELECT verified FROM va_purchase WHERE id = 'GPA.0000-1111-2222-33333'")" "0"
 
 echo "Purchases"
 signed () {  # signed <json> -> the base64 signature, as Play makes it
@@ -169,6 +169,7 @@ is "the same order sent twice is one row"                   "$(sql "SELECT COUNT
 P4='{"orderId":"GPA.3333-4444-5555-66666","packageName":"com.voltixstudios.papersquadron","productId":"paper_pack","purchaseTime":'$NOW',"purchaseToken":"tok4"}'
 post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"purchase_completed\"}],\"pur\":[{\"data\":$(pj "$P4"),\"sig\":\"$(signed "$P4")\",\"price_micros\":1990000,\"currency\":\"EUR\"}]}" >/dev/null
 is "a Paper Squadron purchase Google signed is verified"    "$(sql "SELECT verified, sku FROM va_purchase WHERE id = 'GPA.3333-4444-5555-66666'")" "1|paper_pack"
+is "every game has its Play licence key"                     "$(cd "$SITE" && node -e 'import("./functions/_va/games.js").then(m => console.log(Object.entries(m.GAMES).filter(([k, g]) => !/^MIIB[A-Za-z0-9+\/=]{300,}$/.test(g.licence || "")).map(([k]) => k).join(",") || "all"))')" "all"
 
 echo "The daily cap"
 CAPID=99999999-8888-7777-6666-555555555555
@@ -234,6 +235,35 @@ post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$PSQ\",\"p\":\"app\",\"e
   {\"n\":\"health_pack\",\"t\":$NOW,\"s\":\"a1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"healed\":30}},
   {\"n\":\"shop_short\",\"t\":$NOW,\"s\":\"a1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"what\":\"buy\"}},
   {\"n\":\"level_end\",\"t\":$NOW,\"s\":\"a1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"level_name\":\"classroom\",\"world_index\":1,\"success\":true,\"left\":false,\"engagement_time_msec\":240000}}]}" >/dev/null
+# AshenRise: level 1-2 won by the Warden, a death to a goblin, a boss beaten, gold in, a rare find,
+# an offer card shown and a purchase started and declined.
+ASH=56565656-7878-9090-1212-343434343434
+ae () { echo "{\"n\":\"$1\",\"t\":$NOW,\"s\":\"h1\",\"d\":$TD,\"x\":{\"build\":\"release\"$2},\"u\":{\"furthest_level\":12,\"main_hero\":\"warden\",\"streak\":2}}"; }
+is "AshenRise's play is kept, its streak among the properties" "$(post /collect "{\"v\":1,\"g\":\"sombra\",\"i\":\"$ASH\",\"p\":\"app\",\"e\":[
+  $(ae app_open ',"cause":"launcher"'),
+  $(ae level_start ',"level_name":"1-2","world":1,"hero":"warden","auto":0'),
+  $(ae player_died ',"level_name":"1-2","killer":"goblin"'),
+  $(ae boss_fight ',"level_name":"1-2","boss":"ogre","success":1'),
+  $(ae level_end ',"level_name":"1-2","world":1,"hero":"warden","success":1,"left":0'),
+  $(ae earn_virtual_currency ',"virtual_currency_name":"gold","value":120,"source":"level"'),
+  $(ae item_found ',"item_id":"sword_2","rarity":1,"source":"level"'),
+  $(ae offer_shown ',"offer":"gems_100"'),
+  $(ae purchase_started ',"item_id":"sombra_gems_100"'),
+  $(ae purchase_failed ',"item_id":"sombra_gems_100","state":"declined"')]}")" '{"ok":true,"kept":10,"refused":0,"purchases":0}'
+# Loom sends a completed purchase twice, as purchase_completed with its placement and as GA4's `purchase`.
+post /collect "{\"v\":1,\"g\":\"loom\",\"i\":\"$SAME\",\"p\":\"app\",\"e\":[
+  {\"n\":\"purchase_completed\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"placement\":\"hint\",\"item_id\":\"loom_hints_10\"}},
+  {\"n\":\"purchase\",\"t\":$NOW,\"s\":\"2\",\"d\":$TD,\"x\":{\"build\":\"release\",\"item_id\":\"loom_hints_10\",\"value\":0.99}}]}" >/dev/null
+# Pocket Foundry names a completed purchase `purchase`; Paper Squadron's older builds send a failure
+# without a state, and a cancellation as iap_cancelled.
+PFI=89898989-0101-2323-4545-676767676767
+post /collect "{\"v\":1,\"g\":\"pocketfoundry\",\"i\":\"$PFI\",\"p\":\"app\",\"e\":[
+  {\"n\":\"offer_shown\",\"t\":$NOW,\"s\":\"f1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"offer\":\"starter\"}},
+  {\"n\":\"purchase_started\",\"t\":$NOW,\"s\":\"f1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"item_id\":\"pf_starter\",\"sku\":\"pf_starter\"}},
+  {\"n\":\"purchase\",\"t\":$NOW,\"s\":\"f1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"item_id\":\"pf_starter\",\"value\":2.99}}]}" >/dev/null
+post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$PSQ\",\"p\":\"app\",\"e\":[
+  {\"n\":\"purchase_failed\",\"t\":$NOW,\"s\":\"a1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"item_id\":\"paper_pack\",\"reason\":\"PaymentDeclined\"}},
+  {\"n\":\"iap_cancelled\",\"t\":$NOW,\"s\":\"a1\",\"d\":$TD,\"x\":{\"build\":\"release\",\"item_id\":\"paper_pack\"}}]}" >/dev/null
 is "Refresh now without a login is refused"                 "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$U/va/api/refresh")" "401"
 is "Refresh now from another site is refused"               "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Cookie: $COOKIE" -H 'Origin: https://evil.example' "$U/va/api/refresh")" "403"
 is "Refresh now runs the summary"                           "$(curl -s -X POST -H "Cookie: $COOKIE" "$U/va/api/refresh" | grep -o '"ok":true')" '"ok":true'
@@ -252,6 +282,16 @@ is "and counts the climb's end and the shop"                "$(api "progress?gam
 is "Paper Squadron's progress page has its world, boss and pack" "$(api "progress?game=papersquadron&build=release" | python3 -c 'import json,sys; d=json.load(sys.stdin); w=d["worlds"][0]; print(d.get("ps"), w["world"], w["won"], w["bosses"], d["packs"]["n"], d["short"]["n"])')" "True classroom 1 1 1 1"
 is "its level_end counts as the day's win, with its time in game" "$(sql "SELECT wins, seconds FROM va_daily_user WHERE game = 'papersquadron' AND install = '$PSQ'")" "1|240"
 is "and Loom's own progress page never lists it"              "$(api "progress?game=loom&build=all" | grep -c '"pf":true')" "0"
+pj2 () { python3 -c "import json,sys; d=json.load(sys.stdin); $1"; }
+is "AshenRise's progress page has its level, hero, killer and boss" "$(api "progress?game=sombra&build=release" | pj2 'l=[x for x in d["levels"] if x["level"] == "1-2"][0]; print(d.get("ash"), l["players"], l["cleared"], l["won"], d["killers"][0]["killer"], d["bosses"][0]["won"])')" "True 1 1 1 goblin 1"
+is "and its ledger, its find and its player"                 "$(api "progress?game=sombra&build=release" | pj2 'p=d["players"][0]; print(d["ledger"][0]["currency"], d["ledger"][0]["total"], d["found"][0]["rarity"], p["u"]["furthest_level"], p["u"]["streak"])')" "gold 120 1 12 2"
+is "AshenRise's offer funnel splits by offer and by product" "$(api "money?game=sombra&build=release" | pj2 'print(sorted((r["name"], r["value"], r["events"]) for r in d["offers"]))')" "[('offer_shown', 'gems_100', 1), ('purchase_started', 'sombra_gems_100', 1)]"
+is "and its failed purchase by state"                        "$(api "money?game=sombra&build=release" | pj2 'print([(r["value"], r["events"]) for r in d["failed"]])')" "[('declined', 1)]"
+is "Pocket Foundry's purchase counts as completed"           "$(api "money?game=pocketfoundry&build=release" | pj2 'print(sorted((r["name"], r["value"]) for r in d["offers"]))')" "[('offer_shown', 'starter'), ('purchase_completed', 'pf_starter'), ('purchase_started', 'pf_starter')]"
+is "Loom's funnel keeps its placements, purchase not counted twice" "$(api "money?game=loom&build=release" | pj2 'print(sorted((r["name"], r["value"], r["events"]) for r in d["offers"]))')" "[('purchase_completed', 'hint', 1)]"
+is "Paper Squadron's failures without a state, and its cancellations" "$(api "money?game=papersquadron&build=release" | pj2 'print(sorted((r["value"], r["events"]) for r in d["failed"]))')" "[('cancelled', 1), ('not given', 1)]"
+is "Engagement lists every event the game sent"              "$(api "engagement?game=papersquadron&build=release" | pj2 'print(sorted(r["name"] for r in d["totals"] if r["name"] in ("health_pack", "shop_short")))')" "['health_pack', 'shop_short']"
+is "a first-day win is a first result outside Loom"          "$(api "acquisition?game=sombra&build=release" | pj2 'print(sum(r["first"] for r in d["campaigns"]) >= 1, sum(r["first"] for r in d["campaigns"]) <= sum(r["n"] for r in d["campaigns"]))')" "True True"
 is "Health counts only the chosen game's batches"             "$(api "health?game=pocketfoundry&build=all" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(sum(r["batches"] for r in d["intake"]))')" "$(sql "SELECT COUNT(*) FROM va_batch WHERE game = 'pocketfoundry'")"
 is "a second refresh within ten minutes is refused"         "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Cookie: $COOKIE" "$U/va/api/refresh")" "429"
 is "an unknown page is refused"                             "$(curl -s -o /dev/null -w '%{http_code}' -H "Cookie: $COOKIE" "$U/va/api/nothing")" "404"

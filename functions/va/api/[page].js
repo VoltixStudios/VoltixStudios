@@ -117,6 +117,12 @@ const PAGES = {
   },
 
   async acquisition(c) {
+    /* A first result on the first day: for Loom, a day solved or failed (va_day_result); for the
+       other games, a level won (level_end with success, counted into va_daily_user.wins). */
+    const first = c.game === "loom"
+      ? `EXISTS (SELECT 1 FROM va_day_result r WHERE r.game = ${c.G} AND r.install = coh.install
+                 AND r.played = coh.fd AND r.result <> 'left')`
+      : `EXISTS (SELECT 1 FROM du x WHERE x.install = coh.install AND x.day = coh.fd AND x.wins > 0)`;
     const series = await c.all(`WITH ${c.W}
       SELECT i.fd AS day, COALESCE(i.src_source, 'unknown') AS source, COUNT(*) AS n
       FROM inst i JOIN du d ON d.install = i.install AND d.day = i.fd
@@ -126,8 +132,7 @@ const PAGES = {
         SELECT i.* FROM inst i JOIN du d ON d.install = i.install AND d.day = i.fd
         WHERE i.fd BETWEEN ${c.F} AND ${c.T})
       SELECT COALESCE(src_source, 'unknown') AS source, COALESCE(src_campaign, '') AS campaign, COUNT(*) AS n,
-             SUM(EXISTS (SELECT 1 FROM va_day_result r WHERE r.game = ${c.G} AND r.install = coh.install
-                          AND r.played = coh.fd AND r.result <> 'left')) AS first,
+             SUM(${first}) AS first,
              SUM(CASE WHEN fd < ${c.T} THEN 1 ELSE 0 END) AS d1n,
              SUM(fd < ${c.T} AND EXISTS (SELECT 1 FROM du x WHERE x.install = coh.install AND x.day = coh.fd + 1)) AS d1r
       FROM coh GROUP BY source, campaign ORDER BY n DESC LIMIT 20`);
@@ -202,12 +207,11 @@ const PAGES = {
         FROM inst i JOIN du d ON d.install = i.install AND d.day = i.fd WHERE i.fd BETWEEN ${c.F} AND ${c.T - 7})
       GROUP BY days`);
     const opens = await eventSum(c, ["app_open"], "cause");
-    const totals = await eventSum(c, ["reminder_offered", "reminder_accepted", "reminder_declined", "reminder_permission_denied",
-      "reminder_opened", "stats_opened", "quilt_opened", "archive_opened", "solution_replayed", "help_opened", "share_pressed",
-      "level_start", "shop_open",
-      // Pocket Foundry (PF-019): its reminders and what players use
-      "notify_asked", "notify_answer", "notif_open", "hint_used", "solution_used", "decoration_bought",
-      "workshop_collect", "contract_paid", "tier_claimed", "daily_reward", "building_upgrade"], "");
+    /* Every event the game sent, so each game's profile on the page (its reminders and what players
+       use) finds its own names. A fixed list here had left Paper Squadron's cards at nought. */
+    const totals = await c.all(`SELECT name, value, SUM(events) AS events, SUM(players) AS players FROM va_event_day
+                                WHERE game = ${c.G} AND ${c.BF("build")} AND day BETWEEN ${c.F} AND ${c.T} AND dim = ''
+                                GROUP BY name, value`);
     const answers = await eventSum(c, ["notify_answer"], "state");
     const playerDays = await c.one(`WITH ${c.W} SELECT COUNT(*) AS n FROM du WHERE day BETWEEN ${c.F} AND ${c.T}`);
     return { k, heat, lengths, median: med, firstWeek, opens, totals, answers, playerDays: playerDays.n || 0 };
@@ -216,6 +220,7 @@ const PAGES = {
   async progress(c) {
     if (c.game === "pocketfoundry") return foundryProgress(c);
     if (c.game === "papersquadron") return squadronProgress(c);
+    if (c.game === "sombra") return ashenProgress(c);
     if (c.game !== "loom") return { note: "This game's progress pages arrive with its events." };
     const R = `va_day_result WHERE game = ${c.G} AND played BETWEEN ${c.F} AND ${c.T}
                AND install IN (SELECT install FROM va_daily_user WHERE game = ${c.G} AND ${c.BF("build")})`;
@@ -259,8 +264,8 @@ const PAGES = {
   },
 
   async money(c) {
-    const offers = await eventSum(c, ["offer_shown", "offer_dismissed", "purchase_started", "purchase_completed"], "placement");
-    const failed = await eventSum(c, ["purchase_failed"], "state");
+    const offers = await offerFunnel(c);
+    const failed = await failedPurchases(c);
     const rewarded = await eventSum(c, ["rewarded_ad_offered", "rewarded_ad_started", "rewarded_ad_completed"], "placement");
     const inter = await eventSum(c, ["interstitial_shown"], "");
     const revenue = await c.all(`SELECT CAST((purchase_time - ${DAY0}) / 86400000 AS INTEGER) AS day, sku, currency,
@@ -438,6 +443,107 @@ const PAGES = {
 const ROBOT = `(COALESCE(i.dev_model, '') LIKE 'Google sdk_gphone%' OR
   (COALESCE(i.dev_screen, '') IN ('288x448','448x288','480x288','288x480') AND
    (COALESCE(i.dev_model, '') IN ('OnePlus OnePlus8Pro', 'HUAWEI HRY-LX1T') OR COALESCE(i.dev_webview, '') = '90.0.4430.210')))`;
+
+/* The offer funnel (Money). Loom's offer and purchase events carry the placement; the other games
+   name the product (item_id: Paper Squadron, AshenRise, Pocket Foundry from 8 November 2026) or the
+   offer (AshenRise's and Pocket Foundry's offer cards). Each event is split by the first of those it
+   carries; what carries none shows as one row, "(not named)", so the counts are never lost. Pocket
+   Foundry names a completed purchase `purchase`, which counts as completed in a game that sends no
+   `purchase_completed` (Loom and AshenRise send both, so theirs is not counted twice). */
+const FUNNEL_KEYS = ["placement", "item_id", "offer"];
+async function offerFunnel(c) {
+  const rows = await c.all(`SELECT name, dim, value, SUM(events) AS events, SUM(players) AS players FROM va_event_day
+      WHERE game = ${c.G} AND ${c.BF("build")} AND day BETWEEN ${c.F} AND ${c.T}
+        AND name IN ('offer_shown', 'offer_dismissed', 'purchase_started', 'purchase_completed', 'purchase')
+        AND dim IN ('', ${FUNNEL_KEYS.map((k) => `'${k}'`).join(", ")})
+      GROUP BY name, dim, value`);
+  const hasCompleted = rows.some((r) => r.name === "purchase_completed");
+  const out = [];
+  for (const name of ["offer_shown", "offer_dismissed", "purchase_started", "purchase_completed", "purchase"]) {
+    if (name === "purchase" && hasCompleted) continue;
+    const as = name === "purchase" ? "purchase_completed" : name;
+    const mine = rows.filter((r) => r.name === name);
+    const total = mine.filter((r) => r.dim === "").reduce((a, r) => a + (r.events || 0), 0);
+    const key = FUNNEL_KEYS.find((k) => mine.some((r) => r.dim === k));
+    let named = 0;
+    if (key) for (const r of mine.filter((x) => x.dim === key)) {
+      out.push({ name: as, value: r.value, events: r.events, players: r.players });
+      named += r.events || 0;
+    }
+    if (total > named) out.push({ name: as, value: "(not named)", events: total - named, players: null });
+  }
+  return out;
+}
+
+/* Why purchases failed (Money): purchase_failed by its `state`; a failure without one as "not given";
+   and Paper Squadron's cancellations, which it sends as their own event, iap_cancelled, as "cancelled". */
+async function failedPurchases(c) {
+  const rows = await c.all(`SELECT name, dim, value, SUM(events) AS events FROM va_event_day
+      WHERE game = ${c.G} AND ${c.BF("build")} AND day BETWEEN ${c.F} AND ${c.T}
+        AND ((name = 'purchase_failed' AND dim IN ('', 'state')) OR (name = 'iap_cancelled' AND dim = ''))
+      GROUP BY name, dim, value`);
+  const by = new Map();
+  const add = (v, n) => { if (n > 0) by.set(v, (by.get(v) || 0) + n); };
+  const total = rows.filter((r) => r.name === "purchase_failed" && r.dim === "").reduce((a, r) => a + (r.events || 0), 0);
+  let named = 0;
+  for (const r of rows.filter((x) => x.name === "purchase_failed" && x.dim === "state")) { add(r.value, r.events || 0); named += r.events || 0; }
+  add("not given", total - named);
+  add("cancelled", rows.filter((r) => r.name === "iap_cancelled").reduce((a, r) => a + (r.events || 0), 0));
+  return [...by.entries()].sort((a, b) => b[1] - a[1]).map(([value, events]) => ({ name: "purchase_failed", value, events }));
+}
+
+/* AshenRise's progress (Sombra/docs/ANALYTICS.md, section 6): per level, how runs went and with which
+   hero; what kills the hero; the bosses; the three balances; what was found; the hub's spending; and,
+   while players are few, one row per player. Raw batches, so at most 90 days. */
+async function ashenProgress(c) {
+  const from = Math.max(c.F, c.T - 89);
+  const X = (k) => `json_extract(e.value, '$.x.${k}')`;
+  const E = `va_batch b, json_each(b.events) e WHERE b.game = ${c.G} AND b.day BETWEEN ${from} AND ${c.T}
+             AND ${c.BF(`COALESCE(${X("build")}, 'release')`)} AND ${c.NOTOWN("b.install")}`;
+  const N = `json_extract(e.value, '$.n')`;
+  const levels = await c.all(`SELECT ${X("level_name")} AS level, MIN(${X("world")}) AS world,
+      COUNT(DISTINCT CASE WHEN ${N} = 'level_start' THEN b.install END) AS players,
+      SUM(CASE WHEN ${N} = 'level_start' THEN 1 ELSE 0 END) AS starts,
+      SUM(CASE WHEN ${N} = 'level_end' AND ${X("success")} = 1 THEN 1 ELSE 0 END) AS won,
+      SUM(CASE WHEN ${N} = 'level_end' AND ${X("success")} = 0 AND COALESCE(${X("left")}, 0) = 0 THEN 1 ELSE 0 END) AS lost,
+      SUM(CASE WHEN ${N} = 'level_end' AND ${X("left")} = 1 THEN 1 ELSE 0 END) AS left_,
+      COUNT(DISTINCT CASE WHEN ${N} = 'level_end' AND ${X("success")} = 1 THEN b.install END) AS cleared,
+      SUM(CASE WHEN ${N} = 'level_start' AND ${X("auto")} = 1 THEN 1 ELSE 0 END) AS auto
+    FROM ${E} AND ${N} IN ('level_start', 'level_end') AND ${X("level_name")} IS NOT NULL
+    GROUP BY level ORDER BY world, CAST(SUBSTR(level, INSTR(level, '-') + 1) AS INTEGER) LIMIT 80`);
+  const heroes = await c.all(`SELECT ${X("hero")} AS hero, COUNT(DISTINCT b.install) AS players,
+      SUM(CASE WHEN ${X("success")} = 1 THEN 1 ELSE 0 END) AS won,
+      SUM(CASE WHEN ${X("success")} = 0 AND COALESCE(${X("left")}, 0) = 0 THEN 1 ELSE 0 END) AS lost,
+      SUM(CASE WHEN ${X("left")} = 1 THEN 1 ELSE 0 END) AS left_
+    FROM ${E} AND ${N} = 'level_end' GROUP BY hero ORDER BY players DESC`);
+  const killers = await c.all(`SELECT ${X("killer")} AS killer, COUNT(*) AS n FROM ${E} AND ${N} = 'player_died'
+    GROUP BY killer ORDER BY n DESC LIMIT 12`);
+  const bosses = await c.all(`SELECT ${X("boss")} AS boss, COUNT(*) AS fights, COUNT(DISTINCT b.install) AS players,
+      SUM(CASE WHEN ${X("success")} = 1 THEN 1 ELSE 0 END) AS won
+    FROM ${E} AND ${N} = 'boss_fight' GROUP BY boss ORDER BY fights DESC`);
+  const ledger = await c.all(`SELECT ${X("virtual_currency_name")} AS currency, ${N} AS dir,
+      COALESCE(${X("source")}, ${X("item_name")}) AS what, SUM(${X("value")}) AS total, COUNT(*) AS n
+    FROM ${E} AND ${N} IN ('earn_virtual_currency', 'spend_virtual_currency') GROUP BY currency, dir, what ORDER BY currency, dir, total DESC`);
+  const found = await c.all(`SELECT ${X("rarity")} AS rarity, ${X("source")} AS source, COUNT(*) AS n FROM ${E} AND ${N} = 'item_found'
+    GROUP BY rarity, source`);
+  const joined = await c.all(`SELECT ${X("hero")} AS hero, ${X("how")} AS how, COUNT(*) AS n FROM ${E} AND ${N} = 'hero_join'
+    GROUP BY hero, how`);
+  const places = await c.all(`SELECT ${N} AS name, COUNT(*) AS n, COUNT(DISTINCT b.install) AS players FROM ${E}
+    AND ${N} IN ('hero_upgrade', 'skill_upgrade', 'skill_equipped', 'item_equipped', 'item_enhanced', 'forge_fused', 'redeemed_upgrade',
+                 'chest_opened', 'armoury_bought', 'quest_complete', 'daily_gift', 'supply_crate', 'special_used', 'world_reached',
+                 'career_complete', 'commander_joined', 'player_died')
+    GROUP BY name`);
+  const players = await c.all(`SELECT p.install AS install, p.u AS u, p.t AS t, i.dev_model AS model, p.events AS events FROM (
+      SELECT b.install, json_extract(e.value, '$.u') AS u, json_extract(e.value, '$.t') AS t,
+             COUNT(*) OVER (PARTITION BY b.install) AS events,
+             ROW_NUMBER() OVER (PARTITION BY b.install
+                                ORDER BY json_extract(e.value, '$.u') IS NULL, json_extract(e.value, '$.t') DESC) AS rn
+      FROM ${E}) p LEFT JOIN va_install i ON i.game = ${c.G} AND i.install = p.install
+    WHERE p.rn = 1 ORDER BY p.t DESC LIMIT 30`);
+  return { ash: true, since: from, levels, heroes, killers, bosses, ledger, found, joined, places,
+    players: players.map((p) => ({ install: String(p.install).slice(0, 8), model: p.model, t: p.t, events: p.events,
+      u: (() => { try { return JSON.parse(p.u) || {}; } catch (e) { return {}; } })() })) };
+}
 
 /* Pocket Foundry's progress (docs/ANALYTICS.md, "The dashboard"): read from the raw batches, which are
    kept 90 days, as the Health page reads its script errors. Small numbers are expected for months:

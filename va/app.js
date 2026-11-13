@@ -43,6 +43,27 @@
   }
   const store = { get(k, d) { try { return localStorage.getItem("va." + k) || d; } catch (e) { return d; } },
                   set(k, v) { try { localStorage.setItem("va." + k, v); } catch (e) {} } };
+  /* The figures of each view (page, game, range, builds), saved on this phone or browser so
+     that opening the dashboard reads nothing from the database. Cleared on Sign out. When the
+     browser's storage is full, the older half is dropped. */
+  const views = {
+    P: "va.v:",
+    get(k) { try { const s = localStorage.getItem(this.P + k); return s ? JSON.parse(s) : null; } catch (e) { return null; } },
+    set(k, d, at) {
+      const v = JSON.stringify({ at, d });
+      for (let i = 0; i < 4; i++) {
+        try { localStorage.setItem(this.P + k, v); return; } catch (e) { if (!this.drop(false)) return; }
+      }
+    },
+    keys() { const out = []; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith(this.P)) out.push(k); } } catch (e) {} return out; },
+    drop(all) {
+      const ks = this.keys().map((k) => { let at = 0; try { at = JSON.parse(localStorage.getItem(k)).at || 0; } catch (e) {} return [at, k]; });
+      if (!ks.length) return false;
+      ks.sort((a, b) => a[0] - b[0]);
+      ks.slice(0, all ? ks.length : Math.ceil(ks.length / 2)).forEach(([, k]) => { try { localStorage.removeItem(k); } catch (e) {} });
+      return true;
+    },
+  };
   const dayLabel = (d) => { const t = new Date(DAY0 + d * 86400000); return t.getUTCDate() + " " + MONTHS[t.getUTCMonth()]; };
   const int = (n) => (n === null || n === undefined ? "–" : Math.round(n).toLocaleString("en-GB"));
   /* Shares are shown as counts, "27/176", never as percentages (Sr. Orra, 30 October
@@ -710,26 +731,61 @@
     mb.setAttribute("aria-pressed", String(state.mine));
     mb.textContent = "My phones: " + (state.mine ? "in" : "out");
     const box = document.getElementById("page");
-    const mine = ++ticket;
+    ++ticket;
+    /* A view saved on this phone is shown as it is, with no request at all: the figures are
+       read from the database only when Sr. Orra asks (Refresh now, or Load for a view never
+       saved), because every read counts against D1's free daily limit (13 November 2026). */
+    const saved = views.get(viewKey());
+    if (saved) { try { render(saved.d, saved.at); return; } catch (e) { /* saved by an older dashboard: ask again */ } }
+    document.getElementById("subtitle").textContent = SUBS[state.page] || "";
+    document.getElementById("summaryLine").textContent = "Figures are read from the database only when you ask.";
+    const btn = h("button", { type: "button", class: "btn btn--primary", text: "Load" });
+    btn.addEventListener("click", () => load());
+    box.replaceChildren(h("p", { class: "empty" }, "Not saved on this phone yet for this game, range and builds. ", btn));
+  }
+
+  function viewParams() {
+    const params = { game: state.game, build: state.build };
+    if (state.mine) params.mine = "1";
+    const f = isoToDay(state.from), t = isoToDay(state.to);
+    if (state.range === "custom" && f !== null && t !== null) { params.from = f; params.to = t; }
+    else params.range = state.range === "custom" ? "30" : state.range;
+    return params;
+  }
+  const viewKey = () => state.page + "?" + new URLSearchParams(viewParams());
+
+  function render(d, at) {
+    document.getElementById("subtitle").textContent = state.page === "today" ? SUBS.today
+      : SUBS[state.page] + " · " + dayLabel(d.from) + " to " + dayLabel(d.today) + (d.custom ? " (custom)" : "");
+    summaryLine(d.summary);
+    const when = new Date(at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    document.getElementById("summaryLine").textContent += " Saved on this phone " + when + " (" + ago(new Date(at).toISOString()) + ").";
+    document.getElementById("page").replaceChildren(
+      h("div", { style: { display: "flex", flexDirection: "column", gap: "20px" } }, PAGES[state.page](d)));
+  }
+
+  /* Reads the current view from the database, saves it on this phone and shows it.
+     Returns false when it could not. */
+  async function load() {
+    const box = document.getElementById("page");
+    const mine = ++ticket, key = viewKey(), page = state.page;
     box.replaceChildren(h("p", { class: "empty", text: "Loading…" }));
     try {
-      const params = { game: state.game, build: state.build };
-      if (state.mine) params.mine = "1";
-      const f = isoToDay(state.from), t = isoToDay(state.to);
-      if (state.range === "custom" && f !== null && t !== null) { params.from = f; params.to = t; }
-      else params.range = state.range === "custom" ? "30" : state.range;
-      const r = await fetch("/va/api/" + state.page + "?" + new URLSearchParams(params), { credentials: "same-origin", headers: { Accept: "application/json" } });
-      if (r.status === 401) { location.href = "/va/login"; return; }
+      const r = await fetch("/va/api/" + page + "?" + new URLSearchParams(viewParams()), { credentials: "same-origin", headers: { Accept: "application/json" } });
+      if (r.status === 401) { location.href = "/va/login"; return false; }
       const d = await r.json();
-      if (mine !== ticket) return;
       if (!r.ok) throw new Error(d.detail || d.error || r.status);
-      document.getElementById("subtitle").textContent = state.page === "today" ? SUBS.today
-        : SUBS[state.page] + " · " + dayLabel(d.from) + " to " + dayLabel(d.today) + (d.custom ? " (custom)" : "");
-      summaryLine(d.summary);
-      box.replaceChildren(h("div", { style: { display: "flex", flexDirection: "column", gap: "20px" } }, PAGES[state.page](d)));
+      const at = Date.now();
+      views.set(key, d, at);
+      if (mine === ticket) render(d, at);
+      return mine === ticket;
     } catch (e) {
-      if (mine !== ticket) return;
-      box.replaceChildren(h("p", { class: "err", text: "Could not load this page: " + (e && e.message || e) }));
+      if (mine !== ticket) return false;
+      const saved = views.get(key);
+      if (saved) render(saved.d, saved.at);
+      else box.replaceChildren(h("p", { class: "err", text: "Could not load this page: " + (e && e.message || e) }));
+      document.getElementById("summaryLine").textContent += " Could not load new figures: " + (e && e.message || e);
+      return false;
     }
   }
 
@@ -740,11 +796,15 @@
     try {
       const r = await fetch("/va/api/refresh", { method: "POST", credentials: "same-origin", headers: { Accept: "application/json" } });
       if (r.status === 401) { location.href = "/va/login"; return; }
-      const d = await r.json();
-      if (r.ok) { await show(); line.textContent += " " + d.left_today + " manual refreshes left today."; }
-      else if (d.error === "recent") line.textContent = "A summary ran " + ago(d.at) + ". Try again in " + d.wait_min + " min.";
-      else if (d.error === "limit") line.textContent = "That was the last manual refresh for today (" + d.max + " a day). The next scheduled one is at 08:00 or 22:00.";
-      else line.textContent = "The refresh did not finish: " + (d.detail || d.error || r.status);
+      const d = await r.json().catch(() => ({}));
+      /* The page's figures are read again whatever happened to the summary: a summary that
+         ran a few minutes ago, or the day's last one already used, still leaves today's live
+         figures worth having. */
+      if (!(await load())) return;
+      if (r.ok) line.textContent += " " + d.left_today + " summary rebuilds left today.";
+      else if (d.error === "recent") line.textContent += " A summary ran " + ago(d.at) + ", so it was not rebuilt.";
+      else if (d.error === "limit") line.textContent += " No summary rebuilds left today (" + d.max + " a day); the next scheduled one is at 08:00 or 22:00.";
+      else line.textContent += " The summary did not rebuild: " + (d.detail || d.error || r.status);
     } catch (e) {
       line.textContent = "The refresh did not finish: " + (e && e.message || e);
     } finally { btn.disabled = false; btn.textContent = "Refresh now"; }
@@ -842,6 +902,7 @@
     document.getElementById("mine").addEventListener("click", () => {
       state.mine = !state.mine; store.set("mine", state.mine ? "1" : "0"); show(); });
     document.getElementById("refresh").addEventListener("click", refresh);
+    document.querySelectorAll('form[action="/va/logout"]').forEach((f) => f.addEventListener("submit", () => views.drop(true)));
     addEventListener("hashchange", show);
     pullToReload();
     swipeTabs();

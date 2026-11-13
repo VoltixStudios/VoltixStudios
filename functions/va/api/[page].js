@@ -384,11 +384,18 @@ const PAGES = {
     for (const k of camp) {
       const S = vaDay(Date.parse(k.start)), R = vaDay(Date.parse(k.review));
       const gl = k.games.map((g) => `'${g}'`).join(",");
+      /* Played a release build since the first day: the summaries for every day they cover
+         (an indexed look-up on va_daily_user's key), and the raw batches for today only.
+         Reading the raw batches for the whole campaign expanded every event of every player
+         since its first day, about a million rows per open of this page, and ran the free
+         plan's five million a day out by mid-afternoon (13 November 2026). */
       const counts = await c.all(`
         SELECT i.game, (i.country IN (${inList(k)})) AS camp, COUNT(*) AS n FROM ${players}
           AND i.game IN (${gl}) AND i.first_seen >= ${DAY0 + S * 86400000}
-          AND EXISTS (SELECT 1 FROM va_batch b, json_each(b.events) e
-                      WHERE b.game = i.game AND b.install = i.install AND b.day >= ${S} AND ${REL})
+          AND (EXISTS (SELECT 1 FROM va_daily_user d
+                       WHERE d.game = i.game AND d.install = i.install AND d.day BETWEEN ${S} AND ${T} AND d.${DU})
+               OR EXISTS (SELECT 1 FROM va_batch b, json_each(b.events) e
+                          WHERE b.game = i.game AND b.install = i.install AND b.day = ${T} AND ${REL}))
         GROUP BY i.game, camp`);
       const ret = await c.all(`
         WITH du AS (SELECT game, install, day FROM va_daily_user WHERE ${DU}),

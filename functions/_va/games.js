@@ -15,6 +15,8 @@
  *   sombra         ~/voltix_studios/Sombra/docs/ANALYTICS.md (AshenRise)
  *   pocketfoundry  ~/voltix_studios/PocketFoundry/docs/ANALYTICS.md
  *   papersquadron  ~/voltix_studios/PaperSquadron/docs/ANALYTICS-VA.md
+ *   reefseek       ~/voltix_studios/ReefSeek/docs/ANALYTICS.md
+ *   matsurilights  ~/voltix_studios/MatsuriLights/docs/ANALYTICS.md
  * The install source (utm_*) is not a user property here: it arrives once, in
  * the batch's `src`, and is kept on the install.
  */
@@ -45,6 +47,8 @@ const LOOM_EVENTS = [
   // the hand on a first cloth and the day's players at a climb's end (Loom's GDD 17.4
   // and 22.1, 7 November 2026)
   "hand_shown", "players_shown", "players_scope", "tour_shown", "tour_ended",
+  // the level sheet (Loom's GDD 19.3, 9 November 2026)
+  "level_sheet_shown", "level_sheet_closed",
 ];
 
 // AshenRise (codename sombra): ~/voltix_studios/Sombra/docs/ANALYTICS.md §3
@@ -124,9 +128,45 @@ const PAPERSQUADRON_PROPS = [
   "rc_variant", "days_played", "streak", "language", "ads_consent",
 ];
 
+// Reef & Seek: ~/voltix_studios/ReefSeek/docs/ANALYTICS.md, "Events" (registered 14 November 2026).
+// level_end carries success and left as AshenRise's does, so wins, losses and reefs left count the same way.
+const REEFSEEK_EVENTS = [
+  "app_open", "app_hidden", "js_error", "consent_status", "install_source",
+  "lesson_start", "lesson_done", "lesson_skip", "level_start", "level_end", "daily_done",
+  "hint", "continue", "upgrade", "sea", "aquarium", "aquarium_open", "aquarium_play", "friend",
+  "earn", "spend", "share", "setting", "style", "profile", "reset",
+  "styles_open", "shop_open", "album_open", "league_open", "past_open", "league_level",
+  "offer_shown", "offer_dismissed", "purchase_started", "purchase", "purchase_failed",
+  "rewarded_ad_started", "rewarded_ad_completed", "interstitial_shown", "ad_paid",
+];
+
+const REEFSEEK_PROPS = [
+  "app_version", "version_code", "days_played", "depth", "best", "streak", "freezes", "lang",
+  "learnt", "pearls", "no_ads", "compete",
+];
+
 const LOOM_PROPS = [
   "app_version", "version_code", "first_day", "payer", "days_played", "streak",
   "best_streak", "reminder_on", "preferred_loom", "ads_consent", "best_level", "live_weave",
+];
+
+// Matsuri Lights: ~/voltix_studios/MatsuriLights/docs/ANALYTICS.md, "Events" (added 14 November
+// 2026). The analytics module's own events (app_open, app_hidden, js_error, install_source) and every
+// A.ev() call in the game's index.html.
+const MATSURILIGHTS_EVENTS = [
+  "app_open", "app_hidden", "js_error", "install_source", "consent_status", "first_session_step",
+  "lesson_start", "lesson_skip", "lesson_done",
+  "level_start", "level_end", "daily_done", "hint", "share", "setting", "reset",
+  "earn", "spend", "festival_done", "past_open",
+  "league_open", "league_level", "profile",
+  "shop_open", "styles_open", "style", "style_set",
+  "offer_shown", "offer_dismissed", "purchase_started", "purchase", "purchase_failed",
+  "rewarded_ad_started", "rewarded_ad_completed", "interstitial_shown", "ad_paid",
+];
+
+const MATSURILIGHTS_PROPS = [
+  "app_version", "version_code", "days_played", "levels_lit", "streak", "freezes", "lang",
+  "learnt", "coins", "no_ads", "compete",
 ];
 
 export const GAMES = {
@@ -160,5 +200,20 @@ export const GAMES = {
     props: new Set(PAPERSQUADRON_PROPS),
     licence:
       "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAj6YF8xiiydrfoOCqZEl9NnptX1M6XyzaLejFth4p85hm7hsoPnbl+4KUmwGDJp3hVaC0v56WhlKrDZsT9EgBurZfhqxQ+8HCj6fR5VrO6SHwp75eXN5u+qMGYCyGz45j7b0aqrhVqOntQWFz80/TdeaYi3IqsUeoOVwZRz0pMK7nKJjZ+1egAcrlht/Cj43jVm0DZik/NXIYiok8jZwWD0gEOE2LqUk2lJmgIcgCZKanYVdRxBaznEk0TwNgtv3us2sfdZ6WR4VAKFd8dis7s2DfsqQ3ND/eYOHbwVzy2pbGMkS9kwSYTjeKIObxriJQg+YVSuPjJvCx4Zp3suo8FQIDAQAB",
+  },
+  // Not in Play Console yet (the package com.voltixstudios.reefseek is PROPOSED, ReefSeek RS-007), so
+  // no licence key: its purchases are stored, not verified, until the key is added here.
+  reefseek: {
+    pkg: "com.voltixstudios.reefseek",
+    events: new Set(REEFSEEK_EVENTS),
+    props: new Set(REEFSEEK_PROPS),
+    licence: null,
+  },
+  // Not in Play Console yet, so it has no licence key: its purchases are stored, not verified.
+  matsurilights: {
+    pkg: "com.voltixstudios.matsurilights",
+    events: new Set(MATSURILIGHTS_EVENTS),
+    props: new Set(MATSURILIGHTS_PROPS),
+    licence: null,
   },
 };

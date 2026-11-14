@@ -24,7 +24,8 @@
                  progress: "How far they get", money: "Offers, purchases Google signed, and adverts",
                  health: "Errors, late data, the collector and the nightly run" };
   const NS = "http://www.w3.org/2000/svg";
-  const NAMES = { loom: "Loom", sombra: "AshenRise", pocketfoundry: "Pocket Foundry", papersquadron: "Paper Squadron" };
+  const NAMES = { loom: "Loom", sombra: "AshenRise", pocketfoundry: "Pocket Foundry", papersquadron: "Paper Squadron",
+                  matsurilights: "Matsuri Lights", reefseek: "Reef & Seek" };
 
   /* ---------- small helpers ---------- */
   function h(tag, props, ...kids) {
@@ -82,10 +83,23 @@
     return h("div", { class: "tiles" }, list.map((t) =>
       h("div", { class: "tile" }, h("div", { class: "l", text: t[0] }), h("div", { class: "v", text: t[1] }), h("div", { class: "n", text: t[2] || "" }))));
   }
-  /* Stacked vertical bars: rows of { label, parts: [value...], tip }, colours by part. */
+  /* Tapping a chart shows its numbers (Sr. Orra, 14 November 2026): a phone has no hover, so a
+     title alone never shows. The numbers appear in a line above the chart, where the finger does
+     not cover them; tapping the same thing again clears it. */
+  function readout(hint) { return h("p", { class: "readout", text: hint, "data-hint": hint, "aria-live": "polite" }); }
+  function pickOne(box, el, line, text) {
+    const again = el && el.classList.contains("sel");
+    box.querySelectorAll(".sel").forEach((x) => x.classList.remove("sel"));
+    box.classList.toggle("picked", !again && !!el);
+    if (again || !el) { line.textContent = line.dataset.hint; line.classList.remove("on"); return false; }
+    el.classList.add("sel"); line.textContent = text; line.classList.add("on");
+    return true;
+  }
+  /* Stacked vertical bars: rows of { label, parts: [value...], tip }, colours by part. A tap
+     anywhere in a column's width picks it, so that ninety thin days can still be hit. */
   function bars(rows, colours, height) {
     const max = Math.max(1, ...rows.map((r) => r.parts.reduce((a, b) => a + b, 0)));
-    const box = h("div", { class: "bars", role: "img", "aria-label": "bar chart", style: { height: (height || 180) + "px" } });
+    const box = h("div", { class: "bars tap", role: "img", "aria-label": "bar chart", style: { height: (height || 180) + "px" } });
     for (const r of rows) {
       const col = h("div", { title: r.tip || "" });
       r.parts.slice().reverse().forEach((v, i) => {
@@ -94,7 +108,14 @@
       });
       box.appendChild(col);
     }
-    return box;
+    const line = readout("Tap a bar to see its numbers.");
+    box.addEventListener("click", (e) => {
+      if (!rows.length) return;
+      const rect = box.getBoundingClientRect();
+      const i = Math.max(0, Math.min(rows.length - 1, Math.floor((e.clientX - rect.left) / rect.width * rows.length)));
+      pickOne(box, box.children[i], line, rows[i].tip || "");
+    });
+    return h("div", null, line, box);
   }
   function axis(labels) { return h("div", { class: "axis" }, labels.map((l) => h("span", { text: l }))); }
   function legend(items) { return h("div", { class: "legend" }, items.map(([c, t]) => h("span", { style: { "--c": c }, text: t }))); }
@@ -102,10 +123,13 @@
   function hbars(rows, total, fmt) {
     if (!rows.length) return empty();
     const top = total || Math.max(1, ...rows.map((r) => r.n));
-    return h("div", { style: { display: "flex", flexDirection: "column", gap: "8px" } }, rows.map((r) =>
-      h("div", { class: "hrow" }, h("span", { text: String(r.label), title: String(r.label), style: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }),
+    /* A tap on a row lights it and unfolds a long label that was cut short. */
+    const list = h("div", { style: { display: "flex", flexDirection: "column", gap: "8px" } }, rows.map((r) =>
+      h("div", { class: "hrow tap" }, h("span", { class: "lbl", text: String(r.label), title: String(r.label) }),
         h("div", { class: "track" }, h("div", { style: { width: Math.min(100, (100 * r.n) / top) + "%" } })),
         h("span", { class: "num", text: fmt ? fmt(r) : (total ? share(r.n, total) : int(r.n)) }))));
+    list.addEventListener("click", (e) => { const row = e.target.closest(".hrow"); if (row) row.classList.toggle("sel"); });
+    return list;
   }
   function series(from, to, f) { const out = []; for (let d = from; d <= to; d++) out.push(f(d)); return out; }
   function dayAxis(from, to) { const n = to - from; return axis([0, 0.25, 0.5, 0.75, 1].map((p) => dayLabel(from + Math.round(n * p)))); }
@@ -172,6 +196,30 @@
       use: [["Upgraded a hero", "hero_upgrade"], ["Upgraded a skill", "skill_upgrade"], ["Equipped an item", "item_equipped"],
             ["Enhanced an item", "item_enhanced"], ["Fused in the forge", "forge_fused"], ["Opened a chest", "chest_opened"],
             ["Daily gift", "daily_gift"], ["Completed a quest", "quest_complete"], ["Opened the shop", "shop_open"]],
+    },
+    /* Matsuri Lights: the first day's steps (lesson, first courtyard, courtyard 3 that the closed test
+       reads, the daily puzzle), and what players use. MatsuriLights/docs/ANALYTICS.md. */
+    matsurilights: {
+      steps: [["lesson_start", "Started the lesson"], ["lesson_done", "Finished the lesson"], ["first_level", "Lit a first courtyard"],
+              ["courtyard_3", "Lit courtyard 3"], ["first_daily", "Lit the daily puzzle"]],
+      headline: ["courtyard_3", "Lit courtyard 3"], second: ["lesson_done", "Finished the lesson"],
+      opens: ["launcher", "notification"],
+      first: "Lit a courtyard, day 1",
+      reminder: [],
+      use: [["Asked for a hint", "hint"], ["Lit the daily puzzle", "daily_done"], ["Played a past day", "past_open"],
+            ["Shared a result", "share"], ["Opened the tournament", "league_open"], ["Lit a tournament courtyard", "league_level"],
+            ["Opened Styles", "styles_open"], ["Opened the shop", "shop_open"]],
+    },
+    /* Reef & Seek: no first-day steps of its own yet, so no headline tiles; a reef cleared counts as a
+       win through level_end's success. ReefSeek/docs/ANALYTICS.md. */
+    reefseek: {
+      steps: [],
+      opens: ["launcher", "notification"],
+      first: "Cleared a reef, day 1",
+      reminder: [],
+      use: [["Daily Reef", "daily_done"], ["Took a hint", "hint"], ["Continued", "continue"], ["Bought an upgrade", "upgrade"],
+            ["Called a friend", "friend"], ["Opened the aquarium", "aquarium_open"], ["Opened the album", "album_open"],
+            ["Opened the tournament", "league_open"], ["Opened the shop", "shop_open"], ["Shared the Daily Reef", "share"]],
     },
   };
   const profile = (g) => PROFILES[g] || null;
@@ -244,7 +292,7 @@
     const stepList = P ? P.steps : seen;
     const out = [tiles([
       ["New players, " + d.range + " days", int(total)],
-      ...(P ? [[P.headline[1], share(step(P.headline[0]), total), "of new players, first day"], [P.second[1], share(step(P.second[0]), total)]] : []),
+      ...(P && P.headline ? [[P.headline[1], share(step(P.headline[0]), total), "of new players, first day"], [P.second[1], share(step(P.second[0]), total)]] : []),
       ["Sources", int(sources.length)],
     ])];
     const colours = ["var(--a)", "var(--a2)", "var(--a3)"];
@@ -254,7 +302,9 @@
         const rows = d.series.filter((r) => r.day === day);
         const parts = top.map((s) => sumBy(rows.filter((r) => r.source === s), (r) => r.n));
         if (sources.length > 3) parts[2] += sumBy(rows.filter((r) => top.indexOf(r.source) < 0), (r) => r.n);
-        return { parts, tip: dayLabel(day) + ": " + parts.reduce((a, b) => a + b, 0) + " new" };
+        const names = top.slice(0, sources.length > 3 ? 2 : 3).concat(sources.length > 3 ? ["others"] : []);
+        return { parts, tip: dayLabel(day) + ": " + parts.reduce((a, b) => a + b, 0) + " new" +
+          (parts.some((v) => v) ? " (" + names.map((s, i) => s + " " + parts[i]).filter((x, i) => parts[i]).join(", ") + ")" : "") };
       }), colours), dayAxis(d.from, d.today)));
     const campHead = h("tr", null, ["Source / campaign", "New", (P && P.first) || "Won a level, day 1", "D1"].map((t, i) => h("th", { class: i ? null : "left", text: t })));
     const campRows = d.campaigns.map((c) => h("tr", null,
@@ -273,7 +323,7 @@
     const size = new Map(d.sizes.map((r) => [r.fd, r.n]));
     const cell = new Map(d.cells.map((r) => [r.fd + ":" + r.k, r.r]));
     /* Curves: each day n over the cohorts old enough to have reached it. */
-    const classic = [], rolling = [];
+    const classic = [], rolling = [], counts = [];
     const lastBy = new Map();
     for (const r of d.last) { const a = lastBy.get(r.fd) || []; a.push(r); lastBy.set(r.fd, a); }
     for (let k = 1; k <= 30; k++) {
@@ -283,6 +333,7 @@
         rr += sumBy((lastBy.get(fd) || []).filter((x) => x.lastk >= k), (x) => x.n);
       }
       classic.push(n >= 5 ? r / n : null); rolling.push(n >= 5 ? rr / n : null);
+      counts.push({ n, r, rr });
     }
     /* The tiles: returned / cohort size, over every cohort old enough for that day. */
     const at = (k) => { let n = 0, r = 0;
@@ -292,7 +343,10 @@
       ["Came back after a week away", int(d.returned), "in " + d.range + " days"]])];
     out.push(card("Return curve, day 1 to day 30",
       legend([["var(--a)", "Classic: played exactly on day n"], ["var(--a2)", "Rolling: day n or any day after"]]),
-      curve([classic, rolling], ["var(--a)", "var(--a2)"]), axis(["D1", "D8", "D15", "D22", "D30"])));
+      curve([classic, rolling], ["var(--a)", "var(--a2)"], (k) => { const c = counts[k];
+        return "D" + (k + 1) + ": " + (c.n >= 5 ? "classic " + c.r + "/" + c.n + " · rolling " + c.rr + "/" + c.n
+          : c.n ? "only " + c.n + " players old enough, too few to draw" : "no players old enough yet"); }),
+      axis(["D1", "D8", "D15", "D22", "D30"])));
     /* The table shows the last month (or the range, if longer); the curve above
        also uses the month before, so that D30 has cohorts old enough to read. */
     const cohorts = d.sizes.filter((r) => r.n > 0 && r.fd > d.today - Math.max(d.range, 31));
@@ -322,7 +376,7 @@
     return out;
   };
 
-  function curve(lines, colours) {
+  function curve(lines, colours, tip) {
     const svg = document.createElementNS(NS, "svg");
     svg.setAttribute("viewBox", "0 0 580 200"); svg.setAttribute("preserveAspectRatio", "none");
     svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "retention curves");
@@ -340,8 +394,33 @@
       p.setAttribute("points", pts.join(" ")); p.setAttribute("fill", "none"); p.setAttribute("stroke", colours[i]);
       p.setAttribute("stroke-width", "2.5"); p.setAttribute("vector-effect", "non-scaling-stroke"); svg.appendChild(p);
     });
-    const wrap = h("div", null, svg);
-    return wrap;
+    /* A tap picks the nearest day: a guide line and a dot on each curve, and the counts above.
+       Zero-length round-capped lines make dots that stay round although the drawing stretches. */
+    const n = lines[0].length, step = 580 / Math.max(1, n - 1);
+    const mark = document.createElementNS(NS, "g");
+    svg.appendChild(mark);
+    const line = readout("Tap the curve to see its numbers.");
+    let at = -1;
+    svg.classList.add("tap");
+    svg.addEventListener("click", (e) => {
+      const rect = svg.getBoundingClientRect();
+      const k = Math.max(0, Math.min(n - 1, Math.round((e.clientX - rect.left) / rect.width * (n - 1))));
+      mark.replaceChildren();
+      if (k === at) { at = -1; line.textContent = line.dataset.hint; line.classList.remove("on"); return; }
+      at = k;
+      const seg = (x1, y1, x2, y2, colour, width, cap) => {
+        const l = document.createElementNS(NS, "line");
+        l.setAttribute("x1", x1); l.setAttribute("y1", y1); l.setAttribute("x2", x2); l.setAttribute("y2", y2);
+        l.setAttribute("stroke", colour); l.setAttribute("stroke-width", width); l.setAttribute("vector-effect", "non-scaling-stroke");
+        if (cap) l.setAttribute("stroke-linecap", "round");
+        mark.appendChild(l);
+      };
+      seg(k * step, 0, k * step, 200, "var(--text-dim)", 1);
+      lines.forEach((vals, i) => { if (vals[k] !== null) { const y = 200 - (vals[k] / top) * 196; seg(k * step, y, k * step, y, colours[i], 9, true); } });
+      line.textContent = tip ? tip(k) : "";
+      line.classList.add("on");
+    });
+    return h("div", null, line, svg);
   }
 
   PAGES.engagement = (d) => {
@@ -350,16 +429,19 @@
       ["Sittings a day", k.spd ? k.spd.toFixed(1) : "–", "per active player"], ["Time in game", dur(k.seconds), "per player per day"]])];
     const hmax = Math.max(1, ...d.heat.map((r) => r.n));
     const grid = h("div", { class: "heat", role: "img", "aria-label": "sittings by hour and weekday" });
+    const heatLine = readout("Tap a square to see its numbers.");
+    grid.addEventListener("click", (e) => { const c = e.target.closest("[data-tip]"); if (c) pickOne(grid, c, heatLine, c.dataset.tip); });
     for (let w = 0; w < 7; w++) {
       grid.appendChild(h("span", { class: "small", text: DOW[w] }));
       for (let hr = 0; hr < 24; hr++) {
         const n = (d.heat.find((r) => r.dow === w && r.hour === hr) || {}).n || 0;
-        grid.appendChild(h("div", { title: DOW[w] + " " + hr + ":00, " + n, style: { background: "rgba(53,163,255," + (0.06 + 0.86 * n / hmax).toFixed(2) + ")" } }));
+        const tip = DOW[w] + " " + String(hr).padStart(2, "0") + ":00–" + String(hr).padStart(2, "0") + ":59: " + int(n) + (n === 1 ? " sitting" : " sittings");
+        grid.appendChild(h("div", { class: "tap", title: tip, "data-tip": tip, style: { background: "rgba(53,163,255," + (0.06 + 0.86 * n / hmax).toFixed(2) + ")" } }));
       }
     }
     grid.appendChild(h("span"));
     for (let hr = 0; hr < 24; hr++) grid.appendChild(h("span", { class: "small", style: { textAlign: "center" }, text: hr % 3 ? "" : String(hr) }));
-    out.push(card("When they play", h("div", { class: "small", text: "Sittings by hour and weekday, on each player's own clock" }), h("div", { class: "scroll" }, grid)));
+    out.push(card("When they play", h("div", { class: "small", text: "Sittings by hour and weekday, on each player's own clock" }), heatLine, h("div", { class: "scroll" }, grid)));
     const LB = ["< 1 m", "1–2 m", "2–5 m", "5–10 m", "10–20 m", "20 m +"];
     const lt = sumBy(d.lengths, (r) => r.n);
     const fw = sumBy(d.firstWeek, (r) => r.n);
@@ -672,8 +754,8 @@
         ["Players, VA", int(players), "from campaign countries · " + per(spent, players, code) + " each"],
         ["Back next day", share(back, backOf), "cost per player back " + per(spent, back, code)],
       ]),
-      h("div", { class: "meter", role: "img", "aria-label": Math.round(used * 100) + "% of the budget spent" },
-        h("div", { style: { width: (used * 100) + "%" } })),
+      meter(used, budget ? cur(spent, code) + " spent of a " + cur(budget, code) + " budget, " + cur(Math.max(0, budget - spent), code) + " left"
+        : cur(spent, code) + " spent; no budget set"),
       table(["Since " + dayLabel(k.start), "Spent", "Downloads", "Players", "Elsewhere", "Back next day"], rows),
       ...withAds.filter((g) => g.ads.actions && g.ads.actions.length).map((g) =>
         h("p", { class: "small", style: { margin: 0 }, text: (NAMES[g.game] || g.game) + ", as Google counts it: " +
@@ -682,6 +764,13 @@
       h("p", { class: "small", style: { margin: 0 }, text: synced + ". Downloads are Google's count, made when the download from Play" +
         " finishes, whether or not the game is ever opened; players are VA's, who opened it: a new player from " +
         k.countries.join(", ") + " since " + dayLabel(k.start) + " counts as the campaign's." }));
+  }
+
+  function meter(used, tip) {
+    const line = readout("Tap the bar to see the budget.");
+    const m = h("div", { class: "meter tap", role: "img", "aria-label": tip }, h("div", { style: { width: (used * 100) + "%" } }));
+    m.addEventListener("click", () => pickOne(m.parentElement, m, line, tip));
+    return h("div", null, line, m);
   }
 
   /* A conversion action's name in Google Ads, in a few words: the two the campaigns use are the Play
@@ -752,7 +841,9 @@
     else params.range = state.range === "custom" ? "30" : state.range;
     return params;
   }
-  const viewKey = () => state.page + "?" + new URLSearchParams(viewParams());
+  const viewKey = (page) => (page || state.page) + "?" + new URLSearchParams(viewParams());
+  /* A game's own tabs: everything but Today, which shows every game at once. */
+  const GAME_PAGES = ["overview", "acquisition", "retention", "engagement", "progress", "money", "health"];
 
   function render(d, at) {
     document.getElementById("subtitle").textContent = state.page === "today" ? SUBS.today
@@ -764,29 +855,75 @@
       h("div", { style: { display: "flex", flexDirection: "column", gap: "20px" } }, PAGES[state.page](d)));
   }
 
+  /* Reads one page of the current game, range and builds from the database and saves it on this
+     phone. Throws when it could not; "login" when the session has ended. */
+  async function fetchView(page) {
+    const key = viewKey(page);
+    const r = await fetch("/va/api/" + page + "?" + new URLSearchParams(viewParams()), { credentials: "same-origin", headers: { Accept: "application/json" } });
+    if (r.status === 401) { location.href = "/va/login"; throw new Error("login"); }
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || d.error || r.status);
+    const at = Date.now();
+    views.set(key, d, at);
+    return { key, d, at };
+  }
+
   /* Reads the current view from the database, saves it on this phone and shows it.
      Returns false when it could not. */
   async function load() {
     const box = document.getElementById("page");
-    const mine = ++ticket, key = viewKey(), page = state.page;
+    const mine = ++ticket, key = viewKey();
     box.replaceChildren(h("p", { class: "empty", text: "Loading…" }));
     try {
-      const r = await fetch("/va/api/" + page + "?" + new URLSearchParams(viewParams()), { credentials: "same-origin", headers: { Accept: "application/json" } });
-      if (r.status === 401) { location.href = "/va/login"; return false; }
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.detail || d.error || r.status);
-      const at = Date.now();
-      views.set(key, d, at);
-      if (mine === ticket) render(d, at);
+      const v = await fetchView(state.page);
+      if (mine === ticket) render(v.d, v.at);
       return mine === ticket;
     } catch (e) {
-      if (mine !== ticket) return false;
+      if (mine !== ticket || (e && e.message === "login")) return false;
       const saved = views.get(key);
       if (saved) render(saved.d, saved.at);
       else box.replaceChildren(h("p", { class: "err", text: "Could not load this page: " + (e && e.message || e) }));
       document.getElementById("summaryLine").textContent += " Could not load new figures: " + (e && e.message || e);
       return false;
     }
+  }
+
+  /* Every tab of the chosen game, read again and saved on this phone (Sr. Orra, 14 November
+     2026: not tab by tab). The tab on screen goes first and is shown as soon as it arrives; the
+     others follow together, and any of them that is on screen by the time it arrives is shown
+     too. Returns false when the tab on screen could not be read; the line says which others failed. */
+  async function loadGame() {
+    const btn = document.getElementById("refresh");
+    const box = document.getElementById("page");
+    const first = state.page, mine = ++ticket;
+    const pages = [first].concat(GAME_PAGES.filter((p) => p !== first));
+    const failed = [];
+    let done = 0;
+    box.replaceChildren(h("p", { class: "empty", text: "Loading every tab of " + (NAMES[state.game] || state.game) + "…" }));
+    const one = (page) => fetchView(page).then((v) => {
+      btn.textContent = "Refreshing " + (++done) + "/" + pages.length + "…";
+      if (ticket === mine ? page === first : v.key === viewKey()) render(v.d, v.at);
+      return true;
+    }, (e) => {
+      done++;
+      if (e && e.message === "login") throw e;
+      failed.push(TITLES[page] + " (" + (e && e.message || e) + ")");
+      return false;
+    });
+    let ok;
+    try {
+      ok = await one(first);
+      await Promise.all(pages.slice(1).map(one));
+    } catch (e) { return false; }
+    if (!ok && ticket === mine) {
+      const saved = views.get(viewKey(first));
+      if (saved) render(saved.d, saved.at);
+      else box.replaceChildren(h("p", { class: "err", text: "Could not load this page: " + failed[0] }));
+    }
+    const line = document.getElementById("summaryLine");
+    if (failed.length) line.textContent += " Could not load: " + failed.join(", ") + ".";
+    else line.textContent += " All " + pages.length + " tabs of " + (NAMES[state.game] || state.game) + " read again.";
+    return ok;
   }
 
   async function refresh() {
@@ -797,10 +934,10 @@
       const r = await fetch("/va/api/refresh", { method: "POST", credentials: "same-origin", headers: { Accept: "application/json" } });
       if (r.status === 401) { location.href = "/va/login"; return; }
       const d = await r.json().catch(() => ({}));
-      /* The page's figures are read again whatever happened to the summary: a summary that
-         ran a few minutes ago, or the day's last one already used, still leaves today's live
-         figures worth having. */
-      if (!(await load())) return;
+      /* The figures are read again whatever happened to the summary: a summary that ran a few
+         minutes ago, or the day's last one already used, still leaves today's live figures
+         worth having. On Today, only Today; inside a game, every tab of that game. */
+      if (!(await (state.page === "today" ? load() : loadGame()))) return;
       if (r.ok) line.textContent += " " + d.left_today + " summary rebuilds left today.";
       else if (d.error === "recent") line.textContent += " A summary ran " + ago(d.at) + ", so it was not rebuilt.";
       else if (d.error === "limit") line.textContent += " No summary rebuilds left today (" + d.max + " a day); the next scheduled one is at 08:00 or 22:00.";

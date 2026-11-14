@@ -124,6 +124,19 @@
   .track { height:8px; background:var(--soft); border-radius:5px; overflow:hidden; }
   .track > div { height:100%; background:linear-gradient(90deg, var(--volt), var(--volt-2)); border-radius:5px; }
   .num { text-align:right; color:var(--text-dim); }
+  /* ── a tap on a chart shows its numbers ── */
+  .tap { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .readout { margin:0; min-height:1.5em; font-size:13px; color:var(--muted); }
+  .readout.on { color:var(--text); font-weight:500; }
+  .bars > div { transition:opacity .15s var(--ease); }
+  .bars.picked > div:not(.sel) { opacity:.35; }
+  .hrow .lbl { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .hrow.sel { background:var(--soft); border-radius:6px; }
+  .hrow.sel .lbl { white-space:normal; overflow:visible; overflow-wrap:anywhere; }
+  .hrow.sel .num { color:var(--text); font-weight:600; }
+  .heat.picked div[data-tip]:not(.sel) { opacity:.45; }
+  .heat div.sel { outline:2px solid var(--text); outline-offset:-1px; }
+  .meter.sel { box-shadow:0 0 0 1px var(--volt); }
   .legend { display:flex; flex-wrap:wrap; gap:16px; color:var(--muted); font-size:12px; }
   .legend span::before { content:""; display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; background:var(--c); vertical-align:-1px; }
   .scroll { overflow:auto; }
@@ -234,6 +247,8 @@
         <option value="sombra">AshenRise</option>
         <option value="pocketfoundry">Pocket Foundry</option>
         <option value="papersquadron">Paper Squadron</option>
+        <option value="reefseek">Reef &amp; Seek</option>
+        <option value="matsurilights">Matsuri Lights</option>
       </select>
     </label>
     <label class="pick">Builds
@@ -283,7 +298,8 @@
     <div id="page"><p class="empty">Loading…</p></div>
     <p class="foot">One install is one player: clearing the app's data or a second phone counts again. Days are the game's own
       day. Shares are counts: 3/8 means 3 of 8. The summaries are rebuilt twice a day, at 08:00 and 22:00 Spanish time.
-      Players leave out Sr. Orra's own phones, the S21 and the A33, unless My phones is on.</p>
+      Players leave out Sr. Orra's own phones, the S21 and the A33, unless My phones is on.
+      Tap a chart to see its numbers. Refresh now on Today reads Today again; inside a game it reads every tab of that game.</p>
     <form class="mobile-only" method="post" action="/va/logout"><button type="submit" class="btn">Sign out</button></form>
   </main>
 </div>

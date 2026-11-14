@@ -143,6 +143,8 @@ OTHER=22222222-3333-4444-5555-666666666666
 is "AshenRise's events are accepted under sombra"          "$(post /collect "{\"v\":1,\"g\":\"sombra\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"level_end\",\"x\":{\"level_name\":\"1-5\",\"success\":true}},{\"n\":\"puzzle_solved\"}]}")" '{"ok":true,"kept":1,"refused":1,"purchases":0}'
 is "Pocket Foundry's events are accepted"                   "$(post /collect "{\"v\":1,\"g\":\"pocketfoundry\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"order_run\"},{\"n\":\"level_end\"}]}")" '{"ok":true,"kept":2,"refused":0,"purchases":0}'
 is "Paper Squadron's events are accepted, its ads under VA's names" "$(post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"level_end\",\"x\":{\"build\":\"debug\",\"level_name\":\"classroom\",\"success\":true}},{\"n\":\"health_pack\",\"x\":{\"build\":\"debug\"}},{\"n\":\"rewarded_ad_completed\"},{\"n\":\"ad_rewarded\"}]}")" '{"ok":true,"kept":3,"refused":1,"purchases":0}'
+is "Matsuri Lights' events are accepted, an unknown one refused" "$(post /collect "{\"v\":1,\"g\":\"matsurilights\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"level_end\",\"x\":{\"kind\":\"course\",\"success\":1,\"left\":0}},{\"n\":\"first_session_step\",\"x\":{\"step\":\"courtyard_3\"}},{\"n\":\"puzzle_solved\"}]}")" '{"ok":true,"kept":2,"refused":1,"purchases":0}'
+is "Reef & Seek's events are accepted, an unknown one refused" "$(post /collect "{\"v\":1,\"g\":\"reefseek\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"level_end\",\"x\":{\"result\":\"won\",\"success\":1}},{\"n\":\"aquarium_open\"},{\"n\":\"no_such_event\"}]}")" '{"ok":true,"kept":2,"refused":1,"purchases":0}'
 is "Paper Squadron's install source is accepted"             "$(post /collect '{"v":1,"g":"papersquadron","i":"psqsrc-0123456789ab","p":"app","vc":50,"src":{"source":"google-ads","medium":"cpc","campaign":""},"e":[{"n":"install_source","x":{"build":"release","utm_source":"google-ads","utm_medium":"cpc","ref_keys":"gbraid,gclid"}}]}')" '{"ok":true,"kept":1,"refused":0,"purchases":0}'
 is "and kept on the install, an advert's as google-ads / cpc" "$(sql "SELECT src_source, src_medium FROM va_install WHERE install = 'psqsrc-0123456789ab'")" "google-ads|cpc"
 is "ad_impression, which GA4 reserves, is not a Loom event"  "$(post /collect "{\"v\":1,\"g\":\"loom\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"ad_impression\"},{\"n\":\"ad_paid\"}]}")" '{"ok":true,"kept":1,"refused":1,"purchases":0}'
@@ -169,7 +171,8 @@ is "the same order sent twice is one row"                   "$(sql "SELECT COUNT
 P4='{"orderId":"GPA.3333-4444-5555-66666","packageName":"com.voltixstudios.papersquadron","productId":"paper_pack","purchaseTime":'$NOW',"purchaseToken":"tok4"}'
 post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"purchase_completed\"}],\"pur\":[{\"data\":$(pj "$P4"),\"sig\":\"$(signed "$P4")\",\"price_micros\":1990000,\"currency\":\"EUR\"}]}" >/dev/null
 is "a Paper Squadron purchase Google signed is verified"    "$(sql "SELECT verified, sku FROM va_purchase WHERE id = 'GPA.3333-4444-5555-66666'")" "1|paper_pack"
-is "every game has its Play licence key"                     "$(cd "$SITE" && node -e 'import("./functions/_va/games.js").then(m => console.log(Object.entries(m.GAMES).filter(([k, g]) => !/^MIIB[A-Za-z0-9+\/=]{300,}$/.test(g.licence || "")).map(([k]) => k).join(",") || "all"))')" "all"
+# Matsuri Lights is not in Play Console yet, so it has no key; when it has one, this wants "all" again.
+is "every game in Play Console has its licence key"          "$(cd "$SITE" && node -e 'import("./functions/_va/games.js").then(m => console.log(Object.entries(m.GAMES).filter(([k, g]) => !/^MIIB[A-Za-z0-9+\/=]{300,}$/.test(g.licence || "")).map(([k]) => k).join(",") || "all"))')" "reefseek,matsurilights"
 
 echo "The daily cap"
 CAPID=99999999-8888-7777-6666-555555555555
@@ -372,7 +375,7 @@ post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$RID\",\"p\":\"app\",\"d
 sqlw "UPDATE va_install SET country = 'SA' WHERE install IN ('$TID', '$RID')"   # a campaign country; the dev server has none
 TJ=$(curl -s -H "Cookie: $FRESH" "$U/va/api/today")
 tj () { echo "$TJ" | python3 -c "import json,sys; d=json.load(sys.stdin); g={x['game']:x for x in d['games']}; print($1)"; }
-is "Today answers for every game"                           "$(tj "','.join(sorted(g))")" "loom,papersquadron,pocketfoundry,sombra"
+is "Today answers for every game"                           "$(tj "','.join(sorted(g))")" "loom,matsurilights,papersquadron,pocketfoundry,reefseek,sombra"
 is "a campaign-country player counts, Google's test phone does not" "$(tj "g['papersquadron']['newCampaign']")" "1"
 is "a game outside the campaign has no campaign count"      "$(tj "g['pocketfoundry']['newCampaign']")" "None"
 is "the adverts paid today are added up, in their currency" "$(tj "g['papersquadron']['ads']")" "[{'currency': 'USD', 'value': 0.0025}]"

@@ -631,9 +631,9 @@
     const reached = d.reached || [], climbs = sumBy(reached, (r) => r.n);
     const ev = (name) => sumBy(pick(d.climb || [], name, ""), (r) => r.events);
     return [
-      card("The climb, rung by rung", h("div", { class: "small", text: "Reached: players with a result on that rung, today's climbs only. Solved, failed and left: the last word on each rung touched." }), rungTable),
+      card("The climb, rung by rung", h("div", { class: "small", text: "Every day's own climb in the range chosen above, added together; the Archive's are left out. Reached: players with a result on that rung. Solved, failed and left: the last word on each rung touched." }), rungTable),
       h("div", { class: "grid2" },
-        card("Level reached, per climb", hbars(Array.from({ length: 11 }, (_, lv) => ({ label: lv === 10 ? "10+" : String(lv), n: (reached.find((r) => r.lv === lv) || {}).n || 0 })), climbs || null)),
+        card("Level reached, per climb", h("div", { class: "small", text: "One climb per player per day, over the range chosen above." }), hbars(Array.from({ length: 11 }, (_, lv) => ({ label: lv === 10 ? "10+" : String(lv), n: (reached.find((r) => r.lv === lv) || {}).n || 0 })), climbs || null)),
         card("Climbs ended, the shop and Live weave", hbars([["Climbs ended on a lost rung", ev("climb_ended")], ["Shop opened", ev("shop_opened")],
           ["Live weave switched", ev("live_weave_toggled")], ["Panels closed by a tap outside", ev("panel_closed")]].map(([l, v]) => ({ label: l, n: v })), null))),
     ];

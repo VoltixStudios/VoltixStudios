@@ -49,6 +49,9 @@ const LOOM_EVENTS = [
   "hand_shown", "players_shown", "players_scope", "tour_shown", "tour_ended",
   // the level sheet (Loom's GDD 19.3, 9 November 2026)
   "level_sheet_shown", "level_sheet_closed",
+  // the reminder's funnel and delivery (Loom's GDD 8.3 and 8.4, 16 November 2026): what
+  // Android answered, and what the reminder did since the last open
+  "reminder_permission", "reminder_report",
 ];
 
 // AshenRise (codename sombra): ~/voltix_studios/Sombra/docs/ANALYTICS.md §3
@@ -86,6 +89,9 @@ const POCKETFOUNDRY_EVENTS = [
   "rewarded_ad_offered", "rewarded_ad_started", "rewarded_ad_completed", "interstitial_shown", "ad_paid",
   // the reminders and Firebase's messages (PocketFoundry PF-019, 30 October 2026)
   "notify_asked", "notify_answer", "notif_open",
+  // a streak mended with no advert, while no rewarded video can be shown (PF-036 amended,
+  // R-73, 16 November 2026); its one parameter, source, is an event parameter, not a property
+  "streak_mended",
 ];
 
 const POCKETFOUNDRY_PROPS = [
@@ -148,6 +154,8 @@ const REEFSEEK_PROPS = [
 const LOOM_PROPS = [
   "app_version", "version_code", "first_day", "payer", "days_played", "streak",
   "best_streak", "reminder_on", "preferred_loom", "ads_consent", "best_level", "live_weave",
+  // whether the phone lets a reminder through: on, ask, again, blocked (16 November 2026)
+  "notify",
 ];
 
 // Matsuri Lights: ~/voltix_studios/MatsuriLights/docs/ANALYTICS.md, "Events" (added 14 November

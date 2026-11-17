@@ -1,13 +1,21 @@
 {
-  "_": "AshenRise's remote configuration, read once at launch by a release build (android/app/src/main/java/com/voltixstudios/sombra/Config.java). A placement shows advertising only when it is true AND its unit is a real AdMob ad unit id. The units are Sr. Orra's, created in AdMob on 4 November 2026 (store/ADMOB.md). This is a DRAFT kept in the game's repository, ready to publish with all seven placements on: it does nothing until it is copied to VoltixStudios/ashenrise/config.json and the site is pushed, which is Sr. Orra's word. Nothing in this file can change a price, a reward or a rule.",
-  "ads":   { "double": true, "revive": true, "energy": true, "draw": true, "supply": true, "gift": true, "inter": true },
+  "_": "AshenRise's remote configuration, read once at launch by a release build (android/app/src/main/java/com/voltixstudios/sombra/Config.java). A placement shows advertising only when it is true AND its unit is a real AdMob ad unit id. The units are Sr. Orra's, created in AdMob on 4 November 2026 (store/ADMOB.md). This is a DRAFT kept in the game's repository, ready to publish with all seven placements on: it does nothing until it is copied to VoltixStudios/ashenrise/config.json and the site is pushed, which is Sr. Orra's word. Nothing in this file can change a price, a reward or a rule. 17 November 2026, at Sr. Orra's word: every unit is Google's demo unit (rewarded ca-app-pub-3940256099942544/5224354917, interstitial ca-app-pub-3940256099942544/1033173712) while the AdMob account is suspended (R-73) and the game is in closed testing, so no tester can produce invalid traffic. The real units to restore for production: {\"double\": \"ca-app-pub-8715619194809926/9628944470\", \"revive\": \"ca-app-pub-8715619194809926/1973603705\", \"energy\": \"ca-app-pub-8715619194809926/8398402093\", \"draw\": \"ca-app-pub-8715619194809926/2388361669\", \"supply\": \"ca-app-pub-8715619194809926/4240674398\", \"gift\": \"ca-app-pub-8715619194809926/2392231095\", \"inter\": \"ca-app-pub-8715619194809926/7449116659\"}.",
+  "ads": {
+    "double": true,
+    "revive": true,
+    "energy": true,
+    "draw": true,
+    "supply": true,
+    "gift": true,
+    "inter": true
+  },
   "units": {
-    "double": "ca-app-pub-8715619194809926/9628944470",
-    "revive": "ca-app-pub-8715619194809926/1973603705",
-    "energy": "ca-app-pub-8715619194809926/8398402093",
-    "draw": "ca-app-pub-8715619194809926/2388361669",
-    "supply": "ca-app-pub-8715619194809926/4240674398",
-    "gift": "ca-app-pub-8715619194809926/2392231095",
-    "inter": "ca-app-pub-8715619194809926/7449116659"
+    "double": "ca-app-pub-3940256099942544/5224354917",
+    "revive": "ca-app-pub-3940256099942544/5224354917",
+    "energy": "ca-app-pub-3940256099942544/5224354917",
+    "draw": "ca-app-pub-3940256099942544/5224354917",
+    "supply": "ca-app-pub-3940256099942544/5224354917",
+    "gift": "ca-app-pub-3940256099942544/5224354917",
+    "inter": "ca-app-pub-3940256099942544/1033173712"
   }
 }

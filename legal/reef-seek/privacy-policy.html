@@ -142,10 +142,9 @@
           <p>
             Reef &amp; Seek is in development and not yet released on Google Play. This document
             describes the build given to testers in a closed test and takes effect with it. In those
-            builds every advertisement is one of Google's test advertisements, and Firebase is not
-            included yet: the sections about Firebase, and the news described under Reminders and
-            notifications, apply from the build that includes it. If the app starts handling something
-            new, this page changes in the same release.
+            builds every advertisement is one of Google's test advertisements. Firebase is included from
+            the build of 18 November 2026. If the app starts handling something new, this page changes in
+            the same release.
           </p>
         </div>
 
@@ -293,11 +292,39 @@
 
         <h2 id="rankings">Rankings</h2>
         <p>
-          The weekly tournament and the Daily Reef ranking are not open yet. Until they are, the name and
-          icon you choose for the tournament (two words picked from two lists of sea words, and a fish)
-          stay on your phone, and nothing about your results is sent to anyone. When rankings open, this
-          page will say what they send, and <span class="ui">Settings → Take part in rankings</span> will
-          keep you out of them.
+          Reef &amp; Seek has a ranking of the Daily Reef and a weekly tournament in groups of up to 30
+          players. They run on our own server, on the same website as our analytics.
+          <strong><span class="ui">Take part in rankings</span> in Settings is on when you first open
+          the game.</strong> While it is on, the app sends:
+        </p>
+        <ul>
+          <li>a random identifier made for the rankings, different from the analytics one;</li>
+          <li>for each Daily Reef you clear, the date, the patches you opened in order, whether you used
+              a continue, the hints you used and how long you played, so that the server can play the
+              reef again with the game's own rules and count your taps; the patches are checked and not
+              kept;</li>
+          <li>for each tournament reef, the same, with the week and the reef's number;</li>
+          <li>the name and fish icon you choose;</li>
+          <li>a note that you are online, at most once a minute while you play.</li>
+        </ul>
+        <p>
+          <strong>Your name</strong> is two sea words you choose from two lists in the game, with two
+          digits, for example &ldquo;Coral Puffer 42&rdquo;. You cannot type a name, and there is no
+          chat.
+        </p>
+        <p>
+          <strong>What other players see:</strong> your name and fish; your rank, points and place in
+          your group; whether you are playing, online or offline; and your taps on the Daily Reef, if
+          they are among those shown.
+        </p>
+        <p>
+          <strong>What the server keeps:</strong> your rankings identifier, name, fish and tier; how
+          many times you renamed; when you were last seen; and your results and points by day and week.
+          It keeps no advertising ID, no account, no IP address and nothing typed. Like any web request,
+          each one reaches the host that serves our site (Cloudflare) with your IP address. Turning
+          <span class="ui">Take part in rankings</span> off stops the game sending anything, and the
+          app at once asks the server to delete everything it holds for your rankings identifier.
+          Turned on again, you start as a new player.
         </p>
 
         <h2 id="feedback">Sending us feedback</h2>
@@ -393,10 +420,9 @@
           <p>
             Reef &amp; Seek está en desarrollo y todavía no se ha publicado en Google Play. Este
             documento describe la versión entregada a los probadores en una prueba cerrada y entra en
-            vigor con ella. En esas versiones todos los anuncios son anuncios de prueba de Google, y
-            Firebase aún no está incluido: los apartados sobre Firebase, y las novedades descritas en
-            Recordatorios y notificaciones, se aplican a partir de la versión que lo incluya. Si la
-            aplicación empieza a manejar algo nuevo, esta página cambia en la misma versión.
+            vigor con ella. En esas versiones todos los anuncios son anuncios de prueba de Google.
+            Firebase está incluido desde la versión del 18 de noviembre de 2026. Si la aplicación
+            empieza a manejar algo nuevo, esta página cambia en la misma versión.
           </p>
         </div>
 
@@ -550,11 +576,42 @@
 
         <h2 id="es-rankings">Clasificaciones</h2>
         <p>
-          El torneo semanal y la clasificación del arrecife diario todavía no están abiertos. Hasta que lo
-          estén, el nombre y el icono que eliges para el torneo (dos palabras escogidas de dos listas de
-          palabras del mar, y un pez) se quedan en tu teléfono, y nada sobre tus resultados se envía a
-          nadie. Cuando abran las clasificaciones, esta página dirá qué envían, y
-          <span class="ui">Ajustes → Participar en las clasificaciones</span> te dejará fuera de ellas.
+          Reef &amp; Seek tiene una clasificación del arrecife diario y un torneo semanal en grupos de
+          hasta 30 jugadores. Funcionan en nuestro propio servidor, en la misma web que nuestra
+          analítica. <strong><span class="ui">Participar en las clasificaciones</span>, en Ajustes,
+          está activado la primera vez que abres el juego.</strong> Mientras está activado, la
+          aplicación envía:
+        </p>
+        <ul>
+          <li>un identificador aleatorio creado para las clasificaciones, distinto del de la
+              analítica;</li>
+          <li>por cada arrecife diario que despejas, la fecha, las casillas que abriste en orden, si
+              usaste una segunda oportunidad, las pistas que usaste y cuánto tiempo jugaste, para que
+              el servidor vuelva a jugar el arrecife con las propias reglas del juego y cuente tus
+              toques; las casillas se comprueban y no se guardan;</li>
+          <li>por cada arrecife del torneo, lo mismo, con la semana y el número del arrecife;</li>
+          <li>el nombre y el icono de pez que eliges;</li>
+          <li>un aviso de que estás conectado, como mucho una vez por minuto mientras juegas.</li>
+        </ul>
+        <p>
+          <strong>Tu nombre</strong> son dos palabras del mar que eliges de dos listas del juego, con
+          dos cifras, por ejemplo &ldquo;Coral Puffer 42&rdquo;. No puedes escribir un nombre y no hay
+          chat.
+        </p>
+        <p>
+          <strong>Lo que ven los demás jugadores:</strong> tu nombre y tu pez; tu puesto, tus puntos y
+          tu lugar en el grupo; si estás jugando, conectado o desconectado; y tus toques en el arrecife
+          diario, si están entre los que se muestran.
+        </p>
+        <p>
+          <strong>Lo que guarda el servidor:</strong> tu identificador de clasificaciones, tu nombre,
+          tu pez y tu nivel; cuántas veces cambiaste de nombre; cuándo se te vio por última vez; y tus
+          resultados y puntos por día y por semana. No guarda ningún ID de publicidad, ninguna cuenta,
+          ninguna dirección IP ni nada escrito. Como cualquier petición web, cada una llega con tu
+          dirección IP al proveedor que aloja nuestra web (Cloudflare). Al desactivar
+          <span class="ui">Participar en las clasificaciones</span>, el juego deja de enviar nada y la
+          aplicación pide en el acto al servidor que borre todo lo que guarda con tu identificador de
+          clasificaciones. Si lo vuelves a activar, empiezas como un jugador nuevo.
         </p>
 
         <h2 id="es-feedback">Enviarnos comentarios</h2>

@@ -45,10 +45,12 @@ legal/website-privacy.html what the *site* measures, EN/ES — see Analytics bel
 loom/config.json           Loom's remote switch: which rewarded placements are on — see below
 pocketfoundry/config.json  Pocket Foundry's remote switch: its four ad placements (the game's store/ADMOB.md)
 matsurilights/config.json  Matsuri Lights' remote switch: its ad placements and `play`, the rankings server's on/off
-reefseek/config.json       Reef & Seek's remote switch: its ad placements
+reefseek/config.json       Reef & Seek's remote switch: its ad placements, and "play" for its rankings
 lostsocks/config.json      Lost Socks' remote switch: its ad placements
 functions/play/            Pages Function: Matsuri Lights' rankings (copied from MatsuriLights/server by its deploy.sh;
                            tables in D1 bound as PLAY, else the VA database)
+functions/reef/            Pages Function: Reef & Seek's rankings (copied from ReefSeek/server by its deploy.sh;
+                           the same tables as Matsuri Lights', each row tagged with its game)
 loom/play/                 today's Loom cloth, playable here: a copy of the game — see below
 functions/analytics/       Pages Function: first-party proxy for Umami
 functions/loom/            Pages Function: Loom's day counters, and how to turn

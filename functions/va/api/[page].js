@@ -212,9 +212,26 @@ const PAGES = {
     const totals = await c.all(`SELECT name, value, SUM(events) AS events, SUM(players) AS players FROM va_event_day
                                 WHERE game = ${c.G} AND ${c.BF("build")} AND day BETWEEN ${c.F} AND ${c.T} AND dim = ''
                                 GROUP BY name, value`);
-    const answers = await eventSum(c, ["notify_answer"], "state");
+    /* "name:value" rows for the reminder cards, each event split by its own dimension: Pocket
+       Foundry's notify_answer by state; Loom's Android answer by result (1.5.3) and its button by
+       kind (ask: the button, on: the switch-on where no permission is needed). */
+    const answers = [...await eventSum(c, ["notify_answer"], "state"),
+                     ...await eventSum(c, ["reminder_permission"], "result"),
+                     ...await eventSum(c, ["reminder_offered", "reminder_accepted"], "kind")];
+    /* Loom's delivery (1.5.3): reminder_report carries counts, not a dimension, so they are summed
+       from the raw batches, and raw batches are kept for at most 90 days. */
+    let delivery = null;
+    if (c.game === "loom") {
+      const from = Math.max(c.F, c.T - 89);
+      const X = (k) => `json_extract(e.value, '$.x.${k}')`;
+      delivery = await c.one(`SELECT SUM(${X("posted")}) AS posted, SUM(${X("skipped")}) AS skipped, SUM(${X("blocked")}) AS blocked
+        FROM va_batch b, json_each(b.events) e WHERE b.game = ${c.G} AND b.day BETWEEN ${from} AND ${c.T}
+          AND ${c.BF(`COALESCE(${X("build")}, 'release')`)} AND ${c.NOTOWN("b.install")}
+          AND json_extract(e.value, '$.n') = 'reminder_report'`);
+      delivery.from = from;
+    }
     const playerDays = await c.one(`WITH ${c.W} SELECT COUNT(*) AS n FROM du WHERE day BETWEEN ${c.F} AND ${c.T}`);
-    return { k, heat, lengths, median: med, firstWeek, opens, totals, answers, playerDays: playerDays.n || 0 };
+    return { k, heat, lengths, median: med, firstWeek, opens, totals, answers, delivery, playerDays: playerDays.n || 0 };
   },
 
   async progress(c) {
@@ -631,7 +648,13 @@ async function loomGates(c) {
   const d1 = await c.one(`WITH ${c.W}, coh AS (SELECT i.install, i.fd FROM inst i JOIN du d ON d.install = i.install AND d.day = i.fd
                                                WHERE i.fd BETWEEN ${c.F} AND ${c.T - 1})
     SELECT COUNT(*) AS n, SUM(EXISTS (SELECT 1 FROM du x WHERE x.install = coh.install AND x.day = coh.fd + 1)) AS r FROM coh`);
-  const offered = await ev("reminder_offered"), accepted = await ev("reminder_accepted");
+  /* Gate 3 from 1.5.3 is Loom's button: seen (reminder_offered, kind ask) and tapped
+     (reminder_accepted, kind ask). The unsplit pair is the switch-on of 1.3.0 to 1.5.2 and is
+     read only when the range holds no button at all: the eras are never pooled. */
+  const askSeen = await ev("reminder_offered", "kind", "ask"), askTapped = await ev("reminder_accepted", "kind", "ask");
+  const granted = await ev("reminder_permission", "result", "granted");
+  const button = askSeen.p > 0;
+  const offered = button ? askSeen : await ev("reminder_offered"), accepted = button ? askTapped : await ev("reminder_accepted");
   const shared = await ev("share_pressed"), solved = await ev("puzzle_solved");
   const big = await c.one(`WITH ${c.W}, sizes AS (SELECT i.fd, COUNT(*) AS n FROM inst i JOIN du d ON d.install = i.install AND d.day = i.fd
                                                   WHERE i.fd <= ${c.T - 7} GROUP BY i.fd)
@@ -652,7 +675,9 @@ async function loomGates(c) {
     { n: 2, name: "The day lands", num: d1.r || 0, den: d1.n || 0, kind: "watch",
       reading: "D1 return among new players; the gate asks whether it rises after §8" },
     { n: 3, name: "The reminder is wanted", num: accepted.p, den: offered.p, kind: "watch",
-      reading: "Accepted, of those offered" },
+      reading: button
+        ? `Tapped Loom's reminder button, of those who saw it (Android 13+, from 1.5.3); Android then allowed it for ${granted.p}`
+        : "Accepted, of those offered (the switch-on of builds up to 1.5.2)" },
     { n: 4, name: "People share", num: shared.e, den: solved.e, kind: "line", line: 0.05,
       reading: "Shares per solved day; the line is 5%" },
     { n: 5, name: "It holds a week", num: d7.r || 0, den: d7.n || 0, kind: "line", line: 0.2, min: 100,

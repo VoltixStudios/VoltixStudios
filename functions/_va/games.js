@@ -17,6 +17,7 @@
  *   papersquadron  ~/voltix_studios/PaperSquadron/docs/ANALYTICS-VA.md
  *   reefseek       ~/voltix_studios/ReefSeek/docs/ANALYTICS.md
  *   matsurilights  ~/voltix_studios/MatsuriLights/docs/ANALYTICS.md
+ *   lostsocks      ~/voltix_studios/LostSocks/docs/ANALYTICS.md
  * The install source (utm_*) is not a user property here: it arrives once, in
  * the batch's `src`, and is kept on the install.
  */
@@ -144,6 +145,8 @@ const REEFSEEK_EVENTS = [
   "styles_open", "shop_open", "album_open", "league_open", "past_open", "league_level",
   "offer_shown", "offer_dismissed", "purchase_started", "purchase", "purchase_failed",
   "rewarded_ad_started", "rewarded_ad_completed", "interstitial_shown", "ad_paid",
+  // the first day's steps and the reminders (ReefSeek RS-030, 17 November 2026)
+  "first_session_step", "notify_asked", "notify_answer", "reminder_planned", "notif_open",
 ];
 
 const REEFSEEK_PROPS = [
@@ -170,11 +173,30 @@ const MATSURILIGHTS_EVENTS = [
   "shop_open", "styles_open", "style", "style_set",
   "offer_shown", "offer_dismissed", "purchase_started", "purchase", "purchase_failed",
   "rewarded_ad_started", "rewarded_ad_completed", "interstitial_shown", "ad_paid",
+  // reminders, the rating card and feedback (Matsuri Lights ML-037, ML-038, 17 November 2026)
+  "notify_asked", "notify_answer", "notif_open", "reminder_planned",
+  "review_asked", "rate_opened", "feedback_opened",
 ];
 
 const MATSURILIGHTS_PROPS = [
   "app_version", "version_code", "days_played", "levels_lit", "streak", "freezes", "lang",
-  "learnt", "coins", "no_ads", "compete",
+  "learnt", "coins", "no_ads", "compete", "reminders",
+];
+
+// Lost Socks: ~/voltix_studios/LostSocks/docs/ANALYTICS.md, "Events" (registered 17 November 2026).
+// level_end carries success and left as the other level games' do; rewarded adverts, offers, purchases
+// and reminders use the shared names the dashboard's Money and Engagement pages read.
+const LOSTSOCKS_EVENTS = [
+  "app_open", "app_hidden", "js_error", "install_source", "consent_status", "first_session_step",
+  "level_start", "level_end", "earn", "spend", "booster_used", "continue_used",
+  "gift_shown", "gift_claimed", "basket_opened", "shop_open", "setting",
+  "offer_shown", "offer_dismissed", "purchase_started", "purchase", "purchase_failed",
+  "rewarded_ad_started", "rewarded_ad_completed", "rewarded_ad_stopped", "interstitial_shown", "ad_paid",
+  "notify_asked", "notify_answer", "notif_open", "review_asked", "rate_opened",
+];
+
+const LOSTSOCKS_PROPS = [
+  "app_version", "version_code", "days_played", "level", "buttons", "no_ads", "payer", "lang", "reminders",
 ];
 
 export const GAMES = {
@@ -222,6 +244,14 @@ export const GAMES = {
     pkg: "com.voltixstudios.matsurilights",
     events: new Set(MATSURILIGHTS_EVENTS),
     props: new Set(MATSURILIGHTS_PROPS),
+    licence: null,
+  },
+  // Not in Play Console yet (the package com.voltixstudios.lostsocks is PROPOSED, LostSocks LS-003), so
+  // no licence key: its purchases are stored, not verified, until the key is added here.
+  lostsocks: {
+    pkg: "com.voltixstudios.lostsocks",
+    events: new Set(LOSTSOCKS_EVENTS),
+    props: new Set(LOSTSOCKS_PROPS),
     licence: null,
   },
 };

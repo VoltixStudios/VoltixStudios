@@ -38,9 +38,17 @@ legal/coreward/            privacy policy + terms & virtual currency, EN/ES
 legal/dungeon-gourmand/    privacy policy + terms + deletion, EN/ES
 legal/pocket-foundry/      privacy policy + terms + deletion, EN/ES
 legal/ashenrise/           privacy policy + terms + deletion, EN/ES
+legal/matsuri-lights/      privacy policy + terms + deletion, EN/ES
+legal/reef-seek/           privacy policy + terms + deletion, EN/ES
+legal/lost-socks/          privacy policy + terms + deletion, EN/ES
 legal/website-privacy.html what the *site* measures, EN/ES — see Analytics below
 loom/config.json           Loom's remote switch: which rewarded placements are on — see below
 pocketfoundry/config.json  Pocket Foundry's remote switch: its four ad placements (the game's store/ADMOB.md)
+matsurilights/config.json  Matsuri Lights' remote switch: its ad placements and `play`, the rankings server's on/off
+reefseek/config.json       Reef & Seek's remote switch: its ad placements
+lostsocks/config.json      Lost Socks' remote switch: its ad placements
+functions/play/            Pages Function: Matsuri Lights' rankings (copied from MatsuriLights/server by its deploy.sh;
+                           tables in D1 bound as PLAY, else the VA database)
 loom/play/                 today's Loom cloth, playable here: a copy of the game — see below
 functions/analytics/       Pages Function: first-party proxy for Umami
 functions/loom/            Pages Function: Loom's day counters, and how to turn
@@ -121,6 +129,15 @@ legal/pocket-foundry/delete-account.html  Play data-safety "data deletion" URL
 legal/ashenrise/privacy-policy.html  the app's privacy link (MainActivity.PRIVACY_URL), Play Console + AdMob
 legal/ashenrise/terms.html
 legal/ashenrise/delete-account.html  Play data-safety "data deletion" URL
+legal/matsuri-lights/privacy-policy.html  the app's privacy link (MainActivity.PRIVACY_URL), Play Console + AdMob
+legal/matsuri-lights/terms.html
+legal/matsuri-lights/delete-account.html  Play data-safety "data deletion" URL
+legal/reef-seek/privacy-policy.html  the app's privacy link (MainActivity.PRIVACY_URL), Play Console + AdMob
+legal/reef-seek/terms.html
+legal/reef-seek/delete-account.html  Play data-safety "data deletion" URL
+legal/lost-socks/privacy-policy.html  the app's privacy link (MainActivity.PRIVACY_URL), Play Console + AdMob
+legal/lost-socks/terms.html
+legal/lost-socks/delete-account.html  Play data-safety "data deletion" URL
 legal/website-privacy.html            the site itself, not a game — no store
                                       references it, so this URL is ours to move
 ```

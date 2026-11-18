@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matsuri Lights — Privacy Policy · Voltix Studios</title>
+<meta name="description" content="What data the Matsuri Lights lantern puzzle handles and why. English and Spanish.">
+<meta name="theme-color" content="#05060a">
+<link rel="canonical" href="https://voltixstudios.pages.dev/legal/matsuri-lights/privacy-policy">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Voltix Studios">
+<meta property="og:title" content="Matsuri Lights — Privacy Policy">
+<meta property="og:description" content="What data the Matsuri Lights lantern puzzle handles and why.">
+<meta property="og:url" content="https://voltixstudios.pages.dev/legal/matsuri-lights/privacy-policy">
+<meta property="og:image" content="https://voltixstudios.pages.dev/assets/img/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@voltix_studios">
+
+<link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../assets/css/style.css?v=16">
+<link rel="stylesheet" href="../../assets/css/doc.css">
+
+<!-- Picks the language before the first paint, so the other one never flashes.
+     Order: explicit ?lang= / #es, then the browser's own preference. Nothing
+     is written to storage — see assets/js/doc.js. -->
+<script>
+(function () {
+  var d = document.documentElement;
+  d.className += " js";
+  var m = /[?&]lang=(en|es)/.exec(location.search) || /^#(en|es)$/.exec(location.hash);
+  var lang = m ? m[1]
+    : (((navigator.language || navigator.userLanguage || "en").toLowerCase().indexOf("es") === 0) ? "es" : "en");
+  d.setAttribute("data-doclang", lang);
+  d.setAttribute("lang", lang);
+})();
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-x" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z"/>
+  </symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/>
+  </symbol>
+  <symbol id="i-tt" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07Z"/>
+  </symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M2.75 5.75h18.5v12.5H2.75z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m3.4 6.4 8.6 6.6 8.6-6.6"/>
+  </symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2.1c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/>
+  </symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="../../index.html">
+      <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" decoding="async">
+      <span>Voltix<em>Studios</em></span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="../../index.html#games">Games</a>
+      <a href="../../index.html#studio">Studio</a>
+    </nav>
+    <a class="btn btn--sm" href="mailto:voltix.studios.gaming@gmail.com">Contact</a>
+  </div>
+</header>
+
+<main id="main" class="doc--ml">
+
+  <div class="doc-head">
+    <div class="wrap">
+      <p class="crumbs">
+        <a href="../../index.html">Voltix Studios</a>
+        <span aria-hidden="true">/</span>
+        <a href="../../games/matsuri-lights/">Matsuri Lights</a>
+        <span aria-hidden="true">/</span>
+        <span data-lang="en">Privacy Policy</span>
+        <span data-lang="es" lang="es">Política de Privacidad</span>
+      </p>
+
+      <div class="lang" role="group" aria-label="Document language">
+        <button type="button" data-set-lang="en" aria-pressed="true">English</button>
+        <button type="button" data-set-lang="es" aria-pressed="false">Español</button>
+      </div>
+
+      <h1 class="doc__title" data-lang="en">Matsuri Lights — Privacy Policy</h1>
+      <h1 class="doc__title" data-lang="es" lang="es">Matsuri Lights — Política de Privacidad</h1>
+
+      <p class="lead" data-lang="en">
+        Matsuri Lights is a logic puzzle game: you light the courtyards of a Japanese festival with
+        paper lanterns. This page explains what data the app handles and why. There is no account,
+        so there is nothing to sign up for and nothing to log in to, and your progress lives on your
+        phone. The game collects no location and no contacts, and there is nowhere in it to type
+        anything. Everything you might want removed is covered in
+        <a href="delete-account.html">Delete Your Data</a>.
+      </p>
+      <p class="lead" data-lang="es" lang="es">
+        Matsuri Lights es un juego de puzles de lógica: iluminas los patios de una fiesta japonesa
+        con farolillos de papel. Esta página explica qué datos maneja la aplicación y por qué. No
+        hay cuenta, así que no hay registro ni inicio de sesión, y tu progreso vive en tu teléfono.
+        El juego no recopila ubicación ni contactos, y no hay ningún sitio en él donde escribir
+        nada. Todo lo que puedas querer borrar está en
+        <a href="delete-account.html">Eliminar tus datos</a>.
+      </p>
+
+      <dl class="doc-meta" data-lang="en">
+        <div><dt>Last updated</dt><dd>18 November 2026</dd></div>
+        <div><dt>App</dt><dd>Matsuri Lights <code>com.voltixstudios.matsurilights</code></dd></div>
+        <div><dt>Developer</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+      </dl>
+      <dl class="doc-meta" data-lang="es" lang="es">
+        <div><dt>Última actualización</dt><dd>18 de noviembre de 2026</dd></div>
+        <div><dt>Aplicación</dt><dd>Matsuri Lights <code>com.voltixstudios.matsurilights</code></dd></div>
+        <div><dt>Desarrollador</dt><dd>Voltix Studios
+          <a class="sub" href="mailto:voltix.studios.gaming@gmail.com">voltix.studios.gaming@gmail.com</a></dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="doc">
+    <div class="wrap">
+
+      <!-- ─────────────────────────── English ─────────────────────────── -->
+      <div data-lang="en">
+
+        <div class="note">
+          <p>
+            Matsuri Lights is in development and not yet on Google Play. This document describes
+            the build given to testers in Google Play's closed test and takes effect with it. If
+            the app starts handling something new, this page changes in the same release.
+          </p>
+        </div>
+
+        <nav class="toc" aria-label="On this page">
+          <p class="toc__title">On this page</p>
+          <ol>
+            <li><a href="#device">Data stored on your device</a></li>
+            <li><a href="#backup">Backup to your Google account</a></li>
+            <li><a href="#analytics">Our own analytics</a></li>
+            <li><a href="#rankings">Rankings and the weekly tournament</a></li>
+            <li><a href="#notifications">Reminders</a></li>
+            <li><a href="#feedback">Rating the game and sending feedback</a></li>
+            <li><a href="#remote-config">Remote configuration</a></li>
+            <li><a href="#ads">Advertising</a></li>
+            <li><a href="#purchases">In-app purchases</a></li>
+            <li><a href="#sharing">Sharing</a></li>
+            <li><a href="#switch">Switching things off</a></li>
+            <li><a href="#deletion">Data deletion</a></li>
+            <li><a href="#children">Children</a></li>
+            <li><a href="#changes">Changes</a></li>
+          </ol>
+        </nav>
+
+        <h2 id="device">Data stored on your device</h2>
+        <p>
+          Everything the game remembers is on the phone itself: the courtyards you have lit and
+          your best times, your daily-puzzle streak and its freezes, your coins, the styles, crests
+          and celebrations you own and wear, your rankings name and tier, your settings, a note of
+          when the game asked about reminders and showed the rating card, whether you bought
+          <strong>No adverts</strong>, and a note of the purchases already delivered, so that none
+          is delivered twice. It is written to the app's own storage and nowhere else.
+          Uninstalling the app deletes it from the phone.
+        </p>
+
+        <h2 id="backup">Backup to your Google account (Android Backup)</h2>
+        <p>
+          So that changing phone does not cost you your courtyards and your streak, the save is
+          included in Android's own backup, together with the small settings file that holds the
+          game's analytics identifier. This is a feature of the phone, not a service of ours:
+          Android copies it to your Google account and restores it when you install Matsuri Lights
+          on a new phone. <strong>We cannot read it</strong> and we hold no copy of it. You can
+          switch backup off, or delete what is stored, in Android's
+          <span class="ui">Settings → Google → Backup</span>. A record of what you bought is not
+          part of the backup: Google Play answers for it again on the new phone.
+        </p>
+
+        <h2 id="analytics">Our own analytics (Voltix Analytics)</h2>
+        <p>
+          To learn whether the game explains itself, which courtyards are too hard and whether
+          people come back, the app sends a record of what happens in it to our own server, a small
+          function on our website, <code>voltixstudios.pages.dev</code>, hosted by Cloudflare. The
+          app sends it in small batches, and every event is one of a fixed list. What is sent, and
+          there is nothing else:
+        </p>
+        <ul>
+          <li>a random identifier the app makes up for itself and keeps on your phone, so that the
+              same phone counts as the same player;</li>
+          <li>a session number;</li>
+          <li>the name of each event and plain numbers and short words about it: courtyards opened,
+              lit or left, with their size, time, hints and lanterns placed; the lesson's steps; the
+              daily puzzle and your streak; coins earned and spent, and on what; styles worn and
+              bought; which offer or advertisement was shown or watched; settings changed; when you
+              open the tournament or the Shop; when the game asked about reminders, your answer, and
+              which kind of reminder opened the game; and when the rating card was asked for, or
+              <span class="ui">Rate the game</span> or <span class="ui">Send feedback</span> was
+              tapped;</li>
+          <li>a few facts that every event repeats: the app's version, how many courtyards you have
+              lit, your streak and freezes, your language and coins, whether you finished the
+              lesson, whether you bought No adverts, whether rankings and reminders are on, and how
+              many days you have played;</li>
+          <li>once for each version of the app, the phone's maker and model, its Android and
+              WebView versions, its language and its screen size;</li>
+          <li>once, where the app was installed from, as Google Play reports it to the app; this is
+              never sent to Google;</li>
+          <li>the phone's time zone, as a number of minutes from UTC;</li>
+          <li>for a purchase, the receipt Google signed and the price, so that only real purchases
+              are counted;</li>
+          <li>what an advertisement earned us, as AdMob reports it to the app, and your answer to
+              the advertising consent question;</li>
+          <li>if the game's own code fails, the kind of error and the line where it happened; never
+              the error's text.</li>
+        </ul>
+        <p>
+          What is <strong>not</strong> sent: no name, no e-mail, no account, no contact of any kind;
+          no advertising ID, Android ID or device ID; nothing you typed, because there is nowhere to
+          type. Our server records the country that Cloudflare works out from your IP address and
+          never stores the address itself. Events wait on the phone while it is offline and are
+          sent later; anything older than three days is dropped. The individual events are deleted
+          after 90 days. One summary for each identifier is kept, so that we can see whether people
+          come back over months, until you ask us to delete it. Cloudflare processes this data for
+          us as our host and does not use it for anything else. The browser version of the game
+          used for playtests sends the same events to our server, and nothing to Google.
+        </p>
+
+        <h2 id="rankings">Rankings and the weekly tournament</h2>
+        <p>
+          Matsuri Lights has a ranking of the daily puzzle and a weekly tournament in groups of up
+          to 30 players. They run on our own server, on the same website as our analytics.
+          <strong><span class="ui">Take part in rankings</span> in Settings is on when you first
+          open the game.</strong> While it is on, the app sends:
+        </p>
+        <ul>
+          <li>a random identifier made for the rankings, different from the analytics one;</li>
+          <li>for each daily puzzle you light, the date, your time, the hints you used and where
+              you placed your lanterns, so that the server can check the solution with the game's
+              own rules; the lanterns are checked and not kept;</li>
+          <li>for each tournament puzzle, the same, with the week and the puzzle's number;</li>
+          <li>the name and crest you choose;</li>
+          <li>a note that you are online, at most once a minute while you play.</li>
+        </ul>
+        <p>
+          <strong>Your name</strong> is two Japanese words you choose from two lists in the game,
+          with two digits the game adds, for example &ldquo;Hoshi Kitsune 42&rdquo;. You cannot type
+          a name, and there is no chat.
+        </p>
+        <p>
+          <strong>What other players see:</strong> your name and crest; your rank, points and place
+          in your group; whether you are playing, online or offline; and your time on the daily
+          puzzle, if it is among those shown.
+        </p>
+        <p>
+          <strong>What the server keeps:</strong> your rankings identifier, name, crest and tier;
+          how many times you renamed; when you were last seen; and your results and points by day
+          and week. It keeps no advertising ID, no account, no IP address and nothing typed. Like
+          any web request, each one reaches the host that serves our site (Cloudflare) with your IP
+          address. Turning <span class="ui">Take part in rankings</span> off stops the game sending
+          anything, and the app at once asks the server to delete everything it holds for your
+          rankings identifier. Turned on again, you start as a new player.
+        </p>
+
+        <h2 id="notifications">Reminders</h2>
+        <p>
+          Nothing is posted to your notifications unless you say yes. The game asks in its own
+          words after the second day you light the daily puzzle, and once more at a streak of three
+          if you said <span class="ui">Not now</span>; only then does Android ask its own question.
+          You can change your mind at any time in <span class="ui">Settings → Reminders</span> or
+          in the phone's settings.
+        </p>
+        <p>
+          Reminders are worked out on your phone from your own save &mdash; the daily puzzle at the
+          hour you usually play it, a streak at stake, the tournament week ending, new courtyards
+          after an update, and a note on the third and seventh day after your last visit &mdash; and
+          set as alarms on the phone. They are silent, at most one a day, and never before 09:00 or
+          after 22:00. No server is involved and nothing is sent to make them. Our analytics
+          records only what is listed above: whether reminders are on, the game's question and your
+          answer, and which kind of reminder opened the game. The app receives no messages from us
+          through a notification service.
+        </p>
+
+        <h2 id="feedback">Rating the game and sending feedback</h2>
+        <p>
+          At a few milestones the game may ask Google Play to show its rating card. Google decides
+          whether it appears, and your rating and review go to Google Play under its own terms;
+          the app is not told whether you rated or what you wrote.
+          <span class="ui">Settings → Rate the game</span> opens the game's page on Google Play.
+          <span class="ui">Settings → Send feedback</span> opens your own e-mail app with a message
+          addressed to us and the app's version and your phone's model filled in. Nothing is sent
+          unless you send that e-mail yourself. If you do, we receive it like any e-mail and use it
+          only to answer you and improve the game.
+        </p>
+
+        <h2 id="remote-config">Remote configuration</h2>
+        <p>
+          When it opens, the app fetches one small file from our own website, which says which
+          advertising placements, and whether the rankings, are switched on. The request carries no
+          identifier from the app. Like any web request, it reaches the host that serves our site
+          (Cloudflare) with your IP address. Nothing in that file can change a puzzle, a price or a
+          reward.
+        </p>
+
+        <h2 id="ads">Advertising (Google AdMob)</h2>
+        <p>
+          Matsuri Lights shows two kinds of advertisement through Google AdMob. There are no
+          banners.
+        </p>
+        <ul>
+          <li><strong>Rewarded videos.</strong> One plays only when you press a button marked
+              &ldquo;▶&rdquo; that says what it gives you: a hint when you do not have enough coins,
+              a streak freeze, a festival's coins doubled, or a past daily puzzle opened.</li>
+          <li><strong>A short advertisement between courtyards</strong>, from the Summer festival
+              on or in the tournament and the night market; at most once in three courtyards lit;
+              never in the first three minutes after you open the game or come back to it; never
+              after the daily puzzle, the lesson or a courtyard left unfinished; and never if you
+              bought <strong>No adverts</strong>.</li>
+        </ul>
+        <p>
+          To show and measure advertisements, Google's advertising software in the app may use your
+          device's advertising ID, your IP address (from which a general location can be estimated),
+          and information about the advertisements shown and how the app is used. In the European
+          Economic Area and the United Kingdom you are asked for consent (Google UMP) before any
+          advertisement is requested; where that applies, you can change your choice at any time in
+          <span class="ui">Settings → Advertising privacy</span>. You can reset or delete your
+          advertising ID in Android's settings. During the closed test every advertisement is one of
+          Google's test advertisements; the processing described here still applies. We can switch
+          every placement off ourselves, at any time, without an update. See
+          <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Google's
+          Privacy Policy</a> and
+          <a href="https://policies.google.com/technologies/partner-sites" rel="noopener"
+          target="_blank">How Google uses information from sites or apps that use our services</a>.
+        </p>
+
+        <h2 id="purchases">In-app purchases (Google Play Billing)</h2>
+        <p>
+          Matsuri Lights is free to download. Real money buys two kinds of thing, set out in the
+          <a href="terms.html">Terms</a>: packs of coins, the game's money, and
+          <strong>No adverts</strong>, which ends the advertisements between courtyards. Each
+          purchase says exactly what it gives; nothing is bought at random, and there are no
+          subscriptions. All payments are processed by Google Play: the app never sees, receives or
+          stores your payment details. Google tells the app what was bought, and the app checks
+          Google's signature before delivering it. No adverts can be restored with
+          <span class="ui">Restore purchases</span> in the Shop. The receipt is also counted by our
+          own analytics, as described above.
+        </p>
+
+        <h2 id="sharing">Sharing</h2>
+        <p>
+          If you share your daily-puzzle result, the text (the date, your time, your hints and your
+          streak) goes through Android's share sheet to the app you choose. We never receive it.
+        </p>
+
+        <h2 id="switch">Switching things off</h2>
+        <ul>
+          <li><span class="ui">Settings → Share play statistics</span> turns off our own analytics.
+              The choice is remembered and nothing is sent afterwards. The app at once asks our
+              server to delete everything it holds under your phone's analytics identifier, and
+              keeps asking until the server confirms. A Global Privacy Control signal, where a
+              browser sends one, counts as off.</li>
+          <li><span class="ui">Settings → Take part in rankings</span> stops the rankings and
+              deletes your rankings data, as above.</li>
+          <li><span class="ui">Settings → Reminders</span> stops the reminders.</li>
+          <li><span class="ui">Settings → Advertising privacy</span>, where it is shown, reopens
+              Google's consent form.</li>
+        </ul>
+
+        <h2 id="deletion">Data deletion</h2>
+        <p>
+          Everything on the phone is deleted by uninstalling the app. The Android backup, what
+          Google Play holds about your purchases, and what we hold about your play are covered,
+          place by place, in <a href="delete-account.html">Delete Your Data</a>.
+        </p>
+
+        <h2 id="children">Children</h2>
+        <p>
+          The app is not directed at children under 13 and does not knowingly collect personal
+          information from them.
+        </p>
+
+        <h2 id="changes">Changes</h2>
+        <p>
+          If the app starts handling something new, this page changes in the same release, and the
+          date above changes with it.
+        </p>
+
+        <div class="note">
+          <p>
+            This document is published in English and Spanish. If the two versions ever
+            disagree, the English text is the one that governs.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>Want your data removed?</p>
+          <a class="btn" href="delete-account.html">Delete Your Data</a>
+        </div>
+      </div>
+
+      <!-- ─────────────────────────── Español ─────────────────────────── -->
+      <div data-lang="es" lang="es">
+
+        <div class="note">
+          <p>
+            Matsuri Lights está en desarrollo y todavía no está en Google Play. Este documento
+            describe la versión entregada a los probadores en la prueba cerrada de Google Play y
+            entra en vigor con ella. Si la aplicación empieza a manejar algo nuevo, esta página
+            cambia en la misma versión.
+          </p>
+        </div>
+
+        <nav class="toc" aria-label="En esta página">
+          <p class="toc__title">En esta página</p>
+          <ol>
+            <li><a href="#es-device">Datos guardados en tu dispositivo</a></li>
+            <li><a href="#es-backup">Copia de seguridad en tu cuenta de Google</a></li>
+            <li><a href="#es-analytics">Nuestra propia analítica</a></li>
+            <li><a href="#es-rankings">Clasificaciones y torneo semanal</a></li>
+            <li><a href="#es-notifications">Recordatorios</a></li>
+            <li><a href="#es-feedback">Valorar el juego y enviar comentarios</a></li>
+            <li><a href="#es-remote-config">Configuración remota</a></li>
+            <li><a href="#es-ads">Publicidad</a></li>
+            <li><a href="#es-purchases">Compras dentro de la aplicación</a></li>
+            <li><a href="#es-sharing">Compartir</a></li>
+            <li><a href="#es-switch">Cómo desactivar cada cosa</a></li>
+            <li><a href="#es-deletion">Eliminación de datos</a></li>
+            <li><a href="#es-children">Menores</a></li>
+            <li><a href="#es-changes">Cambios</a></li>
+          </ol>
+        </nav>
+
+        <h2 id="es-device">Datos guardados en tu dispositivo</h2>
+        <p>
+          Todo lo que el juego recuerda está en el propio teléfono: los patios que has iluminado y
+          tus mejores tiempos, tu racha del reto diario y sus protectores, tus monedas, los
+          estilos, emblemas y celebraciones que tienes y llevas, tu nombre y tu nivel en las
+          clasificaciones, tus ajustes, una nota de cuándo el juego te preguntó por los
+          recordatorios y te mostró la tarjeta de valoración, si compraste <strong>Sin
+          anuncios</strong> y una nota de las compras ya entregadas, para que ninguna se entregue
+          dos veces. Se escribe en el almacenamiento propio de la aplicación y en ningún otro
+          sitio. Desinstalar la aplicación lo borra del teléfono.
+        </p>
+
+        <h2 id="es-backup">Copia de seguridad en tu cuenta de Google (Android Backup)</h2>
+        <p>
+          Para que cambiar de teléfono no te cueste tus patios ni tu racha, la partida se incluye
+          en la copia de seguridad de Android, junto con el pequeño archivo de ajustes que guarda el
+          identificador de analítica del juego. Es una función del teléfono, no un servicio
+          nuestro: Android la copia en tu cuenta de Google y la restaura cuando instalas Matsuri
+          Lights en un teléfono nuevo. <strong>Nosotros no podemos leerla</strong> y no guardamos
+          ninguna copia. Puedes desactivar la copia, o borrar lo guardado, en
+          <span class="ui">Ajustes → Google → Copia de seguridad</span> de Android. El registro de
+          lo que compraste no forma parte de la copia: Google Play lo vuelve a confirmar en el
+          teléfono nuevo.
+        </p>
+
+        <h2 id="es-analytics">Nuestra propia analítica (Voltix Analytics)</h2>
+        <p>
+          Para saber si el juego se explica solo, qué patios son demasiado difíciles y si la gente
+          vuelve, la aplicación envía un registro de lo que pasa en ella a nuestro propio servidor,
+          una pequeña función de nuestra web, <code>voltixstudios.pages.dev</code>, alojada en
+          Cloudflare. Lo envía en pequeños lotes, y cada evento pertenece a una lista fija. Esto es
+          lo que se envía, y no hay nada más:
+        </p>
+        <ul>
+          <li>un identificador aleatorio que la aplicación se inventa y guarda en tu teléfono, para
+              que el mismo teléfono cuente como el mismo jugador;</li>
+          <li>un número de sesión;</li>
+          <li>el nombre de cada evento y números y palabras breves sobre él: patios abiertos,
+              iluminados o abandonados, con su tamaño, el tiempo, las pistas y los farolillos
+              colocados; los pasos de la lección; el reto diario y tu racha; las monedas ganadas y
+              gastadas, y en qué; los estilos llevados y comprados; qué oferta o anuncio se mostró o
+              se vio; los ajustes cambiados; cuándo abres el torneo o la Tienda; cuándo el juego
+              preguntó por los recordatorios, tu respuesta y qué tipo de recordatorio abrió el juego;
+              y cuándo se pidió la tarjeta de valoración o se tocó
+              <span class="ui">Valorar el juego</span> o
+              <span class="ui">Enviar comentarios</span>;</li>
+          <li>algunos datos que se repiten en cada evento: la versión de la aplicación, cuántos
+              patios has iluminado, tu racha y tus protectores, tu idioma y tus monedas, si
+              terminaste la lección, si compraste Sin anuncios, si las clasificaciones y los
+              recordatorios están activados y cuántos días has jugado;</li>
+          <li>una vez por versión de la aplicación, la marca y el modelo del teléfono, sus versiones
+              de Android y de WebView, su idioma y el tamaño de su pantalla;</li>
+          <li>una vez, desde dónde se instaló la aplicación, tal como Google Play se lo comunica;
+              esto nunca se envía a Google;</li>
+          <li>la zona horaria del teléfono, como minutos respecto a UTC;</li>
+          <li>en una compra, el recibo firmado por Google y el precio, para contar solo compras
+              reales;</li>
+          <li>lo que nos ha reportado un anuncio, tal como AdMob se lo comunica a la aplicación, y
+              tu respuesta a la pregunta de consentimiento de publicidad;</li>
+          <li>si falla el código del propio juego, el tipo de error y la línea donde ocurrió; nunca
+              el texto del error.</li>
+        </ul>
+        <p>
+          Lo que <strong>no</strong> se envía: ningún nombre, correo, cuenta ni contacto de ningún
+          tipo; ningún ID de publicidad, ID de Android ni ID de dispositivo; nada escrito por ti,
+          porque no hay dónde escribir. Nuestro servidor registra el país que Cloudflare deduce de
+          tu dirección IP y nunca guarda la dirección. Los eventos esperan en el teléfono mientras
+          no hay conexión y se envían después; lo que tenga más de tres días se descarta. Los
+          eventos individuales se borran a los 90 días. Se conserva un resumen por identificador,
+          para ver si la gente vuelve con los meses, hasta que nos pidas borrarlo. Cloudflare trata
+          estos datos por encargo nuestro como proveedor de alojamiento y no los usa para nada más.
+          La versión del juego para navegador que se usa en las pruebas envía los mismos eventos a
+          nuestro servidor, y nada a Google.
+        </p>
+
+        <h2 id="es-rankings">Clasificaciones y torneo semanal</h2>
+        <p>
+          Matsuri Lights tiene una clasificación del reto diario y un torneo semanal en grupos de
+          hasta 30 jugadores. Funcionan en nuestro propio servidor, en la misma web que nuestra
+          analítica. <strong><span class="ui">Participar en las clasificaciones</span>, en Ajustes,
+          está activado la primera vez que abres el juego.</strong> Mientras está activado, la
+          aplicación envía:
+        </p>
+        <ul>
+          <li>un identificador aleatorio creado para las clasificaciones, distinto del de la
+              analítica;</li>
+          <li>por cada reto diario que iluminas, la fecha, tu tiempo, las pistas que usaste y dónde
+              colocaste los farolillos, para que el servidor compruebe la solución con las propias
+              reglas del juego; los farolillos se comprueban y no se guardan;</li>
+          <li>por cada puzle del torneo, lo mismo, con la semana y el número del puzle;</li>
+          <li>el nombre y el emblema que eliges;</li>
+          <li>un aviso de que estás conectado, como mucho una vez por minuto mientras juegas.</li>
+        </ul>
+        <p>
+          <strong>Tu nombre</strong> son dos palabras japonesas que eliges de dos listas del juego,
+          con dos cifras que añade el juego, por ejemplo &ldquo;Hoshi Kitsune 42&rdquo;. No puedes
+          escribir un nombre y no hay chat.
+        </p>
+        <p>
+          <strong>Lo que ven los demás jugadores:</strong> tu nombre y tu emblema; tu puesto, tus
+          puntos y tu lugar en el grupo; si estás jugando, conectado o desconectado; y tu tiempo en
+          el reto diario, si está entre los que se muestran.
+        </p>
+        <p>
+          <strong>Lo que guarda el servidor:</strong> tu identificador de clasificaciones, tu
+          nombre, tu emblema y tu nivel; cuántas veces cambiaste de nombre; cuándo se te vio por
+          última vez; y tus resultados y puntos por día y por semana. No guarda ningún ID de
+          publicidad, ninguna cuenta, ninguna dirección IP ni nada escrito. Como cualquier petición
+          web, cada una llega con tu dirección IP al proveedor que aloja nuestra web (Cloudflare).
+          Al desactivar <span class="ui">Participar en las clasificaciones</span>, el juego deja de
+          enviar nada y la aplicación pide en el acto al servidor que borre todo lo que guarda con
+          tu identificador de clasificaciones. Si lo vuelves a activar, empiezas como un jugador
+          nuevo.
+        </p>
+
+        <h2 id="es-notifications">Recordatorios</h2>
+        <p>
+          No se te envía ninguna notificación si no dices que sí. El juego te lo pregunta con sus
+          propias palabras después del segundo día en que iluminas el reto diario, y una vez más con
+          una racha de tres si dijiste <span class="ui">Ahora no</span>; solo entonces Android hace
+          su propia pregunta. Puedes cambiar de opinión cuando quieras en
+          <span class="ui">Ajustes → Recordatorios</span> o en los ajustes del teléfono.
+        </p>
+        <p>
+          Los recordatorios se calculan en tu teléfono a partir de tu propia partida &mdash;el reto
+          diario a la hora a la que sueles jugarlo, una racha en juego, el final de la semana del
+          torneo, patios nuevos tras una actualización y un aviso el tercer y el séptimo día después
+          de tu última visita&mdash; y se programan como alarmas en el teléfono. Son silenciosos,
+          como mucho uno al día, y nunca antes de las 09:00 ni después de las 22:00. No interviene
+          ningún servidor y no se envía nada para crearlos. Nuestra analítica solo registra lo que
+          se indica arriba: si los recordatorios están activados, la pregunta del juego y tu
+          respuesta, y qué tipo de recordatorio abrió el juego. La aplicación no recibe mensajes
+          nuestros a través de ningún servicio de notificaciones.
+        </p>
+
+        <h2 id="es-feedback">Valorar el juego y enviar comentarios</h2>
+        <p>
+          En algunos momentos señalados, el juego puede pedir a Google Play que muestre su tarjeta
+          de valoración. Google decide si aparece, y tu valoración y tu reseña van a Google Play
+          según sus propias condiciones; a la aplicación no se le dice si valoraste ni qué
+          escribiste. <span class="ui">Ajustes → Valorar el juego</span> abre la página del juego en
+          Google Play. <span class="ui">Ajustes → Enviar comentarios</span> abre tu propia
+          aplicación de correo con un mensaje dirigido a nosotros y con la versión de la aplicación y
+          el modelo de tu teléfono ya escritos. No se envía nada a menos que tú mismo envíes ese
+          correo. Si lo haces, lo recibimos como cualquier correo y solo lo usamos para contestarte
+          y mejorar el juego.
+        </p>
+
+        <h2 id="es-remote-config">Configuración remota</h2>
+        <p>
+          Al abrirse, la aplicación descarga un pequeño archivo de nuestra web que indica qué
+          espacios publicitarios están activados y si lo están las clasificaciones. La petición no
+          lleva ningún identificador de la aplicación. Como cualquier petición web, llega con tu
+          dirección IP al proveedor que aloja nuestra web (Cloudflare). Nada de ese archivo puede
+          cambiar un puzle, un precio ni una recompensa.
+        </p>
+
+        <h2 id="es-ads">Publicidad (Google AdMob)</h2>
+        <p>
+          Matsuri Lights muestra dos tipos de anuncio a través de Google AdMob. No hay banners.
+        </p>
+        <ul>
+          <li><strong>Vídeos con recompensa.</strong> Solo se reproduce uno cuando pulsas un botón
+              marcado con &ldquo;▶&rdquo; que dice lo que te da: una pista cuando no tienes monedas
+              suficientes, un protector de racha, las monedas de una fiesta duplicadas o un reto
+              diario anterior abierto.</li>
+          <li><strong>Un anuncio breve entre patios</strong>, a partir de la fiesta de verano o en
+              el torneo y el mercado nocturno; como mucho una vez cada tres patios iluminados; nunca
+              en los tres primeros minutos después de abrir el juego o volver a él; nunca después del
+              reto diario, la lección o un patio sin terminar; y nunca si compraste
+              <strong>Sin anuncios</strong>.</li>
+        </ul>
+        <p>
+          Para mostrar y medir los anuncios, el software publicitario de Google en la aplicación
+          puede usar el ID de publicidad de tu dispositivo, tu dirección IP (a partir de la cual se
+          puede estimar una ubicación aproximada) e información sobre los anuncios mostrados y el uso
+          de la aplicación. En el Espacio Económico Europeo y el Reino Unido se te pide el
+          consentimiento (Google UMP) antes de solicitar ningún anuncio; cuando se aplica, puedes
+          cambiar tu elección en cualquier momento en
+          <span class="ui">Ajustes → Privacidad de los anuncios</span>. Puedes restablecer o
+          eliminar tu ID de publicidad en los ajustes de Android. Durante la prueba cerrada, todos
+          los anuncios son anuncios de prueba de Google; el tratamiento descrito aquí se aplica
+          igualmente. Podemos desactivar todos los espacios publicitarios nosotros mismos, en
+          cualquier momento, sin actualizar la aplicación. Consulta la
+          <a href="https://policies.google.com/privacy?hl=es" rel="noopener" target="_blank">Política
+          de Privacidad de Google</a> y
+          <a href="https://policies.google.com/technologies/partner-sites?hl=es" rel="noopener"
+          target="_blank">Cómo utiliza Google la información de sitios web o aplicaciones que
+          utilizan sus servicios</a>.
+        </p>
+
+        <h2 id="es-purchases">Compras dentro de la aplicación (Google Play Billing)</h2>
+        <p>
+          Matsuri Lights se descarga gratis. Con dinero real se pueden comprar dos tipos de cosas,
+          descritas en las <a href="terms.html">Condiciones</a>: paquetes de monedas, el dinero del
+          juego, y <strong>Sin anuncios</strong>, que acaba con los anuncios entre patios. Cada
+          compra dice exactamente lo que da; nada se compra al azar y no hay suscripciones. Todos
+          los pagos los procesa Google Play: la aplicación nunca ve, recibe ni guarda tus datos de
+          pago. Google comunica a la aplicación lo que se compró, y la aplicación comprueba la firma
+          de Google antes de entregarlo. Sin anuncios se puede restaurar con
+          <span class="ui">Restaurar compras</span> en la Tienda. Nuestra propia analítica también
+          cuenta el recibo, como se explica arriba.
+        </p>
+
+        <h2 id="es-sharing">Compartir</h2>
+        <p>
+          Si compartes tu resultado del reto diario, el texto (la fecha, tu tiempo, tus pistas y tu
+          racha) pasa por el menú de compartir de Android a la aplicación que elijas. Nosotros nunca
+          lo recibimos.
+        </p>
+
+        <h2 id="es-switch">Cómo desactivar cada cosa</h2>
+        <ul>
+          <li><span class="ui">Ajustes → Compartir estadísticas de juego</span> desactiva nuestra
+              propia analítica. La elección se recuerda y no se envía nada más. La aplicación pide
+              en el acto a nuestro servidor que borre todo lo que guarda con el identificador de
+              analítica de tu teléfono, y lo sigue pidiendo hasta que el servidor lo confirma. La
+              señal Global Privacy Control, cuando un navegador la envía, cuenta como
+              desactivado.</li>
+          <li><span class="ui">Ajustes → Participar en las clasificaciones</span> detiene las
+              clasificaciones y borra tus datos de clasificaciones, como se explica arriba.</li>
+          <li><span class="ui">Ajustes → Recordatorios</span> detiene los recordatorios.</li>
+          <li><span class="ui">Ajustes → Privacidad de los anuncios</span>, cuando aparece, vuelve a
+              abrir el formulario de consentimiento de Google.</li>
+        </ul>
+
+        <h2 id="es-deletion">Eliminación de datos</h2>
+        <p>
+          Todo lo que hay en el teléfono se borra al desinstalar la aplicación. La copia de
+          seguridad de Android, lo que Google Play guarda sobre tus compras y lo que nosotros
+          guardamos sobre tu partida se explican, sitio por sitio, en
+          <a href="delete-account.html">Eliminar tus datos</a>.
+        </p>
+
+        <h2 id="es-children">Menores</h2>
+        <p>
+          La aplicación no está dirigida a menores de 13 años y no recopila a sabiendas información
+          personal de ellos.
+        </p>
+
+        <h2 id="es-changes">Cambios</h2>
+        <p>
+          Si la aplicación empieza a manejar algo nuevo, esta página cambia en la misma versión, y
+          la fecha de arriba cambia con ella.
+        </p>
+
+        <div class="note">
+          <p>
+            Este documento se publica en inglés y en español. Si las dos versiones no coinciden,
+            prevalece el texto en inglés.
+          </p>
+        </div>
+
+        <div class="doc-next">
+          <p>¿Quieres que borremos tus datos?</p>
+          <a class="btn" href="delete-account.html">Eliminar tus datos</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+
+<footer class="foot">
+  <div class="wrap">
+
+    <div class="foot__top">
+      <a class="brand" href="../../index.html">
+        <img src="../../assets/img/voltix-mark.webp" alt="" width="256" height="256" loading="lazy">
+        <span>Voltix<em>Studios</em></span>
+      </a>
+
+      <ul class="social social--compact" aria-label="Voltix Studios elsewhere">
+        <li><a class="social__btn social__btn--x" href="https://x.com/voltix_studios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on X">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></a></li>
+        <li><a class="social__btn social__btn--yt" href="https://www.youtube.com/@VoltixStudiosGaming"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on YouTube">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-yt"></use></svg></a></li>
+        <li><a class="social__btn social__btn--tt" href="https://www.tiktok.com/@voltixstudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on TikTok">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-tt"></use></svg></a></li>
+        <li><a class="social__btn" href="https://github.com/VoltixStudios"
+               rel="me noopener" target="_blank" aria-label="Voltix Studios on GitHub">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-gh"></use></svg></a></li>
+        <li><a class="social__btn" href="mailto:voltix.studios.gaming@gmail.com"
+               aria-label="Email Voltix Studios">
+          <svg class="social__icon" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg></a></li>
+      </ul>
+    </div>
+
+    <div class="foot__bar">
+      <p class="foot__copy">
+        &copy; <span id="year">2026</span> Voltix Studios. All game names and artwork are
+        property of Voltix Studios.
+      </p>
+      <nav class="foot__links" aria-label="Legal">
+        <a href="privacy-policy.html">Privacy policy</a>
+        <a href="terms.html">Terms</a>
+        <a href="delete-account.html">Delete your data</a>
+        <a href="../website-privacy.html">Website privacy</a>
+      </nav>
+    </div>
+
+  </div>
+</footer>
+
+<script src="../../assets/js/main.js" defer></script>
+<script src="../../assets/js/doc.js" defer></script>
+
+<!-- /analytics/ is a Pages Function proxying Umami: no third-party script, and
+     nothing stored on the device (legal/website-privacy.html). Root-absolute on
+     purpose — it resolves only on Cloudflare, keeping the github.io mirror out. -->
+<script defer src="/analytics/script.js"
+        data-website-id="67ef04b0-4dd9-49ec-ba2e-2efcc158bc4b"
+        data-host-url="/analytics"
+        data-exclude-hash="true"></script>
+<script src="../../assets/js/analytics.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "_": "Matsuri Lights' remote configuration. Two readers. The page (game/index.html in the MatsuriLights repo) reads \"play\" before it calls the rankings server at /play: only the exact value true switches the daily ranking and the weekly tournament on; missing or false, the game never calls the server. The release app reads \"ads\" and \"units\" once at launch (android/.../Config.java): a placement shows advertising only when it is true AND has a unit; absent or malformed, every placement is off. Debug builds ignore this file and use Google's test units. Turning anything on or off is an edit here and a push, not an app update. Nothing in this file can change a price, a reward or a rule. 18 November 2026, following pocketfoundry/config.json: every unit is Google's demo unit (rewarded ca-app-pub-3940256099942544/5224354917, interstitial ca-app-pub-3940256099942544/1033173712) while the AdMob account is suspended (R-73, until about 14 December 2026) and the game is in closed testing, so no tester can produce invalid traffic. There are no real units to restore yet: store/ADMOB.md (15 November 2026) records that no AdMob app and no ad units exist for Matsuri Lights. For production, Sr. Orra creates the AdMob app and five units named after the placements (hint, freeze, double, past: rewarded; inter: interstitial) and their ids replace the demo ids here.",
+  "play": true,
+  "ads": {
+    "hint": true,
+    "freeze": true,
+    "double": true,
+    "past": true,
+    "inter": true
+  },
+  "units": {
+    "hint": "ca-app-pub-3940256099942544/5224354917",
+    "freeze": "ca-app-pub-3940256099942544/5224354917",
+    "double": "ca-app-pub-3940256099942544/5224354917",
+    "past": "ca-app-pub-3940256099942544/5224354917",
+    "inter": "ca-app-pub-3940256099942544/1033173712"
+  }
+}

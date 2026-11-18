@@ -25,7 +25,7 @@
                  health: "Errors, late data, the collector and the nightly run" };
   const NS = "http://www.w3.org/2000/svg";
   const NAMES = { loom: "Loom", sombra: "AshenRise", pocketfoundry: "Pocket Foundry", papersquadron: "Paper Squadron",
-                  matsurilights: "Matsuri Lights", reefseek: "Reef & Seek" };
+                  matsurilights: "Matsuri Lights", reefseek: "Reef & Seek", lostsocks: "Lost Socks" };
 
   /* ---------- small helpers ---------- */
   function h(tag, props, ...kids) {
@@ -153,8 +153,13 @@
       headline: ["first_result", "Got a first result"], second: ["loom_chosen", "Chose a first loom"],
       opens: ["launcher", "reminder", "link"],
       first: "First result",
-      reminder: [["Offered", "reminder_offered"], ["Accepted", "reminder_accepted"], ["Declined", "reminder_declined"],
-                 ["Refused by Android", "reminder_permission_denied"], ["Opened the game", "reminder_opened"]],
+      /* From 1.5.3 (Loom's ANALYTICS.md): Loom's button on Android 13+ (kind ask), Android's answer
+         (reminder_permission by result), the switch-on where no permission is needed (kind on). */
+      reminder: [["Button seen (Android 13+)", "reminder_offered:ask"], ["Button tapped", "reminder_accepted:ask"],
+                 ["Android allowed", "reminder_permission:granted"], ["Android refused", "reminder_permission:denied"],
+                 ["Android dismissed", "reminder_permission:dismissed"], ["Switched on at the solve (Android 12-)", "reminder_offered:on"],
+                 ["Turned off on the box", "reminder_declined"], ["Opened the game", "reminder_opened"],
+                 ["Offered, up to 1.5.2", "reminder_offered"], ["Refused by Android, up to 1.5.2", "reminder_permission_denied"]],
       use: [["Statistics", "stats_opened"], ["Quilt", "quilt_opened"], ["Archive", "archive_opened"], ["Replayed solution", "solution_replayed"],
             ["Help", "help_opened"], ["Shared a result", "share_pressed"]],
     },
@@ -203,23 +208,45 @@
       steps: [["lesson_start", "Started the lesson"], ["lesson_done", "Finished the lesson"], ["first_level", "Lit a first courtyard"],
               ["courtyard_3", "Lit courtyard 3"], ["first_daily", "Lit the daily puzzle"]],
       headline: ["courtyard_3", "Lit courtyard 3"], second: ["lesson_done", "Finished the lesson"],
-      opens: ["launcher", "notification"],
+      opens: ["launcher", "reminder", "push"],
       first: "Lit a courtyard, day 1",
-      reminder: [],
+      // reminders (ML-037): asked after the second day's daily puzzle, at a streak of 3, or from Settings
+      reminder: [["Asked, in the game's words", "notify_asked"], ["Said yes", "notify_answer:on"], ["Not now", "notify_answer:not_now"],
+                 ["Refused by Android", "notify_answer:denied"], ["Blocked in settings", "notify_answer:blocked"], ["Opened by a reminder", "notif_open"]],
       use: [["Asked for a hint", "hint"], ["Lit the daily puzzle", "daily_done"], ["Played a past day", "past_open"],
             ["Shared a result", "share"], ["Opened the tournament", "league_open"], ["Lit a tournament courtyard", "league_level"],
-            ["Opened Styles", "styles_open"], ["Opened the shop", "shop_open"]],
+            ["Opened Styles", "styles_open"], ["Opened the shop", "shop_open"],
+            ["Rating card asked for", "review_asked"], ["Opened Rate the game", "rate_opened"], ["Sent feedback", "feedback_opened"]],
     },
-    /* Reef & Seek: no first-day steps of its own yet, so no headline tiles; a reef cleared counts as a
-       win through level_end's success. ReefSeek/docs/ANALYTICS.md. */
+    /* Reef & Seek: the first day's steps (the lesson, a first reef, reef 3 that the closed test reads, the
+       Daily Reef), its reminders (RS-030) and what players use; a reef cleared counts as a win through
+       level_end's success. ReefSeek/docs/ANALYTICS.md. */
     reefseek: {
-      steps: [],
-      opens: ["launcher", "notification"],
+      steps: [["lesson_start", "Started the lesson"], ["lesson_done", "Finished the lesson"], ["first_reef", "Cleared a first reef"],
+              ["reef_3", "Cleared reef 3"], ["first_daily", "Cleared the Daily Reef"]],
+      headline: ["reef_3", "Cleared reef 3"], second: ["lesson_done", "Finished the lesson"],
+      opens: ["launcher", "reminder", "push"],
       first: "Cleared a reef, day 1",
-      reminder: [],
+      // reminders (RS-030): asked after a fish of the aquarium grows, or at a Daily Reef streak of 3
+      reminder: [["Asked, in the game's words", "notify_asked"], ["Said yes", "notify_answer:on"], ["Not now", "notify_answer:not_now"],
+                 ["Refused by Android", "notify_answer:denied"], ["Blocked in settings", "notify_answer:blocked"], ["Opened by a reminder", "notif_open"]],
       use: [["Daily Reef", "daily_done"], ["Took a hint", "hint"], ["Continued", "continue"], ["Bought an upgrade", "upgrade"],
-            ["Called a friend", "friend"], ["Opened the aquarium", "aquarium_open"], ["Opened the album", "album_open"],
-            ["Opened the tournament", "league_open"], ["Opened the shop", "shop_open"], ["Shared the Daily Reef", "share"]],
+            ["Called a friend", "friend"], ["Played in the aquarium", "aquarium_play"], ["Opened the aquarium", "aquarium_open"],
+            ["Opened the album", "album_open"], ["Opened the tournament", "league_open"], ["Opened the shop", "shop_open"],
+            ["Shared the Daily Reef", "share"]],
+    },
+    /* Lost Socks: the first day's steps (first sock thrown, first level, level 1-5 where reminders are
+       offered, the first world), its reminders and what players use. LostSocks/docs/ANALYTICS.md. */
+    lostsocks: {
+      steps: [["first_shot", "Threw a first sock"], ["first_win", "Cleared a first level"], ["level_1_5", "Cleared level 1-5"],
+              ["world_1", "Cleared the first world"]],
+      headline: ["level_1_5", "Cleared level 1-5"], second: ["first_win", "Cleared a first level"],
+      opens: ["launcher", "notification"],
+      first: "Cleared a level, day 1",
+      reminder: [["Asked, in the game's words", "notify_asked"], ["Said yes", "notify_answer:yes"], ["Not now", "notify_answer:not_now"],
+                 ["Opened by a reminder", "notif_open"]],
+      use: [["Used a booster", "booster_used"], ["Continued", "continue_used"], ["Daily gift", "gift_claimed"],
+            ["Opened the Free Basket", "basket_opened"], ["Opened the shop", "shop_open"], ["Changed a setting", "setting"]],
     },
   };
   const profile = (g) => PROFILES[g] || null;
@@ -450,7 +477,8 @@
         hbars(LB.map((l, i) => ({ label: l, n: (d.lengths.find((r) => r.b === i) || {}).n || 0 })), lt || null)),
       card("Days played in the first week", h("div", { class: "small", text: "New players whose first week is over" }),
         hbars([1, 2, 3, 4, 5, 6, 7].map((n) => ({ label: n + (n === 1 ? " day" : " days"), n: (d.firstWeek.find((r) => r.days === n) || {}).n || 0 })), fw || null))));
-    /* "name" counts players who sent the event; "name:value" those whose `state` was that value. */
+    /* "name" counts players who sent the event; "name:value" those whose dimension (state, result
+       or kind, whichever the API split that event by) was that value. */
     const t = (key) => { const [n, v] = key.split(":");
       return v === undefined ? sumBy(pick(d.totals, n, ""), (r) => r.players) : sumBy(pick(d.answers || [], n, v), (r) => r.players); };
     const open = (c) => sumBy(pick(d.opens, "app_open", c), (r) => r.events);
@@ -459,7 +487,9 @@
     const causes = P ? P.opens : [...new Set(d.opens.map((r) => r.value))];
     out.push(h("div", { class: "grid3" },
       card("What opened the game", causes.length ? hbars(causes.map((c) => ({ label: c, n: open(c) })), ot || null) : empty()),
-      card("Reminders", P && P.reminder.length ? hbars(P.reminder.map(([l, n]) => ({ label: l, n: t(n) })), null) : empty("No reminder events defined for this game.")),
+      card("Reminders", P && P.reminder.length ? hbars(P.reminder.map(([l, n]) => ({ label: l, n: t(n) })), null) : empty("No reminder events defined for this game."),
+        d.delivery ? h("div", { class: "small", text: "Notifications since " + dayLabel(Math.max(d.delivery.from, 0)) + ": posted " + int(d.delivery.posted || 0) +
+          ", skipped (already played) " + int(d.delivery.skipped || 0) + ", blocked by the phone " + int(d.delivery.blocked || 0) + " (firings, not players)" }) : null),
       card("What they use", h("div", { class: "small", text: "Share of player-days" }),
         P ? hbars(P.use.map(([l, n]) => ({ label: l, n: t(n) })), d.playerDays || null) : empty("No features defined for this game."))));
     return out;

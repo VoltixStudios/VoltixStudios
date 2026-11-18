@@ -1,0 +1,19 @@
+{
+  "_": "Lost Socks' remote configuration, read once at launch by the app (android/.../Config.java in the LostSocks repo; placements as Ads.PLACEMENTS). A placement shows advertising only when it is true AND its unit is an AdMob ad unit id. Turning one on or off is an edit here and a push, not an app update. Nothing in this file can change a price, a reward or a rule. 18 November 2026: every unit is Google's demo unit (rewarded ca-app-pub-3940256099942544/5224354917, interstitial ca-app-pub-3940256099942544/1033173712) while the studio's AdMob account is suspended (R-73, until about 14 December 2026) and the game is in closed testing, so no tester can produce invalid traffic. The closed-test builds carry Google's sample AdMob application id and are built without adverts (LS-011: BuildConfig.ADS_LIVE is false), so they ignore this file until a build with a real ADMOB_APP_ID replaces them. Real units to restore for production: none exist yet. The Lost Socks AdMob app and its six units (lostsocks_double, lostsocks_continue, lostsocks_booster, lostsocks_buttons, lostsocks_reroll, lostsocks_inter) are to be created once the suspension ends (store/ADMOB.md in the LostSocks repo); their ids replace the demo units here.",
+  "ads": {
+    "double": true,
+    "continue": true,
+    "booster": true,
+    "buttons": true,
+    "reroll": true,
+    "inter": true
+  },
+  "units": {
+    "double": "ca-app-pub-3940256099942544/5224354917",
+    "continue": "ca-app-pub-3940256099942544/5224354917",
+    "booster": "ca-app-pub-3940256099942544/5224354917",
+    "buttons": "ca-app-pub-3940256099942544/5224354917",
+    "reroll": "ca-app-pub-3940256099942544/5224354917",
+    "inter": "ca-app-pub-3940256099942544/1033173712"
+  }
+}

@@ -231,13 +231,13 @@ export const GAMES = {
     licence:
       "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAj6YF8xiiydrfoOCqZEl9NnptX1M6XyzaLejFth4p85hm7hsoPnbl+4KUmwGDJp3hVaC0v56WhlKrDZsT9EgBurZfhqxQ+8HCj6fR5VrO6SHwp75eXN5u+qMGYCyGz45j7b0aqrhVqOntQWFz80/TdeaYi3IqsUeoOVwZRz0pMK7nKJjZ+1egAcrlht/Cj43jVm0DZik/NXIYiok8jZwWD0gEOE2LqUk2lJmgIcgCZKanYVdRxBaznEk0TwNgtv3us2sfdZ6WR4VAKFd8dis7s2DfsqQ3ND/eYOHbwVzy2pbGMkS9kwSYTjeKIObxriJQg+YVSuPjJvCx4Zp3suo8FQIDAQAB",
   },
-  // Not in Play Console yet (the package com.voltixstudios.reefseek is PROPOSED, ReefSeek RS-007), so
-  // no licence key: its purchases are stored, not verified, until the key is added here.
+  // The licence key is ReefSeek's PLAY_LICENCE_KEY, the one its Android build compiles in (added 18 November 2026).
   reefseek: {
     pkg: "com.voltixstudios.reefseek",
     events: new Set(REEFSEEK_EVENTS),
     props: new Set(REEFSEEK_PROPS),
-    licence: null,
+    licence:
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1GRoSCltuSyHPLETcWXTsPznJx19Y+WAMa/VkUqi2dxJiiBFKbyZfGJmdHreD8x2TgXHUUFOA9dinsqsf5BTBy71BJEwTrar9btQa4FT+4uu460BhmUUnd+Sq2cR2SJzXrGAAkn0r7gG3wOsheQ3MkXaXR3cMd7F8vXt8ulTpmHQPBguaiClz91FdsdX1RQ1YizhDL9yByc5rBd7YZzkkthhzaRwywKtp27wLu+cgNx60Cd1ZKURyn+3GldHnb0MVY735aYFS3uDF1y/2WBECuJsekzPmh1VtAB/3qJUQYAbMQYUOzVhwiZ/DJrsk0kn92Hu3CKMVQDizXpsCF3koQIDAQAB",
   },
   // Not in Play Console yet, so it has no licence key: its purchases are stored, not verified.
   matsurilights: {

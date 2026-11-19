@@ -175,7 +175,7 @@ P4='{"orderId":"GPA.3333-4444-5555-66666","packageName":"com.voltixstudios.paper
 post /collect "{\"v\":1,\"g\":\"papersquadron\",\"i\":\"$OTHER\",\"p\":\"app\",\"e\":[{\"n\":\"purchase_completed\"}],\"pur\":[{\"data\":$(pj "$P4"),\"sig\":\"$(signed "$P4")\",\"price_micros\":1990000,\"currency\":\"EUR\"}]}" >/dev/null
 is "a Paper Squadron purchase Google signed is verified"    "$(sql "SELECT verified, sku FROM va_purchase WHERE id = 'GPA.3333-4444-5555-66666'")" "1|paper_pack"
 # Matsuri Lights and Lost Socks are not in Play Console yet, so they have no key; when they have one, this wants "all" again.
-is "every game in Play Console has its licence key"          "$(cd "$SITE" && node -e 'import("./functions/_va/games.js").then(m => console.log(Object.entries(m.GAMES).filter(([k, g]) => !/^MIIB[A-Za-z0-9+\/=]{300,}$/.test(g.licence || "")).map(([k]) => k).join(",") || "all"))')" "matsurilights,lostsocks"
+is "every game in Play Console has its licence key"          "$(cd "$SITE" && node -e 'import("./functions/_va/games.js").then(m => console.log(Object.entries(m.GAMES).filter(([k, g]) => !/^MIIB[A-Za-z0-9+\/=]{300,}$/.test(g.licence || "")).map(([k]) => k).join(",") || "all"))')" "matsurilights"
 
 echo "The daily cap"
 CAPID=99999999-8888-7777-6666-555555555555

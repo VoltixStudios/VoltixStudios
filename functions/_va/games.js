@@ -187,7 +187,7 @@ const MATSURILIGHTS_PROPS = [
 // level_end carries success and left as the other level games' do; rewarded adverts, offers, purchases
 // and reminders use the shared names the dashboard's Money and Engagement pages read.
 const LOSTSOCKS_EVENTS = [
-  "app_open", "app_hidden", "js_error", "install_source", "consent_status", "first_session_step",
+  "app_open", "first_open", "app_hidden", "js_error", "install_source", "consent_status", "first_session_step",
   "level_start", "level_end", "earn", "spend", "booster_used", "continue_used",
   "gift_shown", "gift_claimed", "basket_opened", "shop_open", "setting",
   "offer_shown", "offer_dismissed", "purchase_started", "purchase", "purchase_failed",
@@ -246,12 +246,12 @@ export const GAMES = {
     props: new Set(MATSURILIGHTS_PROPS),
     licence: null,
   },
-  // Not in Play Console yet (the package com.voltixstudios.lostsocks is PROPOSED, LostSocks LS-003), so
-  // no licence key: its purchases are stored, not verified, until the key is added here.
+  // The licence key is LostSocks' PLAY_LICENCE_KEY, the one its Android build compiles in (added 19 November 2026).
   lostsocks: {
     pkg: "com.voltixstudios.lostsocks",
     events: new Set(LOSTSOCKS_EVENTS),
     props: new Set(LOSTSOCKS_PROPS),
-    licence: null,
+    licence:
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArXDsjSSA6E9Z6TknD5D4Jl+JipZ5L42kkQpyzR5ZYfEqZVva234VaViIX0mGXB82bL1/9YHZHUYE9JQHP5OI4NQ1UN/5knMEdPHT/CSuc2HU5IH3qAwlbImyp3fTNoJ6AJ4keFT5EhuMlTB78+SqvtYAw+OTFhoIcS9bws4Uli3AFavHmt4RevOpxDjlWk5ncyKK5AaYsBTDU9QdS34YBTb9cEYfzfmibmv2p0PuNPogVCoqjUk89Pqu7080R7lXV63LOagVVJM/sBGal3mGJPcNxTD+dXVg/xYhwCF9+MWCFMpWSIaphSOBNMInoddBYgioruNfrEpfHfqujtMkmwIDAQAB",
   },
 };

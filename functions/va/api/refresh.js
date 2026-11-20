@@ -1,14 +1,14 @@
 /* Voltix Analytics — the dashboard's "Refresh now" button, at POST /va/api/refresh.
  *
- * Runs the same summary as the scheduled runs at 08:00 and 22:00 Spanish time
- * (workers/va-nightly), on demand, behind the login (the middleware refuses
- * this without a session cookie). The work is the same SQL, run inside D1, so
- * it costs this Function almost no CPU.
+ * Runs the summary (workers/va-nightly) on demand. Since 18 November 2026 it is
+ * the only thing that runs it: the 08:00 and 22:00 schedule was removed. It runs
+ * behind the login (the middleware refuses this without a session cookie). The
+ * work is SQL run inside D1, so it costs this Function almost no CPU.
  *
  * Kept within the free plan: a summary rewrites four days of tables, so the
- * button refuses if any summary (scheduled or manual) ran in the last
- * MIN_GAP_MIN minutes, and allows MAX_PER_DAY manual runs a day (UTC). A POST
- * from any other site is refused, besides the cookie's own SameSite=Strict.
+ * button refuses if a summary ran in the last MIN_GAP_MIN minutes, and allows
+ * MAX_PER_DAY runs a day (UTC). A POST from any other site is refused, besides
+ * the cookie's own SameSite=Strict.
  */
 
 import { nightly } from "../../../workers/va-nightly/src/index.js";

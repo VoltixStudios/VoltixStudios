@@ -74,12 +74,13 @@ every browser at once**, replace only `VA_COOKIE_KEY`. **If the phone with the
 authenticator is lost**, run the script again: the old seed stops working the moment
 the new one is saved.
 
-## 3b. The nightly summaries (a small Worker of their own)
+## 3b. The summaries (a small Worker of their own)
 
-The dashboard reads summaries that a Worker rebuilds twice a day, at 08:00 and 22:00 Spanish time
-(`workers/va-nightly/`). Pages Functions cannot run on a schedule, so it is a
-separate Worker. It has no address, so nothing can call it. Free plan: cron
-triggers are included.
+The dashboard reads summaries that are rebuilt only when Refresh now is pressed
+(`functions/va/api/refresh.js`, which runs the code in `workers/va-nightly/`).
+The Worker ran them at 08:00 and 22:00 Spanish time until 18 November 2026, when
+Sr. Orra had the schedule removed; it now has no cron trigger and no address, so
+nothing calls it.
 
 1. Put the database's id into `workers/va-nightly/wrangler.jsonc` (`database_id`).
    It is shown under Storage & Databases → D1 → va, or by `npx wrangler d1 list`.

@@ -4,7 +4,9 @@
  * no request, and reaches the database only through its D1 binding. Pages
  * Functions cannot run on a schedule, which is the only reason it is not one.
  *
- * Twice a day (08:00 and 22:00 in Spain; wrangler.jsonc) it rebuilds, from the raw
+ * It has no schedule since 18 November 2026 (wrangler.jsonc): the summary runs only
+ * from the dashboard's Refresh now button (functions/va/api/refresh.js), which
+ * imports nightly() below. Each run rebuilds, from the raw
  * batches the collector wrote:
  *   va_session      one row per sitting
  *   va_daily_user   one row per player per day (retention, engagement)
@@ -178,7 +180,13 @@ export async function nightly(env, now = Date.now(), source = "schedule") {
   const redo = own !== seen ? KEEP_DAYS : (Number.isFinite(back) && back > REDO ? back : REDO);
   const from = today - redo;
   const started = Date.now();
-  await db.batch(statements(from).map(([sql, args]) => db.prepare(sql).bind(...args)));
+  /* One statement at a time, not one batch. A D1 batch is a single transaction, and this
+     one held the database for about five seconds (4,782 ms on 20 November 2026), while the
+     collector, the rankings and the dashboard's tabs queued behind it until D1 answered
+     "D1 DB is overloaded". Each statement alone takes a fifth of a second at most, so other
+     requests get in between. A run cut off half-way leaves some summary days empty until
+     the next Refresh now, which rebuilds them. */
+  for (const [sql, args] of statements(from)) await db.prepare(sql).bind(...args).run();
   const purged = await db.prepare("DELETE FROM va_batch WHERE day < ?").bind(today - KEEP_DAYS).run();
   const note = { at: new Date(now).toISOString(), source, from, today, ms: Date.now() - started,
                  purged: (purged.meta && purged.meta.changes) || 0, own: parseInt(own, 10) || 0 };

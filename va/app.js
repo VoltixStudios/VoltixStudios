@@ -708,7 +708,7 @@
       ["Batches today", int(today.batches), "this game's; all games together: " + int(d.allToday || 0) + " of the free 100,000 a day"],
       ["Events refused", int(sumBy(it, (r) => r.refused)), "since " + dayLabel(d.since)],
       ["Waited offline over an hour", share(d.delay.late, d.delay.n), "average wait " + dur(d.delay.avg)],
-      ["Last summary", n ? dayLabel(Math.floor((Date.parse(n.at) - DAY0) / 86400000)) + ", " + n.at.slice(11, 16) + " UTC" : "not yet", n ? "rebuilt from " + dayLabel(n.from) + ", " + n.ms + " ms" : "they run at 08:00 and 22:00 Spanish time"],
+      ["Last summary", n ? dayLabel(Math.floor((Date.parse(n.at) - DAY0) / 86400000)) + ", " + n.at.slice(11, 16) + " UTC" : "not yet", n ? "rebuilt from " + dayLabel(n.from) + ", " + n.ms + " ms" : "press Refresh now"],
     ])];
     out.push(card("Script errors, since " + dayLabel(d.since), d.errors.length
       ? table(["Version", "Kind", "Line:column", "Where", "Count"],
@@ -823,10 +823,10 @@
 
   function summaryLine(sm) {
     const el = document.getElementById("summaryLine");
-    if (!sm) { el.textContent = "No summary yet. They run at 08:00 and 22:00 Spanish time, or press Refresh now."; return; }
+    if (!sm) { el.textContent = "No summary yet. Press Refresh now to build one."; return; }
     const local = new Date(sm.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
     el.textContent = "Figures as of the last summary: " + local + " (" + ago(sm.at) + ", " + (sm.source === "manual" ? "by hand" : "scheduled") +
-      "). Next scheduled at 08:00 and 22:00 Spanish time.";
+      "). Rebuilt only when you press Refresh now.";
   }
 
   async function show() {
@@ -943,7 +943,9 @@
     let ok;
     try {
       ok = await one(first);
-      await Promise.all(pages.slice(1).map(one));
+      /* One tab after another, not all at once: seven tabs in parallel, each several queries
+         over the raw batches, were enough to make D1 answer "D1 DB is overloaded". */
+      for (const p of pages.slice(1)) await one(p);
     } catch (e) { return false; }
     if (!ok && ticket === mine) {
       const saved = views.get(viewKey(first));
@@ -970,7 +972,7 @@
       if (!(await (state.page === "today" ? load() : loadGame()))) return;
       if (r.ok) line.textContent += " " + d.left_today + " summary rebuilds left today.";
       else if (d.error === "recent") line.textContent += " A summary ran " + ago(d.at) + ", so it was not rebuilt.";
-      else if (d.error === "limit") line.textContent += " No summary rebuilds left today (" + d.max + " a day); the next scheduled one is at 08:00 or 22:00.";
+      else if (d.error === "limit") line.textContent += " No summary rebuilds left today (" + d.max + " a day); more tomorrow.";
       else line.textContent += " The summary did not rebuild: " + (d.detail || d.error || r.status);
     } catch (e) {
       line.textContent = "The refresh did not finish: " + (e && e.message || e);
